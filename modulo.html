@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Comunicazione Assunzione — Studio Pelati</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a1a;min-height:100vh;padding:20px 16px 60px}
+
+/* LAYOUT TWO-COLUMN */
+.outer{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+@media(max-width:860px){.outer{grid-template-columns:1fr}.sidebar{display:none}}
+
+/* SIDEBAR CONTESTUALE */
+.sidebar{position:sticky;top:20px}
+.sidebar-card{background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:1.25rem;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.sidebar-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
+.sidebar-field{font-size:12px;font-weight:600;color:#185FA5;margin-bottom:.5rem}
+.sidebar-text{font-size:13px;color:#374151;line-height:1.6}
+.sidebar-norm{font-size:11px;color:#6b7280;margin-top:.5rem;padding-top:.5rem;border-top:0.5px solid #f3f4f6}
+.sidebar-empty{font-size:13px;color:#9ca3af;font-style:italic}
+
+/* FORM AREA */
+.form-col{min-width:0}
+.top-bar{background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.top-icon{width:40px;height:40px;background:#185FA5;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0}
+.top-title{font-size:15px;font-weight:500}
+.top-sub{font-size:12px;color:#6b7280;margin-top:1px}
+.top-right{margin-left:auto;font-size:12px;color:#6b7280;text-align:right}
+.az-name{font-weight:600;color:#185FA5;font-size:13px}
+.prog{height:3px;background:#e5e7eb;border-radius:99px;margin-bottom:1.25rem;overflow:hidden}
+.prog-fill{height:100%;background:#185FA5;border-radius:99px;transition:width .4s}
+
+.page{display:none}
+.page.on{display:block}
+.card{background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:1.25rem;margin-bottom:.75rem;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.pg-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;margin-bottom:1rem;display:flex;align-items:center;gap:6px}
+
+/* Contract title hero */
+.contr-hero{margin-bottom:1rem;padding:1rem 1.25rem;background:#eff6ff;border:0.5px solid #bfdbfe;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.contr-hero-title{font-size:18px;font-weight:700;color:#1e3a5f}
+.btn-info{background:#185FA5;color:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:opacity .15s}
+.btn-info:hover{opacity:.85}
+
+/* Info panel */
+.info-panel{display:none;background:#f8faff;border:1px solid #bfdbfe;border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:13px;line-height:1.7;color:#1e40af}
+.info-panel.on{display:block}
+.info-panel h4{font-size:14px;font-weight:600;margin-bottom:.5rem;color:#1e3a5f}
+.info-panel ul{padding-left:1.1rem;margin-top:.25rem}
+.info-panel li{margin-bottom:.25rem}
+
+.info-box{background:#eff6ff;border:0.5px solid #bfdbfe;border-radius:8px;padding:9px 13px;font-size:12px;color:#1e40af;margin-bottom:1rem;display:flex;gap:7px;align-items:flex-start}
+.warn-box{background:#fffbeb;border:0.5px solid #fcd34d;border-radius:8px;padding:9px 13px;font-size:12px;color:#92400e;margin-bottom:1rem;display:flex;gap:7px;align-items:flex-start}
+.agev-result{display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:1rem;margin-bottom:1rem}
+.agev-result.on{display:block}
+.agev-result h4{font-size:14px;font-weight:600;color:#166534;margin-bottom:.5rem}
+.agev-result p{font-size:13px;color:#166534;line-height:1.6}
+.agev-warn{background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:.75rem 1rem;margin-top:.5rem;font-size:12px;color:#92400e}
+
+.fld{margin-bottom:1rem}
+.fld:last-child{margin-bottom:0}
+.lbl{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:5px}
+.req{color:#dc2626;margin-left:2px}
+.hint{font-size:12px;color:#6b7280;margin-top:4px}
+input[type=text],input[type=email],input[type=date],input[type=number],select,textarea{width:100%;height:40px;border:1px solid #d1d5db;border-radius:8px;padding:0 12px;font-size:14px;color:#1a1a1a;background:#fff;transition:border-color .15s;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,.1)}
+textarea{height:auto;padding:10px 12px;resize:vertical;min-height:72px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+.rg,.cg{display:flex;flex-direction:column;gap:6px}
+.rc,.cc{display:flex;align-items:flex-start;gap:9px;padding:9px 12px;border:0.5px solid #e5e7eb;border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;background:#fff}
+.rc:hover,.cc:hover{border-color:#93c5fd;background:#f8faff}
+.rc.s,.cc.s{border-color:#185FA5;background:#eff6ff}
+.rc input,.cc input{margin-top:2px;flex-shrink:0;accent-color:#185FA5}
+.rb{flex:1}.rt{font-size:13px;font-weight:500;color:#1a1a1a}.rd{font-size:12px;color:#6b7280;margin-top:2px;line-height:1.4}
+.badge{font-size:11px;padding:2px 7px;border-radius:99px;white-space:nowrap;margin-left:auto;align-self:flex-start;margin-top:1px}
+.bg{background:#dcfce7;color:#166534}.bb{background:#dbeafe;color:#1e40af}.ba{background:#fef3c7;color:#92400e}
+
+.cf{display:none;margin-top:8px;padding:12px;background:#f9fafb;border-radius:8px;border:0.5px solid #e5e7eb}
+.cf.on{display:block}
+.divider{border:none;border-top:0.5px solid #f3f4f6;margin:1rem 0}
+
+/* Age row */
+.age-row{display:flex;gap:10px;align-items:flex-end}
+.age-pill{flex-shrink:0;height:40px;padding:0 12px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:8px;display:flex;align-items:center;gap:6px;font-size:13px;color:#6b7280;white-space:nowrap;min-width:110px}
+.age-pill strong{font-size:17px;color:#1a1a1a}
+.age-alert{font-size:12px;padding:5px 10px;border-radius:7px;margin-top:5px;display:none;gap:6px;align-items:center}
+.age-alert.on{display:flex}
+.age-alert.g{background:#dcfce7;color:#166534}.age-alert.a{background:#fef3c7;color:#92400e}
+
+/* Part-time table */
+.pt-table{width:100%;border-collapse:collapse;font-size:13px}
+.pt-table th{background:#f9fafb;padding:8px 10px;text-align:left;border:0.5px solid #e5e7eb;font-weight:500;color:#374151}
+.pt-table td{padding:6px 8px;border:0.5px solid #e5e7eb;vertical-align:middle}
+.pt-table tr:hover td{background:#f8faff}
+.pt-table input{height:32px;font-size:13px;border-radius:6px;padding:0 8px}
+.pt-add{background:none;border:0.5px dashed #93c5fd;border-radius:6px;color:#185FA5;font-size:12px;padding:3px 8px;cursor:pointer;margin-top:4px}
+.pt-add:hover{background:#eff6ff}
+.pt-del{background:none;border:none;color:#dc2626;cursor:pointer;font-size:16px;padding:0 4px}
+.ore-total{display:inline-flex;align-items:center;gap:6px;background:#185FA5;color:#fff;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:500;margin-top:.75rem}
+
+/* Nav */
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:.75rem;padding-top:1rem;border-top:0.5px solid #f3f4f6}
+.pc{font-size:12px;color:#9ca3af}
+.btn-p{background:#185FA5;color:#fff;border:none;border-radius:8px;padding:0 18px;height:38px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;transition:opacity .15s}
+.btn-p:hover{opacity:.88}.btn-p.gr{background:#0F6E56}.btn-p:disabled{opacity:.5;cursor:not-allowed}
+.btn-g{background:#fff;color:#374151;border:0.5px solid #d1d5db;border-radius:8px;padding:0 14px;height:38px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .15s}
+.btn-g:hover{background:#f9fafb}
+
+/* Done */
+.done-card{text-align:center;padding:2.5rem}
+.done-card .big{font-size:52px;margin-bottom:1rem}
+.done-card h2{font-size:20px;font-weight:500;margin-bottom:.5rem}
+.done-card p{font-size:13px;color:#6b7280;max-width:360px;margin:0 auto;line-height:1.6}
+
+@media(max-width:500px){.g2,.g3{grid-template-columns:1fr}.card{padding:1rem}}
+</style>
+</head>
+<body>
+
+<div class="outer">
+<div class="form-col">
+
+<div class="top-bar">
+  <div class="top-icon">📄</div>
+  <div><div class="top-title">Comunicazione di assunzione</div><div class="top-sub">Studio Pelati — compila tutti i campi obbligatori</div></div>
+  <div class="top-right"><div class="az-name" id="az-lbl">—</div><div>Accesso sicuro ✓</div></div>
+</div>
+<div class="prog"><div class="prog-fill" id="prog" style="width:12%"></div></div>
+
+<!-- ══ PAGE 1 — Dati lavoratore ══ -->
+<div class="page on" id="pg1">
+<div class="card">
+  <p class="pg-lbl">👤 Pagina 1 di 8 — Dati del lavoratore</p>
+  <div class="info-box">ℹ️ Inserisci i dati anagrafici del dipendente da assumere. I campi con * sono obbligatori.</div>
+
+  <div class="fld" data-hint="Indicare la ragione sociale completa come risulta dalla visura camerale." data-label="Datore di lavoro">
+    <label class="lbl">Datore di lavoro <span class="req">*</span></label>
+    <input type="text" id="f-datore" placeholder="Ragione sociale" required onfocus="showHint(this)" />
+    <p class="hint">Pre-compilato dalla ragione sociale associata al codice di accesso.</p>
+  </div>
+
+  <div class="fld" data-hint="Il riepilogo delle risposte fornite sarà consegnato a questo indirizzo. Verificare che sia corretto prima di procedere." data-label="Email per riepilogo">
+    <label class="lbl">Il riepilogo delle risposte fornite sarà consegnato a questo indirizzo <span class="req">*</span></label>
+    <input type="email" id="f-email-cop" placeholder="amministrazione@azienda.it" required onfocus="showHint(this)" />
+    <p class="hint">Pre-compilato con l'email del vostro profilo. Modificare se necessario.</p>
+  </div>
+
+  <div class="g2">
+    <div class="fld" data-hint="Cognome seguito dal nome del lavoratore che verrà assunto." data-label="Cognome e nome dipendente">
+      <label class="lbl">Cognome e nome dipendente <span class="req">*</span></label>
+      <input type="text" id="f-dip" placeholder="Rossi Mario" required onfocus="showHint(this)" />
+    </div>
+    <div class="fld" data-hint="Il sesso del lavoratore incide sulla verifica di alcune agevolazioni specifiche (es. Bonus Donne 2026)." data-label="Sesso">
+      <label class="lbl">Sesso <span class="req">*</span></label>
+      <select id="f-sesso" required onfocus="showHint(this)"><option value="">Seleziona...</option><option>Maschio</option><option>Femmina</option></select>
+    </div>
+  </div>
+
+  <div class="fld" data-hint="La data di nascita serve per calcolare automaticamente l'età e verificare le agevolazioni disponibili (es. Under 30, Under 35, Over 50). L'età viene calcolata in tempo reale." data-label="Data di nascita">
+    <label class="lbl">Data di nascita <span class="req">*</span></label>
+    <div class="age-row">
+      <input type="date" id="f-dob" style="flex:1" required oninput="calcAge()" onfocus="showHint(this)" />
+      <div class="age-pill" id="age-pill">📅 <span id="age-txt" style="color:#9ca3af">età</span></div>
+    </div>
+    <div class="age-alert" id="age-al"></div>
+  </div>
+
+  <div class="fld" data-hint="Data prevista di inizio del rapporto di lavoro. La prestazione può iniziare solo dopo la conferma dello Studio." data-label="Data di assunzione">
+    <label class="lbl">Data di assunzione <span class="req">*</span></label>
+    <input type="date" id="f-dass" required onfocus="showHint(this)" />
+  </div>
+
+  <div class="g2">
+    <div class="fld" data-hint="Indirizzo email personale del lavoratore, utile per comunicazioni dirette." data-label="Email lavoratore">
+      <label class="lbl">E-mail del lavoratore</label>
+      <input type="email" id="f-email-lav" placeholder="mario.rossi@email.it" onfocus="showHint(this)" />
+    </div>
+    <div class="fld" data-hint="Numero di cellulare del lavoratore per eventuali comunicazioni urgenti dello Studio." data-label="Cellulare">
+      <label class="lbl">N. cellulare <span class="req">*</span></label>
+      <input type="text" id="f-cell" placeholder="+39 333 1234567" required onfocus="showHint(this)" />
+    </div>
+  </div>
+
+  <div class="fld" data-hint="IBAN di 27 caratteri su cui accreditare la retribuzione mensile. Verificare attentamente: un IBAN errato causa mancato pagamento dello stipendio." data-label="IBAN">
+    <label class="lbl">IBAN accredito retribuzione <span class="req">*</span></label>
+    <input type="text" id="f-iban" placeholder="IT60 X054 2811 1010 0000 0123 456" required onfocus="showHint(this)" />
+    <p class="hint">27 caratteri. Controllare con attenzione prima di inviare.</p>
+  </div>
+
+  <div class="nav"><span class="pc">Pagina 1 di 8</span><button class="btn-p" onclick="go(2)">Avanti →</button></div>
+</div>
+</div>
+
+<!-- ══ PAGE 2 — Precedenti, qualifica ══ -->
+<div class="page" id="pg2">
+<div class="card">
+  <p class="pg-lbl">📋 Pagina 2 di 8 — Precedenti lavorativi e qualifica</p>
+
+  <div class="fld" data-hint="I precedenti lavorativi determinano le agevolazioni disponibili. 'Primo impiego' e 'solo contratti a termine' aprono spesso agevolazioni significative per il datore. Verificare sempre con documentazione ufficiale." data-label="Precedenti lavorativi" data-norm="Art. 1 L. 205/2017 — condizione essenziale per agevolazioni Under 30">
+    <label class="lbl">Precedenti lavorativi <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'prec')"><input type="radio" name="prec" value="Primo impiego" required/><div class="rb"><div class="rt">Primo impiego</div><div class="rd">Non ha mai avuto rapporti di lavoro subordinato.</div></div></label>
+      <label class="rc" onclick="pick(this,'prec')"><input type="radio" name="prec" value="Solo contratti a tempo determinato"/><div class="rb"><div class="rt">Solo contratti a tempo determinato</div><div class="rd">Tutti i precedenti rapporti erano a termine.</div></div></label>
+      <label class="rc" onclick="pick(this,'prec')"><input type="radio" name="prec" value="Solo apprendistato"/><div class="rb"><div class="rt">Solo apprendistato</div></div></label>
+      <label class="rc" onclick="pick(this,'prec')"><input type="radio" name="prec" value="Rapporti di lavoro ordinari"/><div class="rb"><div class="rt">Rapporti di lavoro ordinari</div><div class="rd">Ha avuto contratti a tempo indeterminato o altre tipologie standard.</div></div></label>
+    </div>
+  </div>
+
+  <div class="fld" data-hint="Il titolo di studio può influire sulla durata dell'eventuale apprendistato e su alcune agevolazioni formative." data-label="Titolo di studio">
+    <label class="lbl">Titolo di studio <span class="req">*</span></label>
+    <select id="f-titolo" required onfocus="showHint(this)"><option value="">Seleziona...</option><option>Licenza media inferiore</option><option>Diploma di maturità</option><option>Laurea</option><option>Attestato di qualifica professionale coerente con le mansioni</option><option>Altro</option></select>
+  </div>
+
+  <div class="fld" data-hint="La qualifica determina il CCNL applicabile e i costi contributivi. Gli impiegati con rischio produttivo hanno lo stesso trattamento assicurativo degli operai (contributo INAIL)." data-label="Qualifica">
+    <label class="lbl">Qualifica <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'qual')"><input type="radio" name="qual" value="Dirigente" required/><div class="rb"><div class="rt">Dirigente</div></div></label>
+      <label class="rc" onclick="pick(this,'qual')"><input type="radio" name="qual" value="Quadro"/><div class="rb"><div class="rt">Quadro</div></div></label>
+      <label class="rc" onclick="pick(this,'qual')"><input type="radio" name="qual" value="Impiegato - rischio elettrico"/><div class="rb"><div class="rt">Impiegato — rischio elettrico</div></div></label>
+      <label class="rc" onclick="pick(this,'qual')"><input type="radio" name="qual" value="Impiegato - rischio produttivo"/><div class="rb"><div class="rt">Impiegato — rischio produttivo</div><div class="rd">Esposto agli stessi rischi degli operai.</div></div></label>
+      <label class="rc" onclick="pick(this,'qual')"><input type="radio" name="qual" value="Operaio"/><div class="rb"><div class="rt">Operaio</div></div></label>
+    </div>
+  </div>
+
+  <div class="fld" data-hint="Indicare il livello contrattuale previsto dal CCNL applicato (es. '3° livello CCNL Metalmeccanici'). Se non si conosce il livello esatto, lo Studio provvederà alla verifica." data-label="Livello contrattuale">
+    <label class="lbl">Livello contrattuale <span class="req">*</span></label>
+    <input type="text" id="f-liv" placeholder="es. 3° livello CCNL Metalmeccanici" required onfocus="showHint(this)" />
+  </div>
+
+  <div class="fld" data-hint="La retribuzione concordata deve essere almeno pari a quella contrattuale prevista dal CCNL per il livello indicato. Valori inferiori al minimo contrattuale non sono ammessi." data-label="Retribuzione lorda">
+    <label class="lbl">Retribuzione lorda <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'retrib');document.getElementById('cf-imp').classList.remove('on')"><input type="radio" name="retrib" value="Contrattuale" required/><div class="rb"><div class="rt">Contrattuale</div><div class="rd">Quella prevista dal CCNL per il livello indicato.</div></div></label>
+      <label class="rc" onclick="pick(this,'retrib');document.getElementById('cf-imp').classList.add('on')"><input type="radio" name="retrib" value="Concordata"/><div class="rb"><div class="rt">Concordata — importo specifico</div><div class="rd">Retribuzione diversa da quella tabellare.</div></div></label>
+    </div>
+    <div class="cf" id="cf-imp"><label class="lbl">Importo concordato (€ lordi/mese) <span class="req">*</span></label><input type="number" id="f-imp" placeholder="es. 1800" min="0"/></div>
+  </div>
+
+  <div class="fld" data-hint="Descrivere in modo preciso le mansioni. La descrizione verrà riportata nel contratto individuale e nella comunicazione UNILAV al Centro per l'Impiego." data-label="Mansioni">
+    <label class="lbl">Mansioni <span class="req">*</span></label>
+    <textarea id="f-mans" placeholder="Descrivere le principali mansioni..." required onfocus="showHint(this)"></textarea>
+  </div>
+
+  <div class="g2">
+    <div class="fld" data-hint="Se il lavoratore ha già esperienza nelle mansioni da svolgere, il periodo di prova può essere ridotto o eliminato. Indicare correttamente per la redazione del contratto." data-label="Esperienza nelle mansioni">
+      <label class="lbl">Esperienza nelle mansioni? <span class="req">*</span></label>
+      <div class="rg">
+        <label class="rc" onclick="pick(this,'esp')"><input type="radio" name="esp" value="No" required/><div class="rb"><div class="rt">No</div></div></label>
+        <label class="rc" onclick="pick(this,'esp')"><input type="radio" name="esp" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
+      </div>
+    </div>
+    <div class="fld" data-hint="Il periodo di prova deve essere previsto espressamente nel contratto. La durata massima è stabilita dal CCNL applicato in base alla qualifica." data-label="Periodo di prova">
+      <label class="lbl">Periodo di prova <span class="req">*</span></label>
+      <div class="rg">
+        <label class="rc" onclick="pick(this,'prova')"><input type="radio" name="prova" value="Si" required/><div class="rb"><div class="rt">Sì</div></div></label>
+        <label class="rc" onclick="pick(this,'prova')"><input type="radio" name="prova" value="No"/><div class="rb"><div class="rt">No</div></div></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-g" onclick="go(1)">← Indietro</button>
+    <button class="btn-p" onclick="go(3)">Avanti →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ PAGE 3 — Luogo di lavoro ══ -->
+<div class="page" id="pg3">
+<div class="card">
+  <p class="pg-lbl">📍 Pagina 3 di 8 — Luogo di lavoro e benefits</p>
+
+  <div class="fld" data-hint="La regione del luogo di lavoro è determinante per alcune agevolazioni: es. Bonus ZES (Mezzogiorno), Esonero Mezzogiorno 2025, variazioni regionali del Bonus Giovani. Selezionare con attenzione." data-label="Luogo di lavoro" data-norm="La regione di lavoro incide su: ZES Unica, Esonero Mezzogiorno, Bonus Giovani regionale">
+    <label class="lbl">Luogo di lavoro <span class="req">*</span></label>
+    <div class="g3">
+      <div>
+        <label class="lbl" style="font-size:12px">Provincia <span class="req">*</span></label>
+        <select id="f-prov" onchange="loadComuni()" onfocus="showHint(this.closest('.fld'))"><option value="">Provincia...</option></select>
+      </div>
+      <div>
+        <label class="lbl" style="font-size:12px">Comune <span class="req">*</span></label>
+        <select id="f-comune" onchange="fillCapRegione()" onfocus="showHint(this.closest('.fld'))"><option value="">Prima seleziona prov.</option></select>
+      </div>
+      <div>
+        <label class="lbl" style="font-size:12px">CAP</label>
+        <input type="text" id="f-cap" readonly style="background:#f9fafb;color:#6b7280" placeholder="auto" />
+      </div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:10px">
+      <div style="flex:1"><label class="lbl" style="font-size:12px">Regione</label><input type="text" id="f-regione" readonly style="background:#f9fafb;color:#185FA5;font-weight:500" placeholder="auto" /></div>
+      <div style="flex:2"><label class="lbl" style="font-size:12px">Indirizzo</label><input type="text" id="f-indirizzo" placeholder="Via, n° civico" /></div>
+    </div>
+  </div>
+
+  <!-- SEZIONE CANTIERE (solo edilizia) -->
+  <div id="sezione-cantiere" style="display:none">
+    <div class="warn-box">🏗️ Azienda del settore Edilizia — compilare i dati del cantiere se diverso dalla sede.</div>
+    <div class="fld">
+      <label class="lbl">Cantiere di</label>
+      <input type="text" id="f-cant-desc" placeholder="es. costruzione edificio residenziale, ristrutturazione..." />
+    </div>
+    <div class="g2">
+      <div class="fld">
+        <label class="lbl">Provincia cantiere</label>
+        <select id="f-cant-prov" onchange="loadComuniCantiere()"><option value="">Provincia...</option></select>
+      </div>
+      <div class="fld">
+        <label class="lbl">Comune cantiere</label>
+        <select id="f-cant-comune"><option value="">Prima seleziona prov.</option></select>
+      </div>
+    </div>
+    <div class="fld">
+      <label class="lbl">Indirizzo cantiere</label>
+      <input type="text" id="f-cant-ind" placeholder="Via e numero civico" />
+    </div>
+  </div>
+
+  <div class="fld" data-hint="Se il lavoratore verrà a contatto con minori di 18 anni (anche non dipendenti), è obbligatorio richiedere il certificato penale dei carichi pendenti (D.Lgs. 39/2014). Lo Studio ne gestirà la richiesta." data-label="Contatto con minori" data-norm="D.Lgs. 39/2014 — obbligo certificato penale per chi lavora con minori">
+    <label class="lbl">Contatto diretto con minori di 18 anni? <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'min')"><input type="radio" name="min" value="No" required/><div class="rb"><div class="rt">No</div></div></label>
+      <label class="rc" onclick="pick(this,'min')"><input type="radio" name="min" value="Si"/><div class="rb"><div class="rt">Sì</div><div class="rd">Sarà richiesto il certificato penale dei carichi pendenti (D.Lgs. 39/2014).</div></div></label>
+    </div>
+  </div>
+
+  <div class="fld" data-hint="I beni aziendali in uso al lavoratore costituiscono 'fringe benefit' soggetti a tassazione oltre determinate soglie. L'autovettura in uso non occasionale richiede comunicazione della targa e del valore convenzionale ACI." data-label="Benefits e beni aziendali" data-norm="Art. 51 TUIR — tassazione fringe benefit; soglia esenzione 2024: €1.000 (€2.000 con figli a carico)">
+    <label class="lbl">Utilizzo beni aziendali e benefit <span class="req">*</span></label>
+    <div class="cg">
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Autovettura aziendale non occasionale"/><div class="rb"><div class="rt">Autovettura aziendale in via non occasionale</div><div class="rd">Fringe benefit tassabile — comunicare targa e valore convenzionale ACI.</div></div></label>
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Autovettura aziendale anche nei gg non lavorativi"/><div class="rb"><div class="rt">Autovettura aziendale anche nei giorni non lavorativi</div></div></label>
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Propria autovettura non occasionale"/><div class="rb"><div class="rt">Propria autovettura in via non occasionale</div><div class="rd">Rimborso chilometrico — comunicare targa e modello.</div></div></label>
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Telefono aziendale"/><div class="rb"><div class="rt">Telefono cellulare aziendale</div></div></label>
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Benefits vari (alloggio, polizze, buoni pasto, altro)"/><div class="rb"><div class="rt">Benefits vari</div><div class="rd">Alloggio, polizze extra-professionali, buoni pasto, altro.</div></div></label>
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Nessun benefit"/><div class="rb"><div class="rt">Nessun utilizzo di beni aziendali o benefit</div></div></label>
+    </div>
+  </div>
+
+  <div class="fld" data-hint="Le indennità di trasferta seguono le regole del CCNL applicato. Esistono due regimi fiscali: a piè di lista o forfettario. Lo Studio indicherà il trattamento più conveniente." data-label="Trasferte">
+    <label class="lbl">Trasferte fuori dal territorio comunale? <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'trasf')"><input type="radio" name="trasf" value="No" required/><div class="rb"><div class="rt">No</div></div></label>
+      <label class="rc" onclick="pick(this,'trasf')"><input type="radio" name="trasf" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="fld" data-hint="I giorni lavorati come somministrato si computano ai fini del limite del 20% dei contratti a termine (D.Lgs. 81/2015). Inserire 0 se non applicabile." data-label="Giorni come somministrato">
+      <label class="lbl">Giorni come somministrato (stesso ruolo)</label>
+      <input type="number" id="f-somm" placeholder="0" min="0" value="0" onfocus="showHint(this.closest('.fld'))" />
+    </div>
+    <div class="fld" data-hint="Se negli ultimi 12 mesi sono cessati contratti a termine con altri lavoratori per le stesse mansioni, potrebbero esserci limitazioni alla stipula di nuovi contratti a termine (art. 19 D.Lgs. 81/2015)." data-label="Cessati contratti termine" data-norm="Art. 19 D.Lgs. 81/2015 — limiti ai contratti a termine">
+      <label class="lbl">Cessati contratti a termine stessa mansione (12 mesi)? <span class="req">*</span></label>
+      <div class="rg">
+        <label class="rc" onclick="pick(this,'cess')"><input type="radio" name="cess" value="No" required/><div class="rb"><div class="rt">No</div></div></label>
+        <label class="rc" onclick="pick(this,'cess')"><input type="radio" name="cess" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-g" onclick="go(2)">← Indietro</button>
+    <button class="btn-p" onclick="go(4)">Avanti →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ PAGE 4 — Tipologia contratto ══ -->
+<div class="page" id="pg4">
+<div class="card">
+  <p class="pg-lbl">📑 Pagina 4 di 8 — Tipologia del contratto</p>
+  <div class="warn-box">⚠️ La tipologia selezionata determina le sezioni successive. Scegliere con attenzione — alcune agevolazioni sono ammesse solo per specifici tipi di contratto.</div>
+
+  <div class="fld" data-hint="Ogni tipologia contrattuale ha requisiti normativi, contributi e agevolazioni differenti. Lo Studio verificherà la compatibilità tra la tipologia scelta e l'eventuale agevolazione contributiva." data-label="Tipologia contratto">
+    <label class="lbl">Tipologia del contratto <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'contr')"><input type="radio" name="contr" value="Tempo indeterminato full-time" required/><div class="rb"><div class="rt">05.1 — Tempo indeterminato full-time</div><div class="rd">Orario pieno secondo il CCNL. Accede alla maggior parte delle agevolazioni contributive.</div></div></label>
+      <label class="rc" onclick="pick(this,'contr')"><input type="radio" name="contr" value="Tempo indeterminato part-time"/><div class="rb"><div class="rt">05.2 — Tempo indeterminato part-time</div><div class="rd">Richiederà specificazione giorni e orario. Alcune agevolazioni si riducono proporzionalmente.</div></div></label>
+      <label class="rc" onclick="pick(this,'contr')"><input type="radio" name="contr" value="Lavoro a chiamata"/><div class="rb"><div class="rt">05.3 — Lavoro a chiamata (job on call)</div><div class="rd">Prestazione non continuativa. Richiede aggiornamento DVR. Limitazioni alle agevolazioni.</div></div></label>
+      <label class="rc" onclick="pick(this,'contr')"><input type="radio" name="contr" value="Tempo determinato"/><div class="rb"><div class="rt">05.4 — Tempo determinato</div><div class="rd">Richiede causale obbligatoria. Alcune agevolazioni sono applicabili in misura ridotta (50%).</div></div></label>
+      <label class="rc" onclick="pick(this,'contr')"><input type="radio" name="contr" value="Apprendistato professionalizzante"/><div class="rb"><div class="rt">05.5 — Apprendistato professionalizzante</div><div class="rd">Contratto formativo con piano individuale e tutor. Contribuzione ridotta.</div></div></label>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-g" onclick="go(3)">← Indietro</button>
+    <button class="btn-p" onclick="goContr()">Avanti →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ PAGE 5 — Part-time ══ -->
+<div class="page" id="pg5">
+<div class="card">
+  <div class="contr-hero">
+    <div class="contr-hero-title">Tempo indeterminato part-time</div>
+    <button class="btn-info" onclick="toggleInfo('info-pt')">ℹ️ Informazioni</button>
+  </div>
+  <div class="info-panel" id="info-pt">
+    <h4>Contratto a tempo indeterminato part-time</h4>
+    <ul>
+      <li><strong>Normativa:</strong> Art. 4-12 D.Lgs. 81/2015</li>
+      <li><strong>Tipi:</strong> Orizzontale (riduzione giornaliera), Verticale (solo certi giorni), Misto</li>
+      <li><strong>Lavoro supplementare:</strong> ammesso entro il 25% delle ore contrattuali, con maggiorazione</li>
+      <li><strong>Clausole elastiche/flessibili:</strong> devono essere pattuite per iscritto</li>
+      <li><strong>Agevolazioni:</strong> si applicano in misura proporzionale all'orario (es. massimali ridotti)</li>
+      <li><strong>Contributi:</strong> calcolati sulla retribuzione effettiva, non su quella full-time</li>
+    </ul>
+  </div>
+
+  <p class="pg-lbl">🕐 Pagina 5 di 8 — Orario part-time</p>
+  <div class="info-box">ℹ️ Aggiungi per ogni giorno lavorativo uno o più intervalli orari. Le ore totali vengono calcolate automaticamente.</div>
+
+  <div class="fld">
+    <label class="lbl">Distribuzione orario settimanale <span class="req">*</span></label>
+    <table class="pt-table" id="pt-table">
+      <thead><tr><th style="width:110px">Giorno</th><th>Dalle</th><th>Alle</th><th>Ore</th><th></th></tr></thead>
+      <tbody id="pt-body"></tbody>
+    </table>
+    <button class="pt-add" onclick="addPtRow()">+ Aggiungi intervallo</button>
+    <div style="margin-top:.75rem">
+      <span class="ore-total">⏱ Totale settimanale: <strong id="ore-tot">0h 00m</strong></span>
+    </div>
+  </div>
+
+  <div class="fld">
+    <label class="lbl">Ulteriori precisazioni sull'orario</label>
+    <textarea id="f-orario-note" placeholder="Variazioni settimanali, turni, clausole elastiche, ecc."></textarea>
+  </div>
+
+  <div class="nav">
+    <button class="btn-g" onclick="go(4)">← Indietro</button>
+    <button class="btn-p" onclick="go(8)">Avanti →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ PAGE 6 — A chiamata ══ -->
+<div class="page" id="pg6">
+<div class="card">
+  <div class="contr-hero">
+    <div class="contr-hero-title">Lavoro a chiamata</div>
+    <button class="btn-info" onclick="toggleInfo('info-ch')">ℹ️ Informazioni</button>
+  </div>
+  <div class="info-panel" id="info-ch">
+    <h4>Contratto di lavoro intermittente (job on call)</h4>
+    <ul>
+      <li><strong>Normativa:</strong> Art. 13-18 D.Lgs. 81/2015</li>
+      <li><strong>Quando è ammesso:</strong> per attività discontinue/intermittenti ex R.D. 1955, o per soggetti under 24 o over 55</li>
+      <li><strong>Limite:</strong> max 400 giornate/anno (ultimi 3 anni) — oltre si trasforma in rapporto ordinario</li>
+      <li><strong>Comunicazione preventiva:</strong> obbligatoria al Ministero del Lavoro almeno 1 ora prima dell'inizio prestazione</li>
+      <li><strong>DVR:</strong> aggiornamento obbligatorio per rischi specifici della tipologia</li>
+      <li><strong>Agevolazioni:</strong> non accede alla maggior parte degli incentivi contributivi</li>
+      <li><strong>Indennità di disponibilità:</strong> minimo 20% della retribuzione mensile (art. 16)</li>
+    </ul>
+  </div>
+
+  <p class="pg-lbl">📞 Pagina 6 di 8 — Lavoro a chiamata</p>
+  <div class="warn-box">⚠️ L'azienda è tenuta ad aggiornare il DVR per questa tipologia e a fare comunicazione preventiva al Ministero del Lavoro prima di ogni prestazione.</div>
+
+  <div class="fld" data-hint="Il preavviso di chiamata deve essere stabilito nel contratto. Verificare con lo Studio la congruità rispetto al CCNL applicato." data-label="Preavviso di chiamata">
+    <label class="lbl">Preavviso di chiamata <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'prev-tipo')"><input type="radio" name="prev-tipo" value="Ore" required/><div class="rb"><div class="rt">In ore</div></div></label>
+      <label class="rc" onclick="pick(this,'prev-tipo')"><input type="radio" name="prev-tipo" value="Giorni"/><div class="rb"><div class="rt">In giorni</div></div></label>
+    </div>
+  </div>
+  <div class="fld"><label class="lbl">Quantità preavviso <span class="req">*</span></label><input type="number" id="f-prev-qt" placeholder="es. 2" min="0" required/></div>
+
+  <div class="fld" data-label="Modalità di chiamata" data-hint="La modalità di comunicazione della chiamata deve essere prevista nel contratto. La comunicazione al portale del Ministero è sempre obbligatoria indipendentemente dalla modalità scelta.">
+    <label class="lbl">Modalità di chiamata <span class="req">*</span></label>
+    <div class="cg">
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="SMS"/><div class="rb"><div class="rt">SMS</div></div></label>
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Email"/><div class="rb"><div class="rt">Email</div></div></label>
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Telefono"/><div class="rb"><div class="rt">Telefono</div></div></label>
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Portale Ministero del Lavoro"/><div class="rb"><div class="rt">Portale Ministero del Lavoro</div><div class="rd">Comunicazione obbligatoria entro 60 min. dall'inizio della prestazione.</div></div></label>
+    </div>
+  </div>
+
+  <div class="fld" data-label="Indennità di disponibilità" data-hint="L'indennità di disponibilità è dovuta solo quando il lavoratore si impegna a rispondere alle chiamate (disponibilità continuativa). Il minimo di legge è il 20% della retribuzione mensile (art. 16 D.Lgs. 81/2015). È assoggettata a contribuzione e IRPEF." data-norm="Art. 16 D.Lgs. 81/2015 — indennità minima 20% retribuzione mensile">
+    <label class="lbl">Con erogazione indennità di disponibilità? <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'ind');document.getElementById('cf-ind').classList.remove('on')"><input type="radio" name="ind" value="No" required/><div class="rb"><div class="rt">No</div></div></label>
+      <label class="rc" onclick="pick(this,'ind');document.getElementById('cf-ind').classList.add('on')"><input type="radio" name="ind" value="Si"/><div class="rb"><div class="rt">Sì</div><div class="rd">Minimo 20% della retribuzione mensile (art. 16 D.Lgs. 81/2015).</div></div></label>
+    </div>
+    <div class="cf" id="cf-ind"><label class="lbl">Importo indennità mensile (€) <span class="req">*</span></label><input type="number" id="f-ind-imp" placeholder="es. 300" min="0"/></div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-g" onclick="go(4)">← Indietro</button>
+    <button class="btn-p" onclick="go(8)">Avanti →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ PAGE 7 — Determinato / Apprendistato ══ -->
+<div class="page" id="pg7">
+
+<!-- DETERMINATO -->
+<div id="card-det" style="display:none">
+<div class="card">
+  <div class="contr-hero">
+    <div class="contr-hero-title">Tempo determinato</div>
+    <button class="btn-info" onclick="toggleInfo('info-det')">ℹ️ Informazioni</button>
+  </div>
+  <div class="info-panel" id="info-det">
+    <h4>Contratto a tempo determinato</h4>
+    <ul>
+      <li><strong>Normativa:</strong> Art. 19-29 D.Lgs. 81/2015</li>
+      <li><strong>Durata massima:</strong> 24 mesi complessivi (proroghe incluse) per stesse mansioni stesso datore</li>
+      <li><strong>Causale:</strong> obbligatoria per contratti superiori a 12 mesi o per ogni rinnovo</li>
+      <li><strong>Proroghe:</strong> max 4 nell'arco di 24 mesi</li>
+      <li><strong>Contributo addizionale:</strong> 1,40% a carico datore (rimborsato in caso di trasformazione a TI)</li>
+      <li><strong>Agevolazioni:</strong> Assegno di Inclusione/SFL al 50%; Bonus Donne, sostituzione maternità al 50%</li>
+      <li><strong>Sostituzione maternità:</strong> esenzione contributo addizionale e dei limiti percentuali</li>
+    </ul>
+  </div>
+  <p class="pg-lbl">📅 Pagina 7 di 8 — Tempo determinato</p>
+  <div class="info-box">ℹ️ Causale obbligatoria (art. 19 D.Lgs. 81/2015). Limite massimo 24 mesi con stesso datore per stesse mansioni.</div>
+
+  <div class="fld" data-hint="La causale deve essere specifica e veritiera. Causali generiche o pretestuose possono determinare la conversione del contratto a tempo indeterminato per sentenza del giudice." data-label="Causale del contratto" data-norm="Art. 19 D.Lgs. 81/2015 — causale obbligatoria per contratti >12 mesi o rinnovi">
+    <label class="lbl">Causale del contratto <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'caus');showCaus('mat')"><input type="radio" name="caus" value="Sostituzione maternità/paternità" required/><div class="rb"><div class="rt">Sostituzione maternità / paternità</div><div class="rd">Esonero dal contributo addizionale 1,40% e dai limiti percentuali.</div></div></label>
+      <label class="rc" onclick="pick(this,'caus');showCaus('ass')"><input type="radio" name="caus" value="Sostituzione ferie/malattia/infortunio/aspettativa"/><div class="rb"><div class="rt">Sostituzione ferie / malattia / infortunio / aspettativa</div><div class="rd">D.Lgs. 368/2001 — indicare nominativo del lavoratore sostituito.</div></div></label>
+      <label class="rc" onclick="pick(this,'caus');showCaus('')"><input type="radio" name="caus" value="Senza causale - prorogabile"/><div class="rb"><div class="rt">Senza causale (prorogabile)</div><div class="rd">Solo per contratti fino a 12 mesi. Non rinnovabile senza causale oltre tale soglia.</div></div></label>
+      <label class="rc" onclick="pick(this,'caus');showCaus('esi')"><input type="radio" name="caus" value="Esigenze temporanee o incrementi non programmabili"/><div class="rb"><div class="rt">Esigenze temporanee o incrementi non programmabili</div><div class="rd">Descrivere la causale in modo dettagliato e specifico.</div></div></label>
+    </div>
+    <div class="cf" id="cf-mat"><label class="lbl">Nominativo lavoratore/trice in maternità/paternità <span class="req">*</span></label><input type="text" id="f-sost-mat" placeholder="es. Bianchi Anna"/></div>
+    <div class="cf" id="cf-ass"><label class="lbl">Nominativo lavoratore sostituito <span class="req">*</span></label><input type="text" id="f-sost-ass" placeholder="es. Verdi Paolo"/></div>
+    <div class="cf" id="cf-esi"><label class="lbl">Descrizione causale specifica <span class="req">*</span></label><textarea id="f-caus-desc" placeholder="Descrivere nel dettaglio l'esigenza temporanea o l'incremento di attività non programmabile..."></textarea></div>
+  </div>
+
+  <div class="fld" data-hint="Verificare che la durata complessiva (contratto attuale + eventuali proroghe precedenti con lo stesso datore per le stesse mansioni) non superi i 24 mesi. Superato questo limite il rapporto si converte automaticamente a tempo indeterminato." data-label="Scadenza contratto" data-norm="Art. 19 D.Lgs. 81/2015 — durata massima 24 mesi cumulativi">
+    <label class="lbl">Scadenza del contratto <span class="req">*</span></label>
+    <input type="date" id="f-scad" required onfocus="showHint(this.closest('.fld'))"/>
+    <p class="hint">La durata complessiva (proroghe incluse) non può superare 24 mesi per le stesse mansioni.</p>
+  </div>
+</div>
+</div>
+
+<!-- APPRENDISTATO -->
+<div id="card-appr" style="display:none">
+<div class="card">
+  <div class="contr-hero">
+    <div class="contr-hero-title">Apprendistato professionalizzante</div>
+    <button class="btn-info" onclick="toggleInfo('info-appr')">ℹ️ Informazioni</button>
+  </div>
+  <div class="info-panel" id="info-appr">
+    <h4>Apprendistato professionalizzante (2° livello)</h4>
+    <ul>
+      <li><strong>Normativa:</strong> Art. 44 D.Lgs. 81/2015</li>
+      <li><strong>Età:</strong> da 18 a 29 anni (o 15 se in possesso di diploma professionale)</li>
+      <li><strong>Durata:</strong> da 6 mesi a 3 anni (5 anni per artigianato)</li>
+      <li><strong>Formazione:</strong> minimo 120 ore/anno di formazione trasversale + formazione specifica</li>
+      <li><strong>Tutor:</strong> obbligatorio con requisiti certificati di almeno 8 ore di formazione</li>
+      <li><strong>Contribuzione ridotta:</strong> aliquota ridotta per i primi 3 anni dalla trasformazione a TI</li>
+      <li><strong>Trasformazione a TI:</strong> possibile con ulteriori 12 mesi di contribuzione ridotta</li>
+      <li><strong>Piano Formativo:</strong> obbligatorio — lo Studio provvede alla redazione</li>
+    </ul>
+  </div>
+  <p class="pg-lbl">🎓 Pagina 7 di 8 — Apprendistato professionalizzante</p>
+  <div class="info-box">ℹ️ Richiede Piano Formativo Individuale (PFI) e tutor aziendale con requisiti certificati (art. 47 D.Lgs. 81/2015). Lo Studio redige il PFI.</div>
+
+  <div class="fld" data-hint="Indicare le mansioni specifiche che l'apprendista imparerà a svolgere. Devono corrispondere alla qualifica finale cui aspira. La descrizione verrà inserita nel Piano Formativo Individuale." data-label="Mansioni apprendista">
+    <label class="lbl">Mansioni cui aspira l'apprendista <span class="req">*</span></label>
+    <input type="text" id="f-appr-mans" placeholder="es. addetto contabilità, operatore CNC..." required onfocus="showHint(this.closest('.fld'))"/>
+  </div>
+  <div class="fld" data-label="Qualifica aspirata" data-hint="La qualifica finale viene registrata all'INPS al termine del periodo di apprendistato e certificata con il libretto formativo del cittadino.">
+    <label class="lbl">Qualifica alla quale aspira <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'qappr')"><input type="radio" name="qappr" value="Impiegato mansioni di concetto" required/><div class="rb"><div class="rt">Impiegato addetto a mansioni di concetto</div></div></label>
+      <label class="rc" onclick="pick(this,'qappr')"><input type="radio" name="qappr" value="Impiegato mansioni d'ordine"/><div class="rb"><div class="rt">Impiegato addetto a mansioni d'ordine</div></div></label>
+      <label class="rc" onclick="pick(this,'qappr')"><input type="radio" name="qappr" value="Operaio qualificato"/><div class="rb"><div class="rt">Operaio qualificato</div></div></label>
+      <label class="rc" onclick="pick(this,'qappr')"><input type="radio" name="qappr" value="Operaio specializzato"/><div class="rb"><div class="rt">Operaio specializzato</div></div></label>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="fld" data-label="Precedente apprendistato" data-hint="I periodi di apprendistato già svolti per le stesse mansioni si computano nella durata massima consentita. È necessario acquisire la documentazione del precedente rapporto.">
+      <label class="lbl">Precedente apprendistato stesse mansioni? <span class="req">*</span></label>
+      <div class="rg">
+        <label class="rc" onclick="pick(this,'appr-prec');document.getElementById('cf-appr-mesi').classList.remove('on')"><input type="radio" name="appr-prec" value="No" required/><div class="rb"><div class="rt">No</div></div></label>
+        <label class="rc" onclick="pick(this,'appr-prec');document.getElementById('cf-appr-mesi').classList.add('on')"><input type="radio" name="appr-prec" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
+      </div>
+      <div class="cf" id="cf-appr-mesi"><label class="lbl">Per quanti mesi?</label><input type="number" id="f-appr-mesi" placeholder="es. 6" min="0"/></div>
+    </div>
+    <div class="fld" data-label="Lavoro interinale precedente" data-hint="Il lavoro interinale svolto nell'azienda potrebbe influire sulla qualificazione del rapporto. Lo Studio verificherà la sussistenza dei requisiti.">
+      <label class="lbl">Lavoro interinale in questa azienda (12 mesi)? <span class="req">*</span></label>
+      <div class="rg">
+        <label class="rc" onclick="pick(this,'appr-int')"><input type="radio" name="appr-int" value="No" required/><div class="rb"><div class="rt">No</div></div></label>
+        <label class="rc" onclick="pick(this,'appr-int')"><input type="radio" name="appr-int" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
+      </div>
+    </div>
+  </div>
+  <div class="fld" data-label="Diploma/laurea AMVA" data-hint="Il possesso di diploma di scuola media superiore o laurea permette l'accesso all'Apprendistato per Master e Alta Formazione (AMVA - 3° livello), che ha caratteristiche e agevolazioni diverse dal professionalizzante.">
+    <label class="lbl">In possesso di diploma superiore o laurea (AMVA)? <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'amva');document.getElementById('cf-amva').classList.remove('on')"><input type="radio" name="amva" value="No" required/><div class="rb"><div class="rt">No</div></div></label>
+      <label class="rc" onclick="pick(this,'amva');document.getElementById('cf-amva').classList.add('on')"><input type="radio" name="amva" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
+    </div>
+    <div class="cf" id="cf-amva"><label class="lbl">Specificare titolo e corso di studio <span class="req">*</span></label><input type="text" id="f-amva-tit" placeholder="es. Laurea triennale in Economia aziendale"/></div>
+  </div>
+
+  <div class="divider"></div>
+  <p style="font-size:13px;font-weight:500;color:#374151;margin-bottom:.75rem">Tutor aziendale</p>
+  <div class="fld" data-label="Tutor aziendale" data-hint="Il tutor segue l'apprendista durante tutto il percorso formativo. Deve possedere competenze professionali adeguate e aver completato almeno 8 ore di formazione specifica per tutors. In assenza dei requisiti, il contratto non è stipulabile." data-norm="Art. 47 D.Lgs. 81/2015 — requisiti obbligatori del tutor aziendale">
+    <label class="lbl">Nominativo tutor / referente <span class="req">*</span></label>
+    <input type="text" id="f-tutor" placeholder="Cognome e Nome" required onfocus="showHint(this.closest('.fld'))"/>
+    <p class="hint">Il tutor deve possedere requisiti formativi certificati di almeno 8 ore.</p>
+  </div>
+  <div class="fld" data-label="Requisiti formativi tutor" data-hint="La certificazione delle 8 ore di formazione del tutor è condizione necessaria per la stipula del contratto di apprendistato. In mancanza, lo Studio organizzerà la formazione prima dell'assunzione.">
+    <label class="lbl">Tutor in possesso di requisiti formativi certificati (≥ 8 ore)? <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'tutor-req');document.getElementById('cf-tutor').classList.add('on')"><input type="radio" name="tutor-req" value="Si" required/><div class="rb"><div class="rt">Sì</div></div></label>
+      <label class="rc" onclick="pick(this,'tutor-req');document.getElementById('cf-tutor').classList.remove('on')"><input type="radio" name="tutor-req" value="No"/><div class="rb"><div class="rt">No</div><div class="rd">Obbligatorio prima dell'assunzione. Lo Studio organizzerà la formazione.</div></div></label>
+    </div>
+    <div class="cf" id="cf-tutor">
+      <div class="g2">
+        <div><label class="lbl">Ore di formazione <span class="req">*</span></label><input type="number" id="f-tutor-ore" placeholder="es. 8" min="0"/></div>
+        <div><label class="lbl">Ente formatore <span class="req">*</span></label><input type="text" id="f-tutor-ente" placeholder="es. Confindustria Brescia"/></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:8px">
+  <button class="btn-g" onclick="go(4)">← Indietro</button>
+  <button class="btn-p" onclick="go(8)">Avanti →</button>
+</div>
+</div>
+
+<!-- ══ PAGE 8 — Agevolazioni ══ -->
+<div class="page" id="pg8">
+<div class="card">
+  <p class="pg-lbl">⭐ Pagina 8 di 8 — Agevolazioni e dichiarazioni</p>
+  <div class="info-box">ℹ️ Seleziona la situazione del lavoratore. Il sistema suggerirà l'agevolazione più conveniente in base a tutti i dati inseriti. Lo Studio effettuerà la verifica definitiva.</div>
+
+  <!-- RACCOMANDAZIONE AUTOMATICA -->
+  <div class="agev-result" id="agev-auto">
+    <h4>💡 Agevolazione consigliata dal sistema</h4>
+    <p id="agev-auto-text"></p>
+    <div class="agev-warn" id="agev-warn" style="display:none"></div>
+  </div>
+
+  <div class="fld" data-hint="Alcune agevolazioni sono cumulabili, altre no. Il sistema suggerisce quella più conveniente in base alla combinazione di: età, sesso, stato occupazionale precedente, tipologia contratto e regione di lavoro." data-label="Situazione agevolazione" data-norm="Fonte: Informativa SEAC n.139 del 07/05/2026 — Aggiornato a Decreto Legge 30 aprile 2026 n.62">
+    <label class="lbl">Situazione del lavoratore <span class="req">*</span></label>
+    <div class="rg" id="agev-group" onchange="calcAgev()">
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="Percettore ADI/SFL" required/><div class="rb"><div class="rt">Percettore di Assegno di Inclusione / SFL</div><div class="rd">Richiedere all'INPS il modello preventivo. Sgravio totale contributi.</div></div><span class="badge bg">100% — 12 mesi</span></label>
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="Under 35 disoccupato 24 mesi"/><div class="rb"><div class="rt">Under 35 privo di impiego da ≥ 24 mesi (Bonus Giovani 2026)</div><div class="rd">Art. 2 D.L. 62/2026. Solo contratti a tempo indeterminato.</div></div><span class="badge bg">100% — 24 mesi</span></label>
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="Under 30 mai assunto TI"/><div class="rb"><div class="rt">Under 30, mai assunto a tempo indeterminato</div><div class="rd">L. 205/2017. Verificare tramite dichiarazione del lavoratore.</div></div><span class="badge bb">50% — 36 mesi</span></label>
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="Ex apprendista under 30 stessa azienda"/><div class="rb"><div class="rt">Ex apprendista under 30 nella stessa azienda</div><div class="rd">Massima agevolazione disponibile. Deve aver concluso l'apprendistato qui.</div></div><span class="badge bg">100% — 36 mesi</span></label>
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="Donna senza impiego 24 mesi (Bonus Donne 2026)"/><div class="rb"><div class="rt">Donna priva di impiego da ≥ 24 mesi (Bonus Donne 2026)</div><div class="rd">Art. 1 D.L. 62/2026. Solo contratti a tempo indeterminato.</div></div><span class="badge bg">100% — 24 mesi</span></label>
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="Donna vittima di violenza"/><div class="rb"><div class="rt">Donna vittima di violenza</div><div class="rd">Beneficiaria del reddito di libertà. Triennio 2024-2026.</div></div><span class="badge bg">100% — 24 mesi</span></label>
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="Over 50 disoccupato da +12 mesi"/><div class="rb"><div class="rt">Over 50, disoccupato da più di 12 mesi</div><div class="rd">Richiedere dichiarazione di disoccupazione al Centro per l'Impiego.</div></div><span class="badge ba">50% — 18 mesi</span></label>
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="Madre 3+ figli disoccupata 6 mesi"/><div class="rb"><div class="rt">Madre con 3+ figli, disoccupata da ≥ 6 mesi</div><div class="rd">Art. 1 commi 210-213 L. 199/2025. Max 8.000 euro annui.</div></div><span class="badge bg">100% — fino 24 mesi</span></label>
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="Disabile collocamento mirato"/><div class="rb"><div class="rt">Disabile iscritto al collocamento mirato (invalidità &gt; 45%)</div><div class="rd">Art. 13 L. 68/1999. Verificare iscrizione elenco CPI.</div></div><span class="badge bg">70% retrib. — 36/60 mesi</span></label>
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="Percettore NASpI"/><div class="rb"><div class="rt">Percettore NASpI</div><div class="rd">Solo per assunzioni a TI full-time. L'azienda riceve il 20% dell'indennità residua.</div></div><span class="badge bb">20% ind. residua</span></label>
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="In CIGS da almeno 3 mesi"/><div class="rb"><div class="rt">In CIG straordinaria da almeno 3 mesi</div><div class="rd">Solo per assunzioni a TI full-time. Contribuzione ridotta al 10%.</div></div><span class="badge bb">10% contrib. — 12 mesi</span></label>
+      <label class="rc" onclick="pick(this,'agev');calcAgev()"><input type="radio" name="agev" value="Nessuna agevolazione o non conosciuta"/><div class="rb"><div class="rt">Nessuna delle opzioni o situazione non conosciuta</div><div class="rd">Lo Studio effettuerà comunque una verifica sulla base dei dati inseriti.</div></div></label>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p style="font-size:13px;font-weight:500;color:#374151;margin-bottom:.75rem">Dichiarazioni dell'azienda</p>
+  <div class="cg">
+    <label class="cc" onclick="togc(this)"><input type="checkbox" value="Comunicherà lavoratori somministrati"/><div class="rb"><div class="rt">Si impegna a comunicare allo Studio l'eventuale impiego di lavoratori somministrati</div></div></label>
+    <label class="cc" onclick="togc(this)"><input type="checkbox" value="In regola con contributi INPS/INAIL"/><div class="rb"><div class="rt">Dichiara di essere in regola con il versamento dei contributi INPS / INAIL (e Cassa Edile se applicabile)</div></div></label>
+    <label class="cc" onclick="togc(this)"><input type="checkbox" value="Legale rappresentante esente da condanne sicurezza"/><div class="rb"><div class="rt">Il legale rappresentante è esente da condanne per violazione della normativa sulla sicurezza</div></div></label>
+  </div>
+
+  <div class="fld" style="margin-top:1rem" data-label="DVR" data-hint="Il Documento di Valutazione dei Rischi è obbligatorio per tutte le aziende con almeno un dipendente (D.Lgs. 81/2008). Le aziende sotto i 10 dipendenti in certi settori possono utilizzare l'autocertificazione. Lo Studio verificherà la situazione specifica." data-norm="D.Lgs. 81/2008 art. 17 — obbligo di redazione del DVR">
+    <label class="lbl">DVR redatto e aggiornato (D.Lgs. 81/2008)? <span class="req">*</span></label>
+    <div class="rg">
+      <label class="rc" onclick="pick(this,'dvr')"><input type="radio" name="dvr" value="Si" required/><div class="rb"><div class="rt">Sì</div></div></label>
+      <label class="rc" onclick="pick(this,'dvr')"><input type="radio" name="dvr" value="No"/><div class="rb"><div class="rt">No</div><div class="rd">Obbligatorio per tutte le aziende con dipendenti. Lo Studio fornirà indicazioni.</div></div></label>
+    </div>
+  </div>
+
+  <div class="fld">
+    <label class="lbl">Osservazioni / note aggiuntive</label>
+    <textarea id="f-osserv" placeholder="Eventuali informazioni aggiuntive utili allo Studio..."></textarea>
+  </div>
+
+  <div class="divider"></div>
+  <div class="info-box" style="margin-bottom:.75rem">📋 L'azienda è informata che dovrà sottoporre il/la dipendente a controllo medico dal medico competente (se previsto dalla valutazione dei rischi).</div>
+  <div class="warn-box">⚠️ La prestazione lavorativa può iniziare <strong>soltanto dopo</strong> aver ricevuto dallo Studio la conferma dell'avvenuta formalizzazione del rapporto di lavoro.</div>
+
+  <div class="g2">
+    <div class="fld"><label class="lbl">Compilato da <span class="req">*</span></label><input type="text" id="f-comp-da" placeholder="Cognome e nome" required/></div>
+    <div class="fld"><label class="lbl">Data compilazione</label><input type="date" id="f-data-comp" readonly style="background:#f9fafb;color:#6b7280"/></div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-g" id="btn-back8" onclick="backFrom8()">← Indietro</button>
+    <button class="btn-p gr" id="btn-invia" onclick="invia()">📤 Invia modulo</button>
+  </div>
+</div>
+</div>
+
+<!-- DONE -->
+<div id="pg-done" style="display:none">
+<div class="card done-card">
+  <div class="big">✅</div>
+  <h2>Comunicazione inviata!</h2>
+  <p>Lo Studio Pelati ha ricevuto la comunicazione. Riceverai l'analisi delle agevolazioni disponibili entro <strong>24 ore lavorative</strong>. Una copia è stata inviata alla tua email.<br/><br/><strong>030 7000841 — info@studiopelati.it</strong></p>
+</div>
+</div>
+
+</div><!-- end form-col -->
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-card">
+    <div class="sidebar-title">💡 Guida al campo</div>
+    <div id="sidebar-field" class="sidebar-field">—</div>
+    <div id="sidebar-text" class="sidebar-text sidebar-empty">Fai clic su un campo per vedere le istruzioni e le note normative di riferimento.</div>
+    <div id="sidebar-norm" class="sidebar-norm" style="display:none"></div>
+  </div>
+</div>
+
+</div><!-- end outer -->
+
+<script>
+// ─── DATI AZIENDE (inline per funzionare senza server in anteprima) ──────────
+const AZIENDE = {
+  "76": { ragione_sociale: "ELITOP S.R.L.", email: "alberto@elitop.it", settore: "Metalmeccanico" },
+  "77": { ragione_sociale: "NAEDIL SRLS", email: "segreteria@naedilcostruzioni.it", settore: "Edilizia" },
+  "98": { ragione_sociale: "PELATI DOTT. PIERGIORGIO", email: "info@studiopelati.it", settore: "Servizi" },
+  "9907": { ragione_sociale: "COSTRUZIONI EDILI TONELLI S.P.A.", email: "adriano.stefani@tonellispa.it", settore: "Edilizia" }
+};
+
+// ─── PROVINCE ───────────────────────────────────────────────────────────────
+const PROVINCE = {
+  "BG":"Bergamo (Lombardia)","BS":"Brescia (Lombardia)","CO":"Como (Lombardia)",
+  "CR":"Cremona (Lombardia)","LC":"Lecco (Lombardia)","LO":"Lodi (Lombardia)",
+  "MB":"Monza-Brianza (Lombardia)","MI":"Milano (Lombardia)","MN":"Mantova (Lombardia)",
+  "PV":"Pavia (Lombardia)","SO":"Sondrio (Lombardia)","VA":"Varese (Lombardia)",
+  "TO":"Torino (Piemonte)","VE":"Venezia (Veneto)","VR":"Verona (Veneto)",
+  "PD":"Padova (Veneto)","TV":"Treviso (Veneto)","BO":"Bologna (Emilia-Romagna)",
+  "MO":"Modena (Emilia-Romagna)","PR":"Parma (Emilia-Romagna)","FI":"Firenze (Toscana)",
+  "RM":"Roma (Lazio)","NA":"Napoli (Campania)","BA":"Bari (Puglia)",
+  "PA":"Palermo (Sicilia)","CA":"Cagliari (Sardegna)","GE":"Genova (Liguria)",
+  "TN":"Trento (Trentino)","AN":"Ancona (Marche)","PG":"Perugia (Umbria)",
+  "AQ":"L'Aquila (Abruzzo)","CB":"Campobasso (Molise)","PZ":"Potenza (Basilicata)",
+  "CZ":"Catanzaro (Calabria)","CT":"Catania (Sicilia)","AO":"Aosta (Valle d'Aosta)",
+  "TS":"Trieste (FVG)","UD":"Udine (FVG)"
+};
+const PROV_REGIONE = {
+  "BG":"Lombardia","BS":"Lombardia","CO":"Lombardia","CR":"Lombardia","LC":"Lombardia",
+  "LO":"Lombardia","MB":"Lombardia","MI":"Lombardia","MN":"Lombardia","PV":"Lombardia",
+  "SO":"Lombardia","VA":"Lombardia","TO":"Piemonte","VE":"Veneto","VR":"Veneto",
+  "PD":"Veneto","TV":"Veneto","BO":"Emilia-Romagna","MO":"Emilia-Romagna","PR":"Emilia-Romagna",
+  "FI":"Toscana","RM":"Lazio","NA":"Campania","BA":"Puglia","PA":"Sicilia","CA":"Sardegna",
+  "GE":"Liguria","TN":"Trentino-Alto Adige","AN":"Marche","PG":"Umbria",
+  "AQ":"Abruzzo","CB":"Molise","PZ":"Basilicata","CZ":"Calabria","CT":"Sicilia",
+  "AO":"Valle d'Aosta","TS":"Friuli-Venezia Giulia","UD":"Friuli-Venezia Giulia"
+};
+const ZES_REGIONI = ["Campania","Puglia","Calabria","Sicilia","Basilicata","Molise","Abruzzo","Sardegna","Marche","Umbria"];
+
+const COMUNI_BS = [
+  {nome:"Brescia",cap:"25100"},{nome:"Gardone Val Trompia",cap:"25063"},{nome:"Lumezzane",cap:"25065"},
+  {nome:"Concesio",cap:"25062"},{nome:"Sarezzo",cap:"25068"},{nome:"Nave",cap:"25075"},
+  {nome:"Collebeato",cap:"25060"},{nome:"Rezzato",cap:"25086"},{nome:"Mazzano",cap:"25080"},
+  {nome:"Bedizzole",cap:"25081"},{nome:"Calcinato",cap:"25011"},{nome:"Montichiari",cap:"25018"},
+  {nome:"Desenzano del Garda",cap:"25015"},{nome:"Lonato del Garda",cap:"25017"},
+  {nome:"Rovato",cap:"25038"},{nome:"Chiari",cap:"25032"},{nome:"Palazzolo sull'Oglio",cap:"25036"},
+  {nome:"Ospitaletto",cap:"25035"},{nome:"Travagliato",cap:"25039"},{nome:"Gussago",cap:"25064"},
+  {nome:"Cellatica",cap:"25060"},{nome:"Botticino",cap:"25082"},{nome:"Castenedolo",cap:"25014"},
+  {nome:"Flero",cap:"25020"},{nome:"Poncarale",cap:"25020"},{nome:"Bagnolo Mella",cap:"25021"},
+  {nome:"Leno",cap:"25024"},{nome:"Manerbio",cap:"25025"},{nome:"Verolanuova",cap:"25028"},
+  {nome:"Orzinuovi",cap:"25034"},{nome:"Iseo",cap:"25049"},{nome:"Darfo Boario Terme",cap:"25047"},
+  {nome:"Vobarno",cap:"25079"},{nome:"Salò",cap:"25087"},{nome:"Gavardo",cap:"25085"}
+];
+const COMUNI_BG = [
+  {nome:"Bergamo",cap:"24100"},{nome:"Dalmine",cap:"24044"},{nome:"Seriate",cap:"24068"},
+  {nome:"Treviglio",cap:"24047"},{nome:"Albino",cap:"24021"},{nome:"Nembro",cap:"24027"},
+  {nome:"Ponte San Pietro",cap:"24036"},{nome:"Curno",cap:"24035"},{nome:"Stezzano",cap:"24040"}
+];
+const COMUNI_MI = [
+  {nome:"Milano",cap:"20100"},{nome:"Sesto San Giovanni",cap:"20099"},{nome:"Cinisello Balsamo",cap:"20092"},
+  {nome:"Rho",cap:"20017"},{nome:"Legnano",cap:"20025"},{nome:"Segrate",cap:"20090"},
+  {nome:"Pioltello",cap:"20096"},{nome:"San Donato Milanese",cap:"20097"}
+];
+const COMUNI_MAP = { "BS": COMUNI_BS, "BG": COMUNI_BG, "MI": COMUNI_MI };
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let curPage=1, tipoContr='', azData={}, ptRows=[];
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+window.onload = () => {
+  document.getElementById('f-data-comp').value = new Date().toISOString().split('T')[0];
+  initProvinceSelect('f-prov');
+  initProvinceSelect('f-cant-prov');
+  addPtRow(); // Start with one row
+
+  // Simulate login (in production read from sessionStorage)
+  const codice = sessionStorage.getItem('sp_codice') || '77';
+  azData = AZIENDE[codice] || { ragione_sociale: 'Azienda Cliente', email: 'info@azienda.it', settore: 'Altro' };
+  document.getElementById('az-lbl').textContent = azData.ragione_sociale;
+  document.getElementById('f-datore').value = azData.ragione_sociale;
+  document.getElementById('f-email-cop').value = azData.email;
+  if (azData.settore === 'Edilizia') {
+    document.getElementById('sezione-cantiere').style.display = 'block';
+  }
+};
+
+// ─── PROVINCE / COMUNI ────────────────────────────────────────────────────────
+function initProvinceSelect(id) {
+  const sel = document.getElementById(id);
+  Object.entries(PROVINCE).sort((a,b)=>a[1].localeCompare(b[1])).forEach(([k,v]) => {
+    const o = document.createElement('option');
+    o.value = k; o.textContent = `${k} — ${v}`;
+    sel.appendChild(o);
+  });
+}
+
+function loadComuni() {
+  const prov = document.getElementById('f-prov').value;
+  const sel = document.getElementById('f-comune');
+  sel.innerHTML = '<option value="">Comune...</option>';
+  document.getElementById('f-cap').value = '';
+  document.getElementById('f-regione').value = '';
+  if (!prov) return;
+  const comuni = COMUNI_MAP[prov] || [{nome: PROVINCE[prov]?.split(' ')[0] || prov, cap:'—'}];
+  comuni.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.nome; o.dataset.cap = c.cap;
+    o.textContent = c.nome;
+    sel.appendChild(o);
+  });
+}
+
+function fillCapRegione() {
+  const sel = document.getElementById('f-comune');
+  const opt = sel.options[sel.selectedIndex];
+  document.getElementById('f-cap').value = opt?.dataset?.cap || '';
+  const prov = document.getElementById('f-prov').value;
+  document.getElementById('f-regione').value = PROV_REGIONE[prov] || '';
+}
+
+function loadComuniCantiere() {
+  const prov = document.getElementById('f-cant-prov').value;
+  const sel = document.getElementById('f-cant-comune');
+  sel.innerHTML = '<option value="">Comune...</option>';
+  if (!prov) return;
+  const comuni = COMUNI_MAP[prov] || [{nome: PROVINCE[prov]?.split(' ')[0] || prov, cap:'—'}];
+  comuni.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.nome; o.textContent = c.nome;
+    sel.appendChild(o);
+  });
+}
+
+// ─── PART-TIME TABLE ──────────────────────────────────────────────────────────
+const GIORNI = ['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
+
+function addPtRow() {
+  const id = Date.now();
+  ptRows.push(id);
+  const tr = document.createElement('tr');
+  tr.id = 'ptr-'+id;
+  tr.innerHTML = `
+    <td><select style="height:32px;font-size:13px;border-radius:6px;padding:0 6px;width:100%">${GIORNI.map(g=>`<option>${g}</option>`).join('')}</select></td>
+    <td><input type="time" style="width:100%" oninput="calcPtOre()" /></td>
+    <td><input type="time" style="width:100%" oninput="calcPtOre()" /></td>
+    <td id="ore-${id}" style="font-size:12px;color:#185FA5;font-weight:500;white-space:nowrap">—</td>
+    <td><button class="pt-del" onclick="removePtRow(${id})" title="Rimuovi">×</button></td>
+  `;
+  document.getElementById('pt-body').appendChild(tr);
+}
+
+function removePtRow(id) {
+  ptRows = ptRows.filter(r=>r!==id);
+  document.getElementById('ptr-'+id)?.remove();
+  calcPtOre();
+}
+
+function calcPtOre() {
+  let totMin = 0;
+  ptRows.forEach(id => {
+    const row = document.getElementById('ptr-'+id);
+    if (!row) return;
+    const inputs = row.querySelectorAll('input[type=time]');
+    const dalle = inputs[0]?.value, alle = inputs[1]?.value;
+    if (dalle && alle) {
+      const [dh,dm] = dalle.split(':').map(Number);
+      const [ah,am] = alle.split(':').map(Number);
+      const min = (ah*60+am) - (dh*60+dm);
+      if (min > 0) {
+        totMin += min;
+        document.getElementById('ore-'+id).textContent = `${Math.floor(min/60)}h ${String(min%60).padStart(2,'0')}m`;
+      } else {
+        document.getElementById('ore-'+id).textContent = '—';
+      }
+    }
+  });
+  const h = Math.floor(totMin/60), m = totMin%60;
+  document.getElementById('ore-tot').textContent = `${h}h ${String(m).padStart(2,'0')}m`;
+}
+
+// ─── NAVIGAZIONE ──────────────────────────────────────────────────────────────
+function go(n) {
+  document.getElementById('pg'+curPage)?.classList.remove('on');
+  curPage = n;
+  document.getElementById('pg'+n)?.classList.add('on');
+  document.getElementById('prog').style.width = Math.round((n/8)*100)+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goContr() {
+  const sel = document.querySelector('input[name="contr"]:checked');
+  if (!sel) { alert('Seleziona la tipologia di contratto.'); return; }
+  tipoContr = sel.value;
+  document.getElementById('card-det').style.display = 'none';
+  document.getElementById('card-appr').style.display = 'none';
+  if (tipoContr==='Tempo indeterminato full-time') go(8);
+  else if (tipoContr==='Tempo indeterminato part-time') go(5);
+  else if (tipoContr==='Lavoro a chiamata') go(6);
+  else if (tipoContr==='Tempo determinato') { document.getElementById('card-det').style.display='block'; go(7); }
+  else if (tipoContr==='Apprendistato professionalizzante') { document.getElementById('card-appr').style.display='block'; go(7); }
+}
+
+function backFrom8() {
+  if (tipoContr==='Tempo indeterminato full-time') go(4);
+  else if (tipoContr==='Tempo indeterminato part-time') go(5);
+  else if (tipoContr==='Lavoro a chiamata') go(6);
+  else go(7);
+}
+
+// ─── UI HELPERS ───────────────────────────────────────────────────────────────
+function pick(el, name) {
+  document.querySelectorAll('input[name="'+name+'"]').forEach(r => {
+    r.closest('.rc')?.classList.remove('s');
+  });
+  el.classList.add('s');
+}
+function togc(el) {
+  el.classList.toggle('s');
+  el.querySelector('input').checked = el.classList.contains('s');
+}
+function showCaus(type) {
+  ['mat','ass','esi'].forEach(t => {
+    document.getElementById('cf-'+t)?.classList.toggle('on', t===type);
+  });
+}
+function toggleInfo(id) {
+  document.getElementById(id)?.classList.toggle('on');
+}
+
+// ─── SIDEBAR CONTESTUALE ──────────────────────────────────────────────────────
+function showHint(fld) {
+  if (!fld) return;
+  const label = fld.dataset.hint ? (fld.querySelector('.lbl')?.textContent?.replace('*','').trim() || fld.dataset.label || '—') : null;
+  if (!label) return;
+  document.getElementById('sidebar-field').textContent = fld.dataset.label || label;
+  document.getElementById('sidebar-text').textContent = fld.dataset.hint || '';
+  document.getElementById('sidebar-text').className = 'sidebar-text';
+  const norm = document.getElementById('sidebar-norm');
+  if (fld.dataset.norm) { norm.textContent = '📋 ' + fld.dataset.norm; norm.style.display='block'; }
+  else { norm.style.display='none'; }
+}
+
+// Attach hint to radio groups
+document.addEventListener('click', e => {
+  const fld = e.target.closest('.fld[data-hint]');
+  if (fld) showHint(fld);
+});
+
+// ─── CALCOLO ETÀ ─────────────────────────────────────────────────────────────
+function calcAge() {
+  const dob = document.getElementById('f-dob').value;
+  if (!dob) return;
+  const today = new Date(), birth = new Date(dob);
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m===0 && today.getDate() < birth.getDate())) age--;
+  document.getElementById('age-txt').innerHTML = `<strong>${age}</strong> anni`;
+  document.getElementById('age-txt').style.color = '#1a1a1a';
+  const al = document.getElementById('age-al');
+  if (age < 30) { al.className='age-alert on g'; al.innerHTML='⭐ Under 30 — possibile agevolazione fino al 100% per 36 mesi'; }
+  else if (age < 35) { al.className='age-alert on g'; al.innerHTML='⭐ Under 35 — Bonus Giovani 2026: fino al 100% per 24 mesi'; }
+  else if (age >= 50) { al.className='age-alert on a'; al.innerHTML='ℹ️ Over 50 — verificare stato di disoccupazione per agevolazione 50%'; }
+  else { al.className='age-alert'; }
+  calcAgev();
+}
+
+// ─── MOTORE AGEVOLAZIONI ─────────────────────────────────────────────────────
+function calcAgev() {
+  const dobEl = document.getElementById('f-dob');
+  const sessoEl = document.getElementById('f-sesso');
+  const contEl = document.querySelector('input[name="contr"]:checked');
+  const agevEl = document.querySelector('input[name="agev"]:checked');
+  const regioneEl = document.getElementById('f-regione');
+
+  if (!dobEl.value || !sessoEl.value || !contEl) return;
+
+  const today = new Date(), birth = new Date(dobEl.value);
+  let age = today.getFullYear() - birth.getFullYear();
+  const mo = today.getMonth() - birth.getMonth();
+  if (mo < 0 || (mo===0 && today.getDate() < birth.getDate())) age--;
+
+  const sesso = sessoEl.value;
+  const contratto = contEl.value;
+  const agev = agevEl?.value || '';
+  const regione = regioneEl?.value || '';
+  const isZES = ZES_REGIONI.includes(regione);
+  const isTI = contratto === 'Tempo indeterminato full-time' || contratto === 'Tempo indeterminato part-time';
+  const isDet = contratto === 'Tempo determinato';
+
+  let suggerito = '', motivo = '', avvisi = [];
+
+  // Logica selezione agevolazione più conveniente
+  if (agev === 'Percettore ADI/SFL') {
+    if (isTI) { suggerito = '✅ Agevolazione corretta: Percettore ADI/SFL — 100% contributi per 12 mesi.'; }
+    else if (isDet) { suggerito = '✅ Agevolazione applicabile: Percettore ADI/SFL — 50% contributi per 12 mesi (contratto a termine).'; }
+  } else if (agev === 'Under 35 disoccupato 24 mesi') {
+    if (!isTI) avvisi.push('⚠️ Il Bonus Giovani 2026 (D.L. 62/2026) è ammesso solo per contratti a tempo indeterminato.');
+    else if (age >= 35) avvisi.push('⚠️ Il lavoratore ha '+age+' anni: verificare il requisito "non aver compiuto il 35° anno" alla data dell\'assunzione.');
+    else { suggerito = '✅ Bonus Giovani 2026 — 100% contributi per 24 mesi' + (isZES?' (ZES: massimale aumentato a €650/mese)':'(massimale €500/mese)') + '.'; }
+  } else if (agev === 'Under 30 mai assunto TI') {
+    if (!isTI) avvisi.push('⚠️ L\'agevolazione Under 30 (L. 205/2017) è ammessa solo per contratti a tempo indeterminato.');
+    else if (age >= 30) avvisi.push('⚠️ Il lavoratore ha '+age+' anni: l\'agevolazione Under 30 richiede età inferiore a 30 anni alla data di assunzione.');
+    else { suggerito = '✅ Esonero Under 30 — 50% contributi per 36 mesi (max €3.000/anno).'; }
+  } else if (agev === 'Donna senza impiego 24 mesi (Bonus Donne 2026)') {
+    if (sesso !== 'Femmina') avvisi.push('⚠️ Il Bonus Donne 2026 è riservato alle lavoratrici di sesso femminile.');
+    else if (!isTI) avvisi.push('⚠️ Il Bonus Donne 2026 è ammesso solo per contratti a tempo indeterminato.');
+    else { suggerito = '✅ Bonus Donne 2026 — 100% contributi per 24 mesi' + (isZES?' (ZES: massimale €800/mese)':'(massimale €650/mese)') + '.'; }
+  } else if (agev === 'Percettore NASpI') {
+    if (contratto !== 'Tempo indeterminato full-time') avvisi.push('⚠️ L\'agevolazione NASpI è ammessa solo per assunzioni a tempo indeterminato FULL-TIME. Non si applica a part-time o contratti a termine.');
+    else { suggerito = '✅ Incentivo NASpI — 20% dell\'indennità residua per i mesi restanti.'; }
+  } else if (agev === 'In CIGS da almeno 3 mesi') {
+    if (contratto !== 'Tempo indeterminato full-time') avvisi.push('⚠️ L\'incentivo CIG straordinaria richiede contratto a tempo indeterminato FULL-TIME.');
+    else { suggerito = '✅ CIG straordinaria — contribuzione ridotta al 10% per 12 mesi.'; }
+  } else if (agev === 'Over 50 disoccupato da +12 mesi') {
+    if (age < 50) avvisi.push('⚠️ Il lavoratore ha '+age+' anni: l\'agevolazione Over 50 richiede età pari o superiore a 50 anni.');
+    else { suggerito = '✅ Disoccupato Over 50 — 50% contributi' + (isTI?' per 18 mesi':' per 12 mesi (tempo determinato)') + '.'; }
+  } else if (agev === 'Donna vittima di violenza') {
+    if (sesso !== 'Femmina') avvisi.push('⚠️ L\'agevolazione donne vittime di violenza è riservata alle lavoratrici di sesso femminile.');
+    else { suggerito = '✅ Donna vittima di violenza — 100% contributi' + (isTI?' per 24 mesi':' per 12 mesi') + '.'; }
+  } else if (agev === 'Nessuna agevolazione o non conosciuta') {
+    // Suggerisci in base ai dati
+    let sugg = [];
+    if (age < 35 && isTI) sugg.push('Bonus Giovani 2026 (under 35)');
+    if (age < 30 && isTI) sugg.push('Esonero Under 30 L.205/2017');
+    if (sesso==='Femmina' && isTI) sugg.push('Bonus Donne 2026');
+    if (age >= 50 && isTI) sugg.push('Agevolazione Over 50');
+    if (isZES && isTI) sugg.push('Bonus ZES 2026 o Esonero Mezzogiorno');
+    if (sugg.length > 0) suggerito = '💡 In base all\'età, sesso e contratto, lo Studio verificherà: ' + sugg.join(', ') + '.';
+    else suggerito = 'Lo Studio effettuerà una verifica completa dopo ricezione del modulo.';
+  }
+
+  // ZES check aggiuntivo
+  if (isZES && isTI && !agev.includes('ZES') && agev !== 'Nessuna agevolazione o non conosciuta') {
+    avvisi.push('ℹ️ Il luogo di lavoro è in regione ZES: verificare se applicabile il Bonus ZES 2026 (100%, max €650/mese) o l\'Esonero Mezzogiorno (20% fino a €125/mese).');
+  }
+
+  const box = document.getElementById('agev-auto');
+  const txt = document.getElementById('agev-auto-text');
+  const warn = document.getElementById('agev-warn');
+  if (suggerito || avvisi.length) {
+    box.classList.add('on');
+    txt.textContent = suggerito;
+    if (avvisi.length) { warn.innerHTML = avvisi.join('<br/>'); warn.style.display='block'; }
+    else { warn.style.display='none'; }
+  } else { box.classList.remove('on'); }
+}
+
+// ─── INVIO ────────────────────────────────────────────────────────────────────
+async function invia() {
+  const btn = document.getElementById('btn-invia');
+  btn.disabled = true; btn.innerHTML = '⏳ Invio...';
+  // In production: POST to /api/submit
+  setTimeout(() => {
+    document.getElementById('pg8').classList.remove('on');
+    document.getElementById('pg-done').style.display = 'block';
+    document.getElementById('prog').style.width = '100%';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }, 1200);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "portale-assunzioni-pelati",
+  "version": "1.0.0",
+  "description": "Portale comunicazioni assunzione Studio Pelati",
+  "dependencies": {
+    "resend": "^3.2.0"
+  }
+}
