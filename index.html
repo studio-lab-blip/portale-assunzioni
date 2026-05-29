@@ -7,17 +7,19 @@
 <!-- EmailJS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>emailjs.init('oueuoED95Jwy4zyQ-');</script>
+<!-- Mammoth.js — converte .docx in HTML nel browser -->
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a1a;padding:14px}
 .outer{max-width:1050px;margin:0 auto;display:grid;grid-template-columns:1fr 290px;gap:14px;align-items:start}
 @media(max-width:800px){.outer{grid-template-columns:1fr}.sidebar{display:none}}
 .sidebar{position:sticky;top:14px}
-.sb{background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:.875rem}
-.sb-lbl{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;margin-bottom:.4rem}
-.sb-field{font-size:13px;font-weight:500;color:#185FA5;margin-bottom:.3rem}
-.sb-txt{font-size:13px;color:#374151;line-height:1.55}
-.sb-norm{font-size:11px;color:#9ca3af;margin-top:.4rem;padding-top:.4rem;border-top:0.5px solid #f3f4f6}
+.sb{background:#FFFDE7;border:1.5px solid #FDD835;border-radius:12px;padding:.875rem}
+.sb-lbl{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#7A6000;margin-bottom:.4rem}
+.sb-field{font-size:14px;font-weight:700;color:#185FA5;margin-bottom:.4rem}
+.sb-txt{font-size:14px;color:#185FA5;line-height:1.6}
+.sb-norm{font-size:12px;color:#7A6000;margin-top:.5rem;padding-top:.5rem;border-top:0.5px solid #FDD835}
 
 /* HEADER */
 .top{background:#fff;border:0.5px solid #e5e7eb;border-radius:12px;padding:.75rem 1rem;display:flex;align-items:center;gap:10px;margin-bottom:.75rem}
@@ -238,7 +240,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <div class="fld" data-hint="Il riepilogo delle risposte sarà consegnato a questo indirizzo. Pre-compilato con l'email del profilo aziendale. Se modificata verrà chiesta conferma e salvata." data-label="Email riepilogo">
-    <label class="lbl">Il riepilogo delle risposte sarà consegnato a questo indirizzo <span class="req">*</span></label>
+    <label class="lbl">Il riepilogo delle risposte sarà consegnato a questo indirizzo — <span style="font-weight:400;color:#6b7280">puoi modificarlo</span> <span class="req">*</span></label>
     <input type="email" id="f-email-cop" placeholder="amministrazione@azienda.it" onfocus="emailCopFocus(this)" onblur="emailCopBlur(this)"/>
     <div id="email-cop-confirm" style="display:none;margin-top:6px;background:#fffbeb;border:1px solid #FFA500;border-radius:8px;padding:8px 12px;font-size:12px;color:#7A4400">
       ⚠️ L'email è stata modificata rispetto a quella registrata (<span id="email-cop-originale" style="font-weight:600"></span>).
@@ -498,7 +500,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="fld"><label class="lbl">Cantiere di</label><input type="text" id="f-cant" placeholder="es. costruzione edificio residenziale..."/></div>
     <div class="g2">
       <div class="fld"><label class="lbl">Provincia cantiere</label>
-        <select id="f-cprov"><option value="">Provincia...</option></select>
+        <select id="f-cprov">
+          <option value="">— Seleziona —</option>
+          <option value="AG">AG — Agrigento</option><option value="AL">AL — Alessandria</option><option value="AN">AN — Ancona</option><option value="AO">AO — Aosta</option><option value="AQ">AQ — L'Aquila</option><option value="AR">AR — Arezzo</option><option value="AT">AT — Asti</option><option value="AV">AV — Avellino</option>
+          <option value="BA">BA — Bari</option><option value="BT">BT — Barletta-Andria-Trani</option><option value="BL">BL — Belluno</option><option value="BN">BN — Benevento</option><option value="BG">BG — Bergamo</option><option value="BI">BI — Biella</option><option value="BO">BO — Bologna</option><option value="BZ">BZ — Bolzano</option><option value="BS">BS — Brescia</option><option value="BR">BR — Brindisi</option>
+          <option value="CA">CA — Cagliari</option><option value="CL">CL — Caltanissetta</option><option value="CB">CB — Campobasso</option><option value="CE">CE — Caserta</option><option value="CT">CT — Catania</option><option value="CZ">CZ — Catanzaro</option><option value="CH">CH — Chieti</option><option value="CO">CO — Como</option><option value="CS">CS — Cosenza</option><option value="CR">CR — Cremona</option><option value="KR">KR — Crotone</option><option value="CN">CN — Cuneo</option>
+          <option value="EN">EN — Enna</option><option value="FM">FM — Fermo</option><option value="FE">FE — Ferrara</option><option value="FI">FI — Firenze</option><option value="FG">FG — Foggia</option><option value="FC">FC — Forlì-Cesena</option><option value="FR">FR — Frosinone</option>
+          <option value="GE">GE — Genova</option><option value="GO">GO — Gorizia</option><option value="GR">GR — Grosseto</option>
+          <option value="IM">IM — Imperia</option><option value="IS">IS — Isernia</option>
+          <option value="SP">SP — La Spezia</option><option value="LC">LC — Lecco</option><option value="LE">LE — Lecce</option><option value="LI">LI — Livorno</option><option value="LO">LO — Lodi</option><option value="LU">LU — Lucca</option>
+          <option value="MC">MC — Macerata</option><option value="MN">MN — Mantova</option><option value="MS">MS — Massa-Carrara</option><option value="MT">MT — Matera</option><option value="ME">ME — Messina</option><option value="MI">MI — Milano</option><option value="MO">MO — Modena</option><option value="MB">MB — Monza e Brianza</option>
+          <option value="NA">NA — Napoli</option><option value="NO">NO — Novara</option><option value="NU">NU — Nuoro</option>
+          <option value="OR">OR — Oristano</option><option value="PD">PD — Padova</option><option value="PA">PA — Palermo</option><option value="PR">PR — Parma</option><option value="PV">PV — Pavia</option><option value="PG">PG — Perugia</option><option value="PE">PE — Pescara</option><option value="PC">PC — Piacenza</option><option value="PI">PI — Pisa</option><option value="PT">PT — Pistoia</option><option value="PN">PN — Pordenone</option><option value="PO">PO — Prato</option>
+          <option value="RA">RA — Ravenna</option><option value="RC">RC — Reggio Calabria</option><option value="RE">RE — Reggio Emilia</option><option value="RG">RG — Ragusa</option><option value="RI">RI — Rieti</option><option value="RN">RN — Rimini</option><option value="RM">RM — Roma</option><option value="RO">RO — Rovigo</option>
+          <option value="SA">SA — Salerno</option><option value="SS">SS — Sassari</option><option value="SV">SV — Savona</option><option value="SI">SI — Siena</option><option value="SR">SR — Siracusa</option><option value="SO">SO — Sondrio</option>
+          <option value="TA">TA — Taranto</option><option value="TE">TE — Teramo</option><option value="TR">TR — Terni</option><option value="TO">TO — Torino</option><option value="TP">TP — Trapani</option><option value="TN">TN — Trento</option><option value="TV">TV — Treviso</option><option value="TS">TS — Trieste</option>
+          <option value="UD">UD — Udine</option><option value="VA">VA — Varese</option><option value="VE">VE — Venezia</option><option value="VB">VB — Verbano-Cusio-Ossola</option><option value="VC">VC — Vercelli</option><option value="VR">VR — Verona</option><option value="VV">VV — Vibo Valentia</option><option value="VI">VI — Vicenza</option><option value="VT">VT — Viterbo</option>
+        </select>
       </div>
       <div class="fld"><label class="lbl">Indirizzo cantiere</label><input type="text" id="f-cind" placeholder="Via e numero civico"/></div>
     </div>
@@ -756,7 +774,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <label class="cc" id="dich5-wrap" style="display:none" onclick="togc(this)">
       <input type="checkbox" id="dich5" value="Corso sicurezza edilizia 16 ore"/>
       <div class="rb">
-        <div class="rt">L'azienda è informata che ogni tre anni il lavoratore è tenuto a frequentare il previsto corso obbligatorio di 16 ore in materia di sicurezza</div>
+        <div class="rt">L'azienda è informata che prima dell'inizio del rapporto di lavoro e ogni tre anni il lavoratore è tenuto a frequentare il previsto corso obbligatorio di 16 ore in materia di sicurezza</div>
         <div class="rd">Testo Unico artt. 36 e 37 D.Lgs. 81/2008</div>
       </div>
     </label>
@@ -1425,18 +1443,18 @@ function emailCopBlur(el){
 function confermaEmailCop(){
   const nuova=document.getElementById('f-email-cop').value.trim();
   if(!nuova||!azLoggata)return;
-  // Salva in sessione
+  // Salva in azLoggata (memoria sessione corrente)
   azLoggata.email=nuova;
+  // Aggiorna anche nel DB locale in memoria
   if(AZIENDE_DB[azLoggata.codice]) AZIENDE_DB[azLoggata.codice].email=nuova;
+  // Persisti in sessionStorage — così alla prossima navigazione rimane
   sessionStorage.setItem('sp_azienda',JSON.stringify(azLoggata));
   document.getElementById('email-cop-confirm').style.display='none';
-  // Mostra conferma visiva
+  // Feedback visivo verde
   const el=document.getElementById('f-email-cop');
-  el.style.borderColor='#16a34a';
-  el.style.boxShadow='0 0 0 2px rgba(22,163,74,.15)';
+  el.style.borderColor='#16a34a';el.style.boxShadow='0 0 0 2px rgba(22,163,74,.15)';
   setTimeout(()=>{el.style.borderColor='';el.style.boxShadow='';},2000);
-  // Nota: in produzione qui si chiamerebbe l'API per aggiornare aziende.json su GitHub
-  console.log(`[SIMULAZIONE] Email aggiornata per ditta ${azLoggata.codice}: ${nuova}`);
+  console.log(`[Email] Aggiornata per ditta ${azLoggata.codice}: ${nuova}`);
 }
 function ripristinaEmailCop(){
   if(azLoggata) document.getElementById('f-email-cop').value=azLoggata.email||'';
@@ -1725,13 +1743,23 @@ function chkTitoloAltro(){
 
 // ─── SIDEBAR ─────────────────────────────────────────────────────────────────
 function hint(fld){
-  if(!fld||!fld.dataset.hint)return;
   const f=document.getElementById('sb-f'),t=document.getElementById('sb-t'),n=document.getElementById('sb-n');
+  if(!fld||!fld.dataset.hint){
+    // Nessun suggerimento — resetta il pannello
+    f.textContent='—';f.style.color='#9ca3af';f.style.fontStyle='italic';
+    t.textContent='Fai clic su qualsiasi campo per vedere le istruzioni.';t.style.color='#9ca3af';t.style.fontStyle='italic';
+    n.style.display='none';
+    return;
+  }
   f.textContent=fld.dataset.label||'—';f.style.color='';f.style.fontStyle='';
   t.textContent=fld.dataset.hint;t.style.color='';t.style.fontStyle='';
   if(fld.dataset.norm){n.textContent='📋 '+fld.dataset.norm;n.style.display='block';}else n.style.display='none';
 }
-document.addEventListener('click',e=>{const f=e.target.closest('.fld[data-hint]');if(f)hint(f);});
+document.addEventListener('click',e=>{
+  const f=e.target.closest('.fld[data-hint]');
+  if(f) hint(f);
+  else if(!e.target.closest('.sidebar')&&!e.target.closest('.pdf-ov')&&!e.target.closest('.lg-ov')) hint(null);
+});
 
 // ─── PROVINCE / COMUNI ───────────────────────────────────────────────────────
 function loadComuni(prov){
@@ -2352,41 +2380,75 @@ const LINEE_GUIDA = {
   }
 };
 
-// Traccia lettura linee guida
-const lgLette = new Set();
+// ── URL base dei file Word su GitHub ──────────────────────────────────────────
+const LG_BASE_URL = 'https://raw.githubusercontent.com/studio-lab-blip/portale-assunzioni/main/linee-guida/';
 
-function buildLgHtml(codice) {
-  const lg = LINEE_GUIDA[codice];
-  if (!lg) return '<p>Documento non disponibile.</p>';
-  let html = `<div style="font-family:Arial,sans-serif;line-height:1.7;color:#1a1a1a">`;
-  html += `<h2 style="font-size:18px;font-weight:700;color:#1F4E79;border-bottom:2px solid #2E75B6;padding-bottom:8px;margin-bottom:8px">${lg.titolo}</h2>`;
-  html += `<p style="font-size:12px;color:#6b7280;margin-bottom:16px;font-style:italic">📋 ${lg.rif}</p>`;
-  lg.sezioni.forEach(s => {
-    html += `<h3 style="font-size:14px;font-weight:600;color:#2E75B6;margin:18px 0 6px">${s.h}</h3>`;
-    if (s.body) html += `<p style="font-size:13px;margin-bottom:8px;text-align:justify">${s.body}</p>`;
-    if (s.items) {
-      html += `<ul style="margin:6px 0 8px 20px">`;
-      s.items.forEach(i => { html += `<li style="font-size:13px;margin-bottom:4px">${i}</li>`; });
-      html += `</ul>`;
-    }
-    if (s.nota) html += `<div style="background:#FFF3CD;border:1px solid #FFA500;border-radius:6px;padding:8px 12px;font-size:12px;color:#7A4400;margin:8px 0">⚠️ ${s.nota}</div>`;
-  });
-  html += `</div>`;
-  return html;
-}
+const LG_FILES = {
+  '05.1':  '05.1%20-%20Tempo%20indeterminato%20full-time.docx',
+  '05.2':  '05.2%20-%20Tempo%20indeterminato%20part-time.docx',
+  '05.3':  '05.3%20-%20Tempo%20determinato%20full-time.docx',
+  '05.3b': '05.3b%20-%20Tempo%20determinato%20part-time.docx',
+  '05.4':  '05.4%20-%20Apprendistato%20professionalizzante.docx',
+  '05.5':  '05.5%20-%20Lavoro%20a%20chiamata.docx',
+};
 
-function apriLineaGuida(codice) {
-  const lg = LINEE_GUIDA[codice];
-  document.getElementById('lg-title').textContent = (lg?.titolo||codice) + ' — Linea Guida';
-  document.getElementById('lg-body').innerHTML = buildLgHtml(codice);
+const LG_TITOLI = {
+  '05.1':  '05.1 — Tempo Indeterminato Full-Time',
+  '05.2':  '05.2 — Tempo Indeterminato Part-Time',
+  '05.3':  '05.3 — Tempo Determinato Full-Time',
+  '05.3b': '05.3b — Tempo Determinato Part-Time',
+  '05.4':  '05.4 — Apprendistato Professionalizzante',
+  '05.5':  '05.5 — Lavoro a Chiamata',
+};
+
+async function apriLineaGuida(codice) {
+  const titolo = LG_TITOLI[codice] || codice;
+  const nomeFile = LG_FILES[codice];
+
+  document.getElementById('lg-title').textContent = titolo + ' — Linea Guida';
+  document.getElementById('lg-body').innerHTML =
+    '<div style="text-align:center;padding:2rem;color:#6b7280">⏳ Caricamento in corso…</div>';
   document.getElementById('lg-ov').classList.add('on');
-  // Segna come letto
+
+  // Segna come letto subito
   lgLette.add(codice);
-  // Aggiorna bottone
   document.querySelectorAll('.lg-btn').forEach(btn => {
-    const c = btn.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+    const c = btn.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
     if (c === codice) btn.classList.add('letto');
   });
+
+  if (!nomeFile) {
+    document.getElementById('lg-body').innerHTML = '<p style="color:#dc2626">File non trovato per il codice: ' + codice + '</p>';
+    return;
+  }
+
+  const url = LG_BASE_URL + nomeFile;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const arrayBuffer = await res.arrayBuffer();
+
+    // Converte il .docx in HTML con mammoth.js
+    const result = await mammoth.convertToHtml({ arrayBuffer });
+    const html = result.value;
+
+    document.getElementById('lg-body').innerHTML =
+      '<div style="font-family:Arial,sans-serif;font-size:13px;line-height:1.7;color:#1a1a1a">' +
+      html + '</div>';
+
+  } catch (err) {
+    // Fallback: mostra contenuto dal dizionario locale se il file non è ancora su GitHub
+    console.warn('[LG] File non disponibile su GitHub, uso contenuto locale:', err.message);
+    const lgLocale = LINEE_GUIDA[codice];
+    if (lgLocale) {
+      document.getElementById('lg-body').innerHTML = buildLgHtml(codice);
+    } else {
+      document.getElementById('lg-body').innerHTML =
+        '<div class="warn-box" style="margin:1rem">⚠️ File non ancora disponibile. Caricare il file <strong>' +
+        (nomeFile || codice) + '</strong> nella cartella <code>linee-guida/</code> del repository GitHub.</div>';
+    }
+  }
 }
 
 function chiudiLineaGuida() {
@@ -2424,6 +2486,30 @@ function stampaLineaGuida() {
 }
 
 // Esporta lgLette per uso nel generaCrit e openPdf
+// Traccia lettura linee guida
+const lgLette = new Set();
+
+// Fallback: costruisce HTML dal dizionario locale LINEE_GUIDA
+function buildLgHtml(codice) {
+  const lg = LINEE_GUIDA[codice];
+  if (!lg) return '<p>Documento non disponibile.</p>';
+  let html = `<div style="font-family:Arial,sans-serif;line-height:1.7;color:#1a1a1a">`;
+  html += `<h2 style="font-size:18px;font-weight:700;color:#1F4E79;border-bottom:2px solid #2E75B6;padding-bottom:8px;margin-bottom:8px">${lg.titolo}</h2>`;
+  html += `<p style="font-size:12px;color:#6b7280;margin-bottom:16px;font-style:italic">📋 ${lg.rif}</p>`;
+  lg.sezioni.forEach(s => {
+    html += `<h3 style="font-size:14px;font-weight:600;color:#2E75B6;margin:18px 0 6px">${s.h}</h3>`;
+    if (s.body) html += `<p style="font-size:13px;margin-bottom:8px;text-align:justify">${s.body}</p>`;
+    if (s.items) {
+      html += `<ul style="margin:6px 0 8px 20px">`;
+      s.items.forEach(i => { html += `<li style="font-size:13px;margin-bottom:4px">${i}</li>`; });
+      html += `</ul>`;
+    }
+    if (s.nota) html += `<div style="background:#FFF3CD;border:1px solid #FFA500;border-radius:6px;padding:8px 12px;font-size:12px;color:#7A4400;margin:8px 0">⚠️ ${s.nota}</div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+
 function getLgLette() { return Array.from(lgLette); }
 
 // ─── LAVORATORE STRANIERO ─────────────────────────────────────────────────────
