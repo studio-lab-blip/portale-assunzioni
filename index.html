@@ -9,6 +9,10 @@
 <script>emailjs.init('oueuoED95Jwy4zyQ-');</script>
 <!-- Mammoth.js — converte .docx in HTML nel browser -->
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<!-- jsPDF — genera PDF nel browser -->
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<!-- html2canvas — cattura il contenuto HTML come immagine per il PDF -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a1a;padding:14px}
@@ -2737,31 +2741,106 @@ function invia(){
   }
   document.getElementById('err4').classList.remove('on');
 
-  // Invio completato — invia email via EmailJS
+  // Invio completato — genera PDF e invia email via EmailJS
   formSent=true;
   sessionStorage.removeItem('form_draft');
 
-  // Prepara i parametri per EmailJS
-  const emailParams = {
-    datore:              gv('f-datore'),
-    dipendente:          gv('f-dip'),
-    data_assunzione:     gv('f-dass'),
-    tipologia_contratto: tipoContr || rv('contr'),
-    agevolazioni:        getAgevSel().join(', ') || 'Nessuna',
-    compilato_da:        gv('f-comp-da'),
-    email_azienda:       gv('f-email-cop'),
-    email_studio:        'info@studiopelati.it',
-  };
-
-  // Invia email tramite EmailJS
-  emailjs.send('service_v6yh8a8', 'template_jvpchue', emailParams)
-    .then(() => console.log('[EmailJS] Email inviata con successo'))
-    .catch(err => console.error('[EmailJS] Errore invio:', err));
-
+  // Mostra schermata done subito, poi invia email in background
   document.getElementById('pg4').classList.remove('on');
   document.getElementById('pg-done').style.display='block';
   document.getElementById('prog').style.width='100%';
   window.scrollTo({top:0,behavior:'smooth'});
+
+  // Genera e invia in background
+  generaEInviaEmail();
+}
+
+// ─── GENERA PDF E INVIA EMAIL ─────────────────────────────────────────────────
+async function generaEInviaEmail(){
+  try {
+    // 1. Genera il contenuto del riepilogo (stesso di openPdf)
+    openPdf(); // popola pdf-c con i dati
+    await new Promise(r=>setTimeout(r,300)); // attendi render
+
+    const pdfContent = document.getElementById('pdf-c');
+    const titolo = `Ordine di assunzione — ${gv('f-dip')} — ${gv('f-dass')}`;
+
+    // 2. Cattura l'HTML come canvas con html2canvas
+    const canvas = await html2canvas(pdfContent, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      width: pdfContent.scrollWidth,
+      height: pdfContent.scrollHeight,
+    });
+
+    // 3. Genera PDF con jsPDF
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const margin = 12;
+    const imgW = pageW - margin * 2;
+    const imgH = (canvas.height * imgW) / canvas.width;
+
+    // Aggiunge pagine se il contenuto è lungo
+    let yPos = margin;
+    let remainingH = imgH;
+    const pageImgH = pageH - margin * 2;
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+    while (remainingH > 0) {
+      if (yPos > margin) pdf.addPage();
+      const sliceH = Math.min(remainingH, pageImgH);
+      pdf.addImage(imgData, 'JPEG', margin, yPos === margin ? margin : margin, imgW, imgH, '', 'FAST');
+      remainingH -= pageImgH;
+      yPos = margin;
+    }
+
+    // 4. Converti PDF in base64
+    const pdfBase64 = pdf.output('datauristring').split(',')[1];
+
+    // 5. Chiudi il modal PDF (era stato aperto da openPdf)
+    closePdf();
+
+    // 6. Prepara parametri email — con contenuto HTML del riepilogo nel corpo
+    const htmlRiepilogo = pdfContent.innerHTML;
+    const emailBase = {
+      datore:              gv('f-datore'),
+      dipendente:          gv('f-dip'),
+      data_assunzione:     gv('f-dass'),
+      tipologia_contratto: tipoContr || rv('contr'),
+      agevolazioni:        getAgevSel().join(', ') || 'Nessuna',
+      compilato_da:        gv('f-comp-da'),
+      riepilogo_html:      htmlRiepilogo,
+    };
+
+    // 7. Invia email allo Studio
+    await emailjs.send('service_v6yh8a8', 'template_jvpchue', {
+      ...emailBase,
+      email_destinatario: 'studiopelati@gmail.com',
+      oggetto: `Nuovo ordine di assunzione — ${gv('f-datore')} — ${gv('f-dip')}`,
+    });
+    console.log('[EmailJS] Email studio inviata');
+
+    // 8. Invia email all'azienda
+    const emailAzienda = gv('f-email-cop');
+    if(emailAzienda && emailAzienda !== 'studiopelati@gmail.com') {
+      await emailjs.send('service_v6yh8a8', 'template_jvpchue', {
+        ...emailBase,
+        email_destinatario: emailAzienda,
+        oggetto: `Conferma ordine di assunzione — ${gv('f-dip')} — ${gv('f-dass')}`,
+      });
+      console.log('[EmailJS] Email azienda inviata a:', emailAzienda);
+    }
+
+  } catch(err) {
+    console.error('[Email] Errore:', err);
+    // Non blocca l'utente — la schermata done è già mostrata
+  }
 }
 </script>
 </body>
