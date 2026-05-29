@@ -245,7 +245,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="fld" data-hint="Il riepilogo delle risposte sarà consegnato a questo indirizzo. Pre-compilato con l'email del profilo aziendale. Se modificata verrà chiesta conferma e salvata." data-label="Email riepilogo">
     <label class="lbl">Il riepilogo delle risposte sarà consegnato a questo indirizzo — <span style="font-weight:400;color:#6b7280">puoi modificarlo</span> <span class="req">*</span></label>
-    <input type="email" id="f-email-cop" placeholder="amministrazione@azienda.it" onfocus="emailCopFocus(this)" onblur="emailCopBlur(this)"/>
+    <input type="email" id="f-email-cop" placeholder="amministrazione@azienda.it" onfocus="emailCopFocus(this)" onchange="emailCopBlur(this)"/>
     <div id="email-cop-confirm" style="display:none;margin-top:6px;background:#fffbeb;border:1px solid #FFA500;border-radius:8px;padding:8px 12px;font-size:12px;color:#7A4400">
       ⚠️ L'email è stata modificata rispetto a quella registrata (<span id="email-cop-originale" style="font-weight:600"></span>).
       <div style="display:flex;gap:8px;margin-top:6px">
@@ -2758,56 +2758,52 @@ function invia(){
 // ─── GENERA PDF E INVIA EMAIL ─────────────────────────────────────────────────
 async function generaEInviaEmail(){
   try {
-    // 1. Genera il contenuto del riepilogo (stesso di openPdf)
-    openPdf(); // popola pdf-c con i dati
-    await new Promise(r=>setTimeout(r,300)); // attendi render
+    // 1. Genera il riepilogo HTML (stesso di openPdf)
+    openPdf();
+    await new Promise(r=>setTimeout(r,400));
 
     const pdfContent = document.getElementById('pdf-c');
-    const titolo = `Ordine di assunzione — ${gv('f-dip')} — ${gv('f-dass')}`;
 
-    // 2. Cattura l'HTML come canvas con html2canvas
+    // 2. Cattura con html2canvas
     const canvas = await html2canvas(pdfContent, {
       scale: 2,
       useCORS: true,
       backgroundColor: '#ffffff',
       logging: false,
-      width: pdfContent.scrollWidth,
-      height: pdfContent.scrollHeight,
     });
 
     // 3. Genera PDF con jsPDF
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
-    const margin = 12;
+    const margin = 10;
     const imgW = pageW - margin * 2;
     const imgH = (canvas.height * imgW) / canvas.width;
-
-    // Aggiunge pagine se il contenuto è lungo
-    let yPos = margin;
-    let remainingH = imgH;
     const pageImgH = pageH - margin * 2;
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.92);
-
-    while (remainingH > 0) {
-      if (yPos > margin) pdf.addPage();
-      const sliceH = Math.min(remainingH, pageImgH);
-      pdf.addImage(imgData, 'JPEG', margin, yPos === margin ? margin : margin, imgW, imgH, '', 'FAST');
-      remainingH -= pageImgH;
-      yPos = margin;
+    // Divide in pagine
+    let srcY = 0;
+    const imgData = canvas.toDataURL('image/jpeg', 0.90);
+    while(srcY < canvas.height) {
+      if(srcY > 0) pdf.addPage();
+      const sliceCanvas = document.createElement('canvas');
+      const sliceH = Math.min(canvas.height - srcY, Math.round(pageImgH * canvas.width / imgW));
+      sliceCanvas.width = canvas.width;
+      sliceCanvas.height = sliceH;
+      sliceCanvas.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+      const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.90);
+      const actualH = (sliceH * imgW) / canvas.width;
+      pdf.addImage(sliceData, 'JPEG', margin, margin, imgW, actualH);
+      srcY += sliceH;
     }
 
-    // 4. Converti PDF in base64
-    const pdfBase64 = pdf.output('datauristring').split(',')[1];
+    // 4. PDF come base64
+    const pdfBase64 = pdf.output('datauristring'); // "data:application/pdf;base64,..."
 
-    // 5. Chiudi il modal PDF (era stato aperto da openPdf)
     closePdf();
 
-    // 6. Prepara parametri email — con contenuto HTML del riepilogo nel corpo
-    const htmlRiepilogo = pdfContent.innerHTML;
+    // 5. Parametri comuni email
     const emailBase = {
       datore:              gv('f-datore'),
       dipendente:          gv('f-dip'),
@@ -2815,31 +2811,33 @@ async function generaEInviaEmail(){
       tipologia_contratto: tipoContr || rv('contr'),
       agevolazioni:        getAgevSel().join(', ') || 'Nessuna',
       compilato_da:        gv('f-comp-da'),
-      riepilogo_html:      htmlRiepilogo,
+      riepilogo_html:      pdfContent.innerHTML,
     };
 
-    // 7. Invia email allo Studio
+    const emailAzienda = gv('f-email-cop') || azLoggata?.email || '';
+
+    // 6. Email allo Studio
     await emailjs.send('service_v6yh8a8', 'template_jvpchue', {
       ...emailBase,
-      email_destinatario: 'studiopelati@gmail.com',
-      oggetto: `Nuovo ordine di assunzione — ${gv('f-datore')} — ${gv('f-dip')}`,
+      to_email:  'studiopelati@gmail.com',
+      to_name:   'Studio Pelati',
+      reply_to:  emailAzienda,
     });
-    console.log('[EmailJS] Email studio inviata');
+    console.log('[EmailJS] ✅ Email studio inviata');
 
-    // 8. Invia email all'azienda
-    const emailAzienda = gv('f-email-cop');
-    if(emailAzienda && emailAzienda !== 'studiopelati@gmail.com') {
+    // 7. Email all'azienda (destinatario diverso)
+    if(emailAzienda) {
       await emailjs.send('service_v6yh8a8', 'template_jvpchue', {
         ...emailBase,
-        email_destinatario: emailAzienda,
-        oggetto: `Conferma ordine di assunzione — ${gv('f-dip')} — ${gv('f-dass')}`,
+        to_email:  emailAzienda,
+        to_name:   gv('f-datore'),
+        reply_to:  'studiopelati@gmail.com',
       });
-      console.log('[EmailJS] Email azienda inviata a:', emailAzienda);
+      console.log('[EmailJS] ✅ Email azienda inviata a:', emailAzienda);
     }
 
   } catch(err) {
     console.error('[Email] Errore:', err);
-    // Non blocca l'utente — la schermata done è già mostrata
   }
 }
 </script>
