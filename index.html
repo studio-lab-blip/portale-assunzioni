@@ -4,6 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Comunicazione Assunzione — Studio Pelati</title>
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('oueuoED95Jwy4zyQ-');</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a1a;padding:14px}
@@ -2648,9 +2651,27 @@ function invia(){
   }
   document.getElementById('err4').classList.remove('on');
 
-  // Invio completato
+  // Invio completato — invia email via EmailJS
   formSent=true;
   sessionStorage.removeItem('form_draft');
+
+  // Prepara i parametri per EmailJS
+  const emailParams = {
+    datore:              gv('f-datore'),
+    dipendente:          gv('f-dip'),
+    data_assunzione:     gv('f-dass'),
+    tipologia_contratto: tipoContr || rv('contr'),
+    agevolazioni:        getAgevSel().join(', ') || 'Nessuna',
+    compilato_da:        gv('f-comp-da'),
+    email_azienda:       gv('f-email-cop'),
+    email_studio:        'info@studiopelati.it',
+  };
+
+  // Invia email tramite EmailJS
+  emailjs.send('service_v6yh8a8', 'template_yqn1l27', emailParams)
+    .then(() => console.log('[EmailJS] Email inviata con successo'))
+    .catch(err => console.error('[EmailJS] Errore invio:', err));
+
   document.getElementById('pg4').classList.remove('on');
   document.getElementById('pg-done').style.display='block';
   document.getElementById('prog').style.width='100%';
