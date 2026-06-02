@@ -4,15 +4,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Comunicazione Assunzione — Studio Pelati</title>
-<!-- EmailJS SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>emailjs.init('oueuoED95Jwy4zyQ-');</script>
-<!-- Mammoth.js — converte .docx in HTML nel browser -->
-<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
-<!-- jsPDF — genera PDF nel browser -->
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<!-- html2canvas — cattura il contenuto HTML come immagine per il PDF -->
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a1a;padding:14px}
@@ -58,7 +49,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fld:last-child{margin-bottom:0}
 /* Label BLU NERETTO */
 .lbl{display:block;font-size:13px;font-weight:600;color:#185FA5;margin-bottom:5px}
-.req{color:#dc2626;margin-left:2px}
+/* Asterisco obbligatorio — spostato in fondo via JS al caricamento */
+.req{ display:none }                  /* nascosto nel posto originale */
+.req-end{ color:#dc2626; font-weight:700; margin-left:3px } /* asterisco in fondo */
 .err-field{border-color:#dc2626!important;box-shadow:0 0 0 2px rgba(220,38,38,.15)!important}
 .err-msg{font-size:11px;color:#dc2626;margin-top:3px;display:none}
 .err-msg.on{display:block}
@@ -136,9 +129,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pdf-doc{font-size:12px;line-height:1.7;color:#1a1a1a}
 .pdf-doc h2{font-size:15px;font-weight:600;margin-bottom:.5rem}
 .pdf-doc h3{font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin:.75rem 0 .3rem}
-.pdf-doc .row{display:flex;gap:8px;border-bottom:0.5px solid #f3f4f6;padding:.22rem 0}
-.pdf-doc .rk{min-width:155px;font-size:11px;color:#6b7280;flex-shrink:0}
-.pdf-doc .rv{font-size:11px;font-weight:500}
+.pdf-doc .row{display:flex;align-items:baseline;gap:8px;border-bottom:0.5px solid #f3f4f6;padding:.22rem 0;flex-wrap:nowrap}
+.pdf-doc .rk{min-width:160px;max-width:160px;font-size:11px;color:#6b7280;flex-shrink:0;white-space:nowrap}
+.pdf-doc .rv{font-size:11px;font-weight:500;flex:1;word-break:break-word}
 .pdf-doc .crit-box{background:#fffbeb;border:0.5px solid #fcd34d;border-radius:8px;padding:.625rem .875rem;margin-top:.75rem}
 .pdf-doc .crit-box h3{color:#92400e;margin:0 0 .4rem;text-transform:none;font-size:12px;letter-spacing:0}
 .pdf-doc .crit-item{font-size:11px;color:#92400e;padding:.15rem 0;display:flex;gap:5px;line-height:1.5}
@@ -238,14 +231,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button onclick="doLogout()" style="background:none;border:0.5px solid #d1d5db;border-radius:6px;font-size:11px;color:#6b7280;cursor:pointer;padding:3px 8px">Esci</button>
   </div>
 
-  <div class="fld" data-hint="Ragione sociale completa come da visura camerale. Pre-compilata dal profilo." data-label="Datore di lavoro">
+  <div class="fld" data-hint="Ragione sociale completa come da visura camerale. Pre-compilata dal profilo." data-label="Datore di lavoro" style="grid-column:1/-1">
     <label class="lbl">Datore di lavoro <span class="req">*</span></label>
-    <input type="text" id="f-datore" placeholder="Ragione sociale" onfocus="hint(this.closest('.fld'))" readonly style="background:#f9fafb;color:#374151"/>
+    <input type="text" id="f-datore" placeholder="Ragione sociale" onfocus="hint(this.closest('.fld'))" readonly style="background:#f9fafb;color:#374151;max-width:100%"/>
   </div>
 
   <div class="fld" data-hint="Il riepilogo delle risposte sarà consegnato a questo indirizzo. Pre-compilato con l'email del profilo aziendale. Se modificata verrà chiesta conferma e salvata." data-label="Email riepilogo">
     <label class="lbl">Il riepilogo delle risposte sarà consegnato a questo indirizzo — <span style="font-weight:400;color:#6b7280">puoi modificarlo</span> <span class="req">*</span></label>
-    <input type="email" id="f-email-cop" placeholder="amministrazione@azienda.it" onfocus="emailCopFocus(this)" onchange="emailCopBlur(this)"/>
+    <input type="text" id="f-email-cop" placeholder="amministrazione@azienda.it" 
+           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+           onfocus="emailCopFocus(this)" onchange="emailCopBlur(this)"
+           oninput="this.value=this.value.replace(/\s/g,'')"/>
     <div id="email-cop-confirm" style="display:none;margin-top:6px;background:#fffbeb;border:1px solid #FFA500;border-radius:8px;padding:8px 12px;font-size:12px;color:#7A4400">
       ⚠️ L'email è stata modificata rispetto a quella registrata (<span id="email-cop-originale" style="font-weight:600"></span>).
       <div style="display:flex;gap:8px;margin-top:6px">
@@ -338,7 +334,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="g2">
     <div class="fld"><label class="lbl">E-mail del lavoratore</label><input type="email" id="f-email-lav" placeholder="mario.rossi@email.it"/></div>
-    <div class="fld"><label class="lbl">N. cellulare <span class="req">*</span></label><input type="text" id="f-cell" placeholder="+39 333 1234567"/><span class="err-msg" id="e-cell">Campo obbligatorio</span></div>
+    <div class="fld"><label class="lbl">N. cellulare</label><input type="text" id="f-cell" placeholder="+39 333 1234567"/></div>
   </div>
 
   <div class="fld" data-hint="IBAN di 27 caratteri. Verificare attentamente: un IBAN errato causa mancato pagamento." data-label="IBAN">
@@ -361,7 +357,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span class="err-msg" id="e-prec">Campo obbligatorio</span>
   </div>
 
-  <!-- TITOLO DI STUDIO — obbligatorio, con campo testo se "Altro" -->
+  <!-- DISOCCUPATO DA ALMENO N MESI -->
+  <div class="fld" data-label="Stato di disoccupazione"
+    data-hint="Sono considerati disoccupati i soggetti privi di impiego che dichiarano, in forma telematica, al sistema informativo unitario delle politiche del lavoro di cui all'art. 13, la propria immediata disponibilità allo svolgimento di attività lavorativa e alla partecipazione alle misure di politica attiva del lavoro concordate con il centro per l'impiego (art. 19 co. 1 D.Lgs. 150/2015). Sono in stato di disoccupazione anche i lavoratori il cui reddito da lavoro dipendente o autonomo corrisponde a un'imposta lorda pari o inferiore alle detrazioni spettanti ai sensi dell'art. 13 TUIR D.P.R. 917/1986 (co. 15-quater art. 4 D.L. 4/2019)."
+    data-norm="Art. 19 co. 1 D.Lgs. 150/2015; co. 15-quater art. 4 D.L. 4/2019">
+    <label class="lbl">Disoccupato/a da almeno 24 mesi</label>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px">
+      <label class="cc" id="cc-disoc" onclick="togcDisoc(this)" style="flex:0 0 auto">
+        <input type="checkbox" id="chk-disoc"/>
+        <div class="rb"><div class="rt">Sì, è disoccupato/a da almeno 24 mesi</div></div>
+      </label>
+    </div>
+  </div>
+
+  <!-- PRIVO DI IMPIEGO DA ALMENO 6 MESI -->
+  <div class="fld" data-label="Privo/a d'impiego"
+    data-hint="Sono soggetti privi di impiego regolarmente retribuito da almeno 6 mesi coloro che negli ultimi sei mesi non hanno prestato attività lavorativa riconducibile a un rapporto di lavoro subordinato della durata di almeno sei mesi, nonché coloro che negli ultimi sei mesi hanno svolto attività lavorativa in forma autonoma o parasubordinata dalla quale derivi un reddito che corrisponde a un'imposta lorda pari o inferiore alle detrazioni spettanti ai sensi dell'art. 13 TUIR D.P.R. 917/1986."
+    data-norm="Definizione di 'privo di impiego' ai fini delle agevolazioni contributive — D.Lgs. 150/2015">
+    <label class="lbl">Privo/a d'impiego da almeno 6 mesi</label>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px">
+      <label class="cc" id="cc-privoimp" onclick="togcPrivoImp(this)" style="flex:0 0 auto">
+        <input type="checkbox" id="chk-privoimp"/>
+        <div class="rb"><div class="rt">Sì, è privo/a d'impiego da ≥ 6 mesi</div></div>
+      </label>
+    </div>
+  </div>
   <div class="fld" data-label="Titolo di studio" data-hint="Il titolo di studio è obbligatorio. Se si seleziona 'Altro' indicare il titolo nel campo di testo.">
     <label class="lbl">Titolo di studio <span class="req">*</span></label>
     <select id="f-titolo" onchange="chkTitoloAltro()" onfocus="hint(this.closest('.fld'))">
@@ -402,6 +422,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="rc" onclick="pick(this,'qual')"><input type="radio" name="qual" value="Impiegato soggetto a rischio elettrico"/><div class="rb"><div class="rt">Impiegato soggetto a rischio elettrico</div></div></label>
       <label class="rc" onclick="pick(this,'qual')"><input type="radio" name="qual" value="Impiegato soggetto a rischio produttivo (come operai)"/><div class="rb"><div class="rt">Impiegato soggetto a rischio produttivo (come operai)</div></div></label>
       <label class="rc" onclick="pick(this,'qual')"><input type="radio" name="qual" value="Operaio"/><div class="rb"><div class="rt">Operaio</div></div></label>
+      <label class="rc" id="rc-qual-appr" onclick="pick(this,'qual');selezionaApprendistato()" style="display:none"><input type="radio" name="qual" value="Apprendista"/><div class="rb"><div class="rt">Apprendista</div></div></label>
     </div>
     <span class="err-msg" id="e-qual">Campo obbligatorio</span>
   </div>
@@ -501,7 +522,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <!-- Cantiere -->
   <div id="sez-cantiere" style="display:none">
     <div class="warn-b">🏗️ Azienda del settore edilizia — compilare i dati del cantiere se diverso dalla sede.</div>
-    <div class="fld"><label class="lbl">Cantiere di</label><input type="text" id="f-cant" placeholder="es. costruzione edificio residenziale..."/></div>
+    <div class="fld"><label class="lbl">Cantiere di <span class="req">*</span></label><input type="text" id="f-cant" placeholder="es. costruzione edificio residenziale..."/><span class="err-msg" id="e-cant">Campo obbligatorio per aziende edili</span></div>
     <div class="g2">
       <div class="fld"><label class="lbl">Provincia cantiere</label>
         <select id="f-cprov">
@@ -539,9 +560,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="fld" data-label="Benefits" data-hint="I beni aziendali in uso costituiscono 'fringe benefit' soggetti a tassazione oltre soglia. L'autovettura richiede comunicazione di targa e valore convenzionale ACI." data-norm="Art. 51 TUIR — fringe benefit; soglia 2024: €1.000 (€2.000 con figli a carico)">
     <label class="lbl">Utilizzo beni aziendali e benefit <span class="req">*</span></label>
     <div class="cg" id="benef-group">
-      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Autovettura aziendale non occasionale"/><div class="rb"><div class="rt">Autovettura aziendale in via non occasionale</div><div class="rd">Fringe benefit — comunicare targa e valore ACI.</div></div></label>
-      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Autovettura aziendale anche gg non lavorativi"/><div class="rb"><div class="rt">Autovettura aziendale anche nei giorni non lavorativi</div></div></label>
-      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Propria autovettura non occasionale"/><div class="rb"><div class="rt">Propria autovettura in via non occasionale</div></div></label>
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Autovettura aziendale non occasionale"/><div class="rb"><div class="rt">Autovettura aziendale esclusivamente per lavoro in via non occasionale</div></div></label>
+      <label class="cc" onclick="togc(this);hintDirect('Autovettura aziendale anche ad uso personale nei giorni non lavorativi','Nel caso in cui l\'azienda assegni a un dipendente un\'autovettura di proprietà aziendale, per utilizzo sia a fini lavorativi che personali (uso promiscuo), l\'uso personale di tale veicolo concorre, ad ogni effetto, alla formazione del reddito per il dipendente (benefit), con conseguente tassazione, salvo che il relativo importo gli venga fatturato. L\'ammontare del reddito annuo cui corrisponde il benefit \'auto aziendale\' va calcolato con una percentuale che dipende dal tipo di alimentazione del veicolo; la norma risulta premiante per le autovetture elettriche e plug-in. La tassazione sarà calcolata su una percentuale (variabile a seconda dell\'alimentazione della vettura) del costo km dell\'autovettura, da calcolarsi sul valore della percorrenza media di 15.000 km annui.','Art. 51 co. 4 TUIR; Circ. AE n. 1/2024')"><input type="checkbox" value="Autovettura aziendale anche gg non lavorativi"/><div class="rb"><div class="rt">Autovettura aziendale anche ad uso personale nei giorni non lavorativi</div></div></label>
+      <label class="cc" onclick="togc(this)"><input type="checkbox" value="Propria autovettura non occasionale"/><div class="rb"><div class="rt">Propria autovettura in via non occasionale</div><div class="rd">Con rimborso chilometrico in base a tariffe ACI.</div></div></label>
       <label class="cc" onclick="togc(this)"><input type="checkbox" value="Telefono aziendale"/><div class="rb"><div class="rt">Telefono cellulare aziendale</div></div></label>
       <label class="cc" onclick="togc(this)"><input type="checkbox" value="Benefits vari"/><div class="rb"><div class="rt">Benefits vari (alloggio, polizze, buoni pasto…)</div></div></label>
       <label class="cc" onclick="togc(this)"><input type="checkbox" value="Nessun benefit"/><div class="rb"><div class="rt">Nessun utilizzo di beni aziendali o benefit</div></div></label>
@@ -588,18 +609,71 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="fld">
     <label class="lbl">Tipologia del contratto di lavoro <span class="req">*</span></label>
     <div class="rg">
-      <label class="rc" onclick="pick(this,'contr')"><input type="radio" name="contr" value="Tempo indeterminato full-time"/><div class="rb"><div class="rt">05.1 — Tempo indeterminato full-time</div></div></label>
-      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('05.1')">📖 Leggi di più</button></div>
-      <label class="rc" onclick="pick(this,'contr')"><input type="radio" name="contr" value="Tempo indeterminato part-time"/><div class="rb"><div class="rt">05.2 — Tempo indeterminato part-time</div></div></label>
-      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('05.2')">📖 Leggi di più</button></div>
-      <label class="rc" onclick="pick(this,'contr')"><input type="radio" name="contr" value="Tempo determinato full-time"/><div class="rb"><div class="rt">05.3 — Tempo determinato full-time</div><div class="rd">Contratto a termine con orario pieno. Richiede data di scadenza e causale obbligatoria se di durata superiore a 12 mesi.</div></div></label>
-      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('05.3')">📖 Leggi di più</button></div>
-      <label class="rc" onclick="pick(this,'contr')"><input type="radio" name="contr" value="Tempo determinato part-time"/><div class="rb"><div class="rt">05.3b — Tempo determinato part-time</div><div class="rd">Contratto a termine con orario ridotto. Prima verranno richieste le caratteristiche del contratto a termine, poi la distribuzione dell'orario part-time.</div></div></label>
-      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('05.3b')">📖 Leggi di più</button></div>
-      <label class="rc" id="rc-appr" onclick="pick(this,'contr')"><input type="radio" name="contr" value="Apprendistato professionalizzante" id="radio-appr"/><div class="rb"><div class="rt">05.4 — Apprendistato professionalizzante</div><div class="rd">Contratto formativo con piano individuale e tutor. Contribuzione ridotta. <strong>Età da 18 a 29 anni.</strong></div></div></label>
-      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('05.4')">📖 Leggi di più</button></div>
-      <label class="rc" onclick="pick(this,'contr')"><input type="radio" name="contr" value="Lavoro a chiamata"/><div class="rb"><div class="rt">05.5 — Lavoro a chiamata (job on call)</div><div class="rd">Prestazione non continuativa. Richiede aggiornamento DVR. Limitazioni alle agevolazioni.</div></div></label>
-      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('05.5')">📖 Leggi di più</button></div>
+
+      <!-- 01 — Tempo indeterminato -->
+      <label class="rc" id="rc-ti" onclick="pick(this,'contr-base');mostraOrarioTI()">
+        <input type="radio" name="contr-base" value="Tempo indeterminato"/>
+        <div class="rb"><div class="rt">01 — Tempo indeterminato</div></div>
+      </label>
+      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('01')">📖 Leggi di più</button></div>
+      <!-- Sub-selezione orario TI -->
+      <div id="sub-orario-ti" style="display:none;margin:6px 0 4px 18px">
+        <label class="lbl" style="font-size:12px;margin-bottom:4px">Orario di lavoro <span class="req">*</span></label>
+        <div class="rg-h">
+          <label class="rc" onclick="pick(this,'orario-ti');setContrTI('ft')"><input type="radio" name="orario-ti" value="full-time" checked/><div class="rb"><div class="rt">Full-time</div></div></label>
+          <label class="rc" onclick="pick(this,'orario-ti');setContrTI('pt')"><input type="radio" name="orario-ti" value="part-time"/><div class="rb"><div class="rt">Part-time</div></div></label>
+        </div>
+        <!-- Distribuzione orario PT — TI -->
+        <div id="sub-pt-ti" style="display:none;margin-top:10px">
+          <label class="lbl" style="font-size:12px">Distribuzione orario settimanale <span class="req">*</span></label>
+          <table class="pt-tbl"><thead><tr><th style="width:90px">Giorno</th><th>Dalle</th><th>Alle</th><th>Ore</th><th></th></tr></thead><tbody id="pt-body-ti"></tbody></table>
+          <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+            <button class="btn-g" style="font-size:12px;padding:4px 10px" onclick="addPtRowTI()">+ Aggiungi riga</button>
+            <span style="font-size:12px;color:#6b7280">Totale ore settimanali: <strong id="pt-tot-ti">0</strong></span>
+          </div>
+          <div class="fld" style="margin-top:8px">
+            <label class="lbl" style="font-size:12px">Ulteriori precisazioni</label>
+            <textarea id="f-pt-note-ti" rows="2" placeholder="Distribuzione mensile, variazioni stagionali, ecc." style="font-size:12px"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 — Tempo determinato -->
+      <label class="rc" id="rc-td" onclick="pick(this,'contr-base');mostraOrarioTD()">
+        <input type="radio" name="contr-base" value="Tempo determinato"/>
+        <div class="rb"><div class="rt">02 — Tempo determinato</div><div class="rd">Richiede data di scadenza e causale obbligatoria se di durata superiore a 12 mesi.</div></div>
+      </label>
+      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('02')">📖 Leggi di più</button></div>
+      <!-- Sub-selezione orario TD -->
+      <div id="sub-orario-td" style="display:none;margin:6px 0 4px 18px">
+        <label class="lbl" style="font-size:12px;margin-bottom:4px">Orario di lavoro <span class="req">*</span></label>
+        <div class="rg-h">
+          <label class="rc" onclick="pick(this,'orario-td');setContrTD('ft')"><input type="radio" name="orario-td" value="full-time" checked/><div class="rb"><div class="rt">Full-time</div></div></label>
+          <label class="rc" onclick="pick(this,'orario-td');setContrTD('pt')"><input type="radio" name="orario-td" value="part-time"/><div class="rb"><div class="rt">Part-time</div></div></label>
+        </div>
+        <!-- Distribuzione orario PT — TD -->
+        <div id="sub-pt-td" style="display:none;margin-top:10px">
+          <label class="lbl" style="font-size:12px">Distribuzione orario settimanale <span class="req">*</span></label>
+          <table class="pt-tbl"><thead><tr><th style="width:90px">Giorno</th><th>Dalle</th><th>Alle</th><th>Ore</th><th></th></tr></thead><tbody id="pt-body-td"></tbody></table>
+          <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+            <button class="btn-g" style="font-size:12px;padding:4px 10px" onclick="addPtRowTD()">+ Aggiungi riga</button>
+            <span style="font-size:12px;color:#6b7280">Totale ore settimanali: <strong id="pt-tot-td">0</strong></span>
+          </div>
+          <div class="fld" style="margin-top:8px">
+            <label class="lbl" style="font-size:12px">Ulteriori precisazioni</label>
+            <textarea id="f-pt-note-td" rows="2" placeholder="Distribuzione mensile, variazioni stagionali, ecc." style="font-size:12px"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 — Apprendistato -->
+      <label class="rc" id="rc-appr" onclick="pick(this,'contr-base')"><input type="radio" name="contr-base" value="Apprendistato professionalizzante" id="radio-appr"/><div class="rb"><div class="rt">03 — Apprendistato professionalizzante</div><div class="rd">Contratto formativo con piano individuale e tutor. Contribuzione ridotta. <strong>Età da 18 a 29 anni.</strong></div></div></label>
+      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('03')">📖 Leggi di più</button></div>
+
+      <!-- 04 — Lavoro a chiamata -->
+      <label class="rc" onclick="pick(this,'contr-base')"><input type="radio" name="contr-base" value="Lavoro a chiamata"/><div class="rb"><div class="rt">04 — Lavoro a chiamata (job on call)</div><div class="rd">Prestazione non continuativa. Richiede aggiornamento DVR. Limitazioni alle agevolazioni.</div></div></label>
+      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('04')">📖 Leggi di più</button></div>
+
     </div>
     <span class="err-msg" id="e-contr">Selezionare la tipologia di contratto</span>
   </div>
@@ -646,13 +720,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="card-det" style="display:none">
     <div class="hero"><div class="hero-t">Tempo determinato full-time</div><button class="btn-info" onclick="toggleInfo('ip-det')">Informazioni</button></div>
     <div class="info-panel" id="ip-det"><h4>Contratto a termine — D.Lgs. 81/2015 artt. 19-29</h4><ul><li>Durata massima 24 mesi (proroghe incluse) per stesse mansioni stesso datore</li><li>Causale obbligatoria per contratti >12 mesi o ogni rinnovo</li><li>Contributo addizionale 1,40% (rimborsato se trasformazione a TI)</li></ul></div>
-    <div class="fld" data-label="Causale" data-hint="La causale deve essere specifica e veritiera. Per esigenze temporanee o incrementi non programmabili verrà segnalata la necessità di verificare la coerenza." data-norm="Art.19 D.Lgs.81/2015 — causale obbligatoria per contratti >12 mesi">
+    <div class="fld" data-label="Causale" data-hint="La causale deve essere specifica e veritiera. Per esigenze temporanee o incrementi non programmabili: applicabile solo per far fronte a picchi di lavoro non prevedibili o necessità oggettive ed estranee all'attività ordinaria." data-norm="Art.19 D.Lgs.81/2015 — causale obbligatoria per contratti >12 mesi">
       <label class="lbl">Causale del contratto <span class="req">*</span></label>
       <div class="rg">
         <label class="rc" onclick="pick(this,'caus');showCaus('mat')"><input type="radio" name="caus" value="Sostituzione maternità/paternità"/><div class="rb"><div class="rt">Sostituzione maternità / paternità</div><div class="rd">Esonero contributo addizionale 1,40% e dai limiti percentuali.</div></div></label>
         <label class="rc" onclick="pick(this,'caus');showCaus('ass')"><input type="radio" name="caus" value="Sostituzione ferie/malattia/infortunio/aspettativa"/><div class="rb"><div class="rt">Sostituzione ferie / malattia / infortunio / aspettativa</div></div></label>
         <label class="rc" onclick="pick(this,'caus');showCaus('')"><input type="radio" name="caus" value="Senza causale prorogabile"/><div class="rb"><div class="rt">Senza causale (prorogabile)</div><div class="rd">Solo per contratti fino a 12 mesi.</div></div></label>
-        <label class="rc" onclick="pick(this,'caus');showCaus('esi')"><input type="radio" name="caus" value="Esigenze temporanee o incrementi non programmabili"/><div class="rb"><div class="rt">Esigenze temporanee o incrementi non programmabili</div><div class="rd">Verrà segnalata la necessità di verificare la coerenza del tipo di esigenza.</div></div></label>
+        <label class="rc" onclick="pick(this,'caus');showCaus('esi')"><input type="radio" name="caus" value="Esigenze temporanee o incrementi non programmabili"/><div class="rb"><div class="rt">Esigenze temporanee o incrementi non programmabili</div><div class="rd">Applicabile solo per far fronte a picchi di lavoro non prevedibili o necessità oggettive ed estranee all'attività ordinaria.</div></div></label>
       </div>
       <div class="cf" id="cf-mat"><label class="lbl">Nominativo in maternità/paternità <span class="req">*</span></label><input type="text" id="f-sost-mat" placeholder="es. Bianchi Anna" oninput="capitalizeWords(this)"/></div>
       <div class="cf" id="cf-ass"><label class="lbl">Nominativo lavoratore sostituito <span class="req">*</span></label><input type="text" id="f-sost-ass" placeholder="es. Verdi Paolo" oninput="capitalizeWords(this)"/></div>
@@ -671,13 +745,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="hero"><div class="hero-t">Tempo determinato part-time</div><button class="btn-info" onclick="toggleInfo('ip-det-pt')">Informazioni</button></div>
     <div class="info-panel" id="ip-det-pt"><h4>Contratto a termine part-time — combinazione D.Lgs. 81/2015 artt. 19-29 + artt. 4-12</h4><ul><li>Richiede sia la causale obbligatoria del contratto a termine che la specificazione dell'orario ridotto</li><li>Durata massima 24 mesi (proroghe incluse) per stesse mansioni stesso datore</li><li>Contributo addizionale 1,40% a carico datore</li><li>Agevolazioni contributive si applicano in misura proporzionale all'orario part-time</li><li>Alla pagina successiva verrà richiesta la distribuzione dell'orario settimanale</li></ul></div>
     <p class="sub-title" style="margin-top:0">📅 Passo 1 di 2 — Caratteristiche del contratto a termine</p>
-    <div class="fld" data-label="Causale (tempo determinato)" data-hint="La causale deve essere specifica e veritiera. Per esigenze temporanee o incrementi non programmabili verrà segnalata la necessità di verificare la coerenza." data-norm="Art.19 D.Lgs.81/2015 — causale obbligatoria per contratti >12 mesi">
+    <div class="fld" data-label="Causale (tempo determinato)" data-hint="La causale deve essere specifica e veritiera. Per esigenze temporanee o incrementi non programmabili: applicabile solo per far fronte a picchi di lavoro non prevedibili o necessità oggettive ed estranee all'attività ordinaria." data-norm="Art.19 D.Lgs.81/2015 — causale obbligatoria per contratti >12 mesi">
       <label class="lbl">Causale del contratto <span class="req">*</span></label>
       <div class="rg">
         <label class="rc" onclick="pick(this,'caus-pt');showCausPt('mat-pt')"><input type="radio" name="caus-pt" value="Sostituzione maternità/paternità"/><div class="rb"><div class="rt">Sostituzione maternità / paternità</div><div class="rd">Esonero contributo addizionale 1,40% e dai limiti percentuali.</div></div></label>
         <label class="rc" onclick="pick(this,'caus-pt');showCausPt('ass-pt')"><input type="radio" name="caus-pt" value="Sostituzione ferie/malattia/infortunio/aspettativa"/><div class="rb"><div class="rt">Sostituzione ferie / malattia / infortunio / aspettativa</div></div></label>
         <label class="rc" onclick="pick(this,'caus-pt');showCausPt('')"><input type="radio" name="caus-pt" value="Senza causale prorogabile"/><div class="rb"><div class="rt">Senza causale (prorogabile)</div><div class="rd">Solo per contratti fino a 12 mesi.</div></div></label>
-        <label class="rc" onclick="pick(this,'caus-pt');showCausPt('esi-pt')"><input type="radio" name="caus-pt" value="Esigenze temporanee o incrementi non programmabili"/><div class="rb"><div class="rt">Esigenze temporanee o incrementi non programmabili</div><div class="rd">Verrà segnalata la necessità di verificare la coerenza del tipo di esigenza.</div></div></label>
+        <label class="rc" onclick="pick(this,'caus-pt');showCausPt('esi-pt')"><input type="radio" name="caus-pt" value="Esigenze temporanee o incrementi non programmabili"/><div class="rb"><div class="rt">Esigenze temporanee o incrementi non programmabili</div><div class="rd">Applicabile solo per far fronte a picchi di lavoro non prevedibili o necessità oggettive ed estranee all'attività ordinaria.</div></div></label>
       </div>
       <div class="cf" id="cf-mat-pt"><label class="lbl">Nominativo in maternità/paternità <span class="req">*</span></label><input type="text" id="f-sost-mat-pt" placeholder="es. Bianchi Anna" oninput="capitalizeWords(this)"/></div>
       <div class="cf" id="cf-ass-pt"><label class="lbl">Nominativo lavoratore sostituito <span class="req">*</span></label><input type="text" id="f-sost-ass-pt" placeholder="es. Verdi Paolo" oninput="capitalizeWords(this)"/></div>
@@ -788,7 +862,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <!-- Facoltative ma segnalate -->
   <p style="font-size:11px;color:#6b7280;margin-top:.75rem;margin-bottom:.4rem;font-weight:500">Facoltative — l'omissione sarà segnalata nel riepilogo allo Studio</p>
   <div class="cg">
-    <label class="cc" onclick="togc(this)"><input type="checkbox" id="dich2" value="In regola contributi INPS/INAIL"/><div class="rb"><div class="rt">Dichiara di essere in regola con il versamento dei contributi INPS / INAIL (e Cassa Edile se applicabile)</div></div></label>
+    <label class="cc" onclick="togc(this)"><input type="checkbox" id="dich2" value="In regola contributi INPS/INAIL"/><div class="rb"><div class="rt">Dichiara di essere in regola con il versamento dei contributi INPS / INAIL (e Cassa Edile se applicabile)</div><div class="rd" style="color:#854F0B">⚠️ L'irregolarità determina la perdita delle agevolazioni contributive in corso.</div></div></label>
     <label class="cc" onclick="togc(this)"><input type="checkbox" id="dich3" value="Legale rappresentante esente da condanne"/><div class="rb"><div class="rt">Il legale rappresentante è esente da condanne passate in giudicato per violazione della normativa sulla sicurezza</div></div></label>
   </div>
 
@@ -1289,7 +1363,27 @@ function doChangePwd(){
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
+// ─── ASTERISCO OBBLIGATORIO IN FONDO ALLA LABEL ──────────────────────────────
+// Funzione richiamabile anche dopo aggiornamenti dinamici del DOM
+function posizionaAsterischi(){
+  document.querySelectorAll('.lbl .req, label.lbl .req').forEach(req=>{
+    const lbl = req.closest('.lbl, label.lbl');
+    if(!lbl) return;
+    // Rimuovi eventuali asterischi già spostati
+    lbl.querySelectorAll('.req-end').forEach(e=>e.remove());
+    // Rimuovi il req dal posto originale
+    req.remove();
+    // Aggiungi in fondo alla label
+    const star = document.createElement('span');
+    star.className = 'req-end';
+    star.textContent = ' *';
+    lbl.appendChild(star);
+  });
+}
+
 window.onload=()=>{
+  // Sposta tutti gli asterischi obbligatori in fondo alla label
+  posizionaAsterischi();
   // Data compilazione = oggi, non editabile
   const today=new Date().toISOString().split('T')[0];
   document.getElementById('f-data-comp').value=today;
@@ -1499,7 +1593,7 @@ function next1(){
   function chkR(name,errId){const ok=!!document.querySelector(`input[name="${name}"]:checked`);document.getElementById(errId)?.classList.toggle('on',!ok);if(!ok)errs.push(name);}
 
   chk('f-dip','e-dip');chk('f-sesso','e-sesso');chk('f-dob','e-dob');
-  chk('f-cell','e-cell');chk('f-iban','e-iban');
+  chk('f-iban','e-iban');
   chkR('prec','e-prec');chkR('qual','e-qual');chkR('retrib','e-retrib');
   chkR('esp','e-esp');chkR('prova','e-prova');chkR('min','e-min');chkR('trasf','e-trasf');chkR('cess','e-cess');chkR('titolo-attinenza','e-titolo-attinenza');
   chkR('straniero','e-straniero');
@@ -1507,6 +1601,14 @@ function next1(){
     const pok=document.getElementById('f-permesso')?.value;
     document.getElementById('e-permesso')?.classList.toggle('on',!pok);
     if(!pok)errs.push('permesso');
+  }
+
+  // Cantiere obbligatorio solo per aziende edili
+  if(azLoggata?.settore==='Edilizia'){
+    const cant=document.getElementById('f-cant')?.value.trim();
+    document.getElementById('f-cant')?.classList.toggle('err-field',!cant);
+    document.getElementById('e-cant')?.classList.toggle('on',!cant);
+    if(!cant) errs.push('cant');
   }
 
   // Titolo studio (obbligatorio)
@@ -1556,29 +1658,153 @@ function ptOrarioValido(bodyId){
   return false;
 }
 
+// ─── GESTIONE ORARIO TI/TD INLINE ────────────────────────────────────────────
+function mostraOrarioTI(){
+  document.getElementById('sub-orario-ti').style.display='block';
+  document.getElementById('sub-orario-td').style.display='none';
+  // Default full-time
+  const ft=document.querySelector('input[name="orario-ti"][value="full-time"]');
+  if(ft&&!document.querySelector('input[name="orario-ti"]:checked')){ft.checked=true;ft.closest('.rc')?.classList.add('s');}
+  setContrTI(document.querySelector('input[name="orario-ti"]:checked')?.value==='part-time'?'pt':'ft');
+}
+function mostraOrarioTD(){
+  document.getElementById('sub-orario-td').style.display='block';
+  document.getElementById('sub-orario-ti').style.display='none';
+  // Full-time di default
+  const ft=document.querySelector('input[name="orario-td"][value="full-time"]');
+  if(ft){
+    ft.checked=true;
+    ft.closest('.rc')?.classList.add('s');
+    document.querySelector('input[name="orario-td"][value="part-time"]')?.closest('.rc')?.classList.remove('s');
+  }
+  setContrTD('ft');
+}
+function setContrTI(tipo){
+  document.getElementById('sub-pt-ti').style.display=tipo==='pt'?'block':'none';
+  if(tipo==='pt'){
+    tipoContr='Tempo indeterminato part-time';
+    if(document.getElementById('pt-body-ti').children.length===0) addPtRowTI();
+  } else {
+    tipoContr='Tempo indeterminato full-time';
+  }
+}
+function setContrTD(tipo){
+  document.getElementById('sub-pt-td').style.display=tipo==='pt'?'block':'none';
+  if(tipo==='pt'){
+    tipoContr='Tempo determinato part-time';
+    if(document.getElementById('pt-body-td').children.length===0) addPtRowTD();
+  } else {
+    tipoContr='Tempo determinato full-time';
+  }
+}
+
+// Righe orario PT inline TI
+function addPtRowTI(){
+  const tbody=document.getElementById('pt-body-ti');
+  const giorni=['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
+  const tr=document.createElement('tr');
+  const idx=tbody.children.length;
+  tr.innerHTML=`<td><select style="width:88px;font-size:12px" onchange="calcPtTI()">
+    <option value="">—</option>${giorni.map(g=>`<option>${g}</option>`).join('')}
+  </select></td>
+  <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTI()"/></td>
+  <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTI()"/></td>
+  <td id="ore-ti-${idx}" style="font-size:12px;font-weight:600;text-align:center">0h</td>
+  <td><button onclick="this.closest('tr').remove();calcPtTI()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button></td>`;
+  tbody.appendChild(tr);
+}
+function calcPtTI(){
+  let tot=0;
+  document.querySelectorAll('#pt-body-ti tr').forEach((tr,i)=>{
+    const ins=tr.querySelectorAll('input[type=time]');
+    const oreEl=tr.querySelector(`[id^="ore-ti-"]`)||tr.cells[3];
+    if(ins[0]?.value&&ins[1]?.value){
+      const [h1,m1]=ins[0].value.split(':').map(Number);
+      const [h2,m2]=ins[1].value.split(':').map(Number);
+      const min=(h2*60+m2)-(h1*60+m1);
+      if(min>0){tot+=min;if(oreEl)oreEl.textContent=(min/60).toFixed(1)+'h';}
+    } else {if(oreEl)oreEl.textContent='0h';}
+  });
+  document.getElementById('pt-tot-ti').textContent=(tot/60).toFixed(1);
+}
+
+// Righe orario PT inline TD
+function addPtRowTD(){
+  const tbody=document.getElementById('pt-body-td');
+  const giorni=['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><select style="width:88px;font-size:12px" onchange="calcPtTD()">
+    <option value="">—</option>${giorni.map(g=>`<option>${g}</option>`).join('')}
+  </select></td>
+  <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTD()"/></td>
+  <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTD()"/></td>
+  <td style="font-size:12px;font-weight:600;text-align:center">0h</td>
+  <td><button onclick="this.closest('tr').remove();calcPtTD()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button></td>`;
+  tbody.appendChild(tr);
+}
+function calcPtTD(){
+  let tot=0;
+  document.querySelectorAll('#pt-body-td tr').forEach(tr=>{
+    const ins=tr.querySelectorAll('input[type=time]');
+    const oreEl=tr.cells[3];
+    if(ins[0]?.value&&ins[1]?.value){
+      const [h1,m1]=ins[0].value.split(':').map(Number);
+      const [h2,m2]=ins[1].value.split(':').map(Number);
+      const min=(h2*60+m2)-(h1*60+m1);
+      if(min>0){tot+=min;if(oreEl)oreEl.textContent=(min/60).toFixed(1)+'h';}
+    } else {if(oreEl)oreEl.textContent='0h';}
+  });
+  document.getElementById('pt-tot-td').textContent=(tot/60).toFixed(1);
+}
+
 function next2(){
-  const ok=!!document.querySelector('input[name="contr"]:checked');
+  const ok=!!document.querySelector('input[name="contr-base"]:checked');
   document.getElementById('e-contr')?.classList.toggle('on',!ok);
   document.getElementById('err2')?.classList.toggle('on',!ok);
   if(!ok)return;
-  tipoContr=document.querySelector('input[name="contr"]:checked').value;
-  ['card-pt','card-ch','card-det','card-det-pt','card-appr'].forEach(id=>document.getElementById(id).style.display='none');
 
-  // Mostra/nascondi sezione agevolazioni per apprendistato
-  const isAppr = tipoContr==='Apprendistato professionalizzante';
+  const base=document.querySelector('input[name="contr-base"]:checked').value;
+
+  // Determina tipoContr definitivo
+  if(base==='Tempo indeterminato'){
+    const orario=document.querySelector('input[name="orario-ti"]:checked')?.value||'full-time';
+    tipoContr=orario==='part-time'?'Tempo indeterminato part-time':'Tempo indeterminato full-time';
+  } else if(base==='Tempo determinato'){
+    const orario=document.querySelector('input[name="orario-td"]:checked')?.value||'full-time';
+    tipoContr=orario==='part-time'?'Tempo determinato part-time':'Tempo determinato full-time';
+  } else {
+    tipoContr=base;
+  }
+
+  // Aggiorna anche il radio name="contr" legacy usato dal resto del codice
+  document.querySelectorAll('input[name="contr"]').forEach(r=>{r.checked=r.value===tipoContr;});
+
+  ['card-pt','card-ch','card-det','card-det-pt','card-appr'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display='none';
+  });
+  const isAppr=tipoContr==='Apprendistato professionalizzante';
   const agevSection=document.getElementById('agev-section');
   if(agevSection) agevSection.style.display=isAppr?'none':'block';
 
   if(tipoContr==='Tempo indeterminato full-time') go(4);
   else if(tipoContr==='Tempo indeterminato part-time'){
-    document.getElementById('card-pt').style.display='block';
-    if(ptRows.length===0) addPtRow();
-    go(3);
+    // Orario già inserito inline — vai a pg4 direttamente
+    if(!ptOrarioValido('pt-body-ti')){
+      document.getElementById('err2').innerHTML='⛔ Compilare almeno un intervallo orario per il part-time.';
+      document.getElementById('err2').classList.add('on');return;
+    }
+    go(4);
   }
-  else if(tipoContr==='Lavoro a chiamata'){document.getElementById('card-ch').style.display='block';go(3);}
   else if(tipoContr==='Tempo determinato full-time'){document.getElementById('card-det').style.display='block';go(3);}
-  else if(tipoContr==='Tempo determinato part-time'){document.getElementById('card-det-pt').style.display='block';go(3);}
+  else if(tipoContr==='Tempo determinato part-time'){
+    if(!ptOrarioValido('pt-body-td')){
+      document.getElementById('err2').innerHTML='⛔ Compilare almeno un intervallo orario per il part-time.';
+      document.getElementById('err2').classList.add('on');return;
+    }
+    document.getElementById('card-det').style.display='block';go(3);
+  }
   else if(tipoContr==='Apprendistato professionalizzante'){document.getElementById('card-appr').style.display='block';go(3);}
+  else if(tipoContr==='Lavoro a chiamata'){document.getElementById('card-ch').style.display='block';go(3);}
 }
 
 // nextPg3: se TI part-time valida orario; se TD part-time valida causale e va a pg3b
@@ -1749,7 +1975,6 @@ function chkTitoloAltro(){
 function hint(fld){
   const f=document.getElementById('sb-f'),t=document.getElementById('sb-t'),n=document.getElementById('sb-n');
   if(!fld||!fld.dataset.hint){
-    // Nessun suggerimento — resetta il pannello
     f.textContent='—';f.style.color='#9ca3af';f.style.fontStyle='italic';
     t.textContent='Fai clic su qualsiasi campo per vedere le istruzioni.';t.style.color='#9ca3af';t.style.fontStyle='italic';
     n.style.display='none';
@@ -1759,6 +1984,15 @@ function hint(fld){
   t.textContent=fld.dataset.hint;t.style.color='';t.style.fontStyle='';
   if(fld.dataset.norm){n.textContent='📋 '+fld.dataset.norm;n.style.display='block';}else n.style.display='none';
 }
+
+// Aggiorna il pannello laterale direttamente con testo personalizzato
+function hintDirect(label, testo, norma){
+  const f=document.getElementById('sb-f'),t=document.getElementById('sb-t'),n=document.getElementById('sb-n');
+  f.textContent=label;f.style.color='';f.style.fontStyle='';
+  t.textContent=testo;t.style.color='';t.style.fontStyle='';
+  if(norma){n.textContent='📋 '+norma;n.style.display='block';}else n.style.display='none';
+}
+
 document.addEventListener('click',e=>{
   const f=e.target.closest('.fld[data-hint]');
   if(f) hint(f);
@@ -1800,6 +2034,8 @@ function calcAge(){
 
   // Aggiorna blocco agevolazioni per età
   aggiornaAgevolabilita();
+  // Mostra/nascondi qualifica Apprendista in base all'età
+  aggiornaVisibilitaQualApprendista(a);
   // ── Blocca apprendistato fuori dal range 18-29 anni (art. 44 D.Lgs. 81/2015) ──
   const rcAppr=document.getElementById('rc-appr');
   const radioAppr=document.getElementById('radio-appr');
@@ -1822,49 +2058,37 @@ function calcAge(){
 }
 
 function autoCheckAgev(age, sesso){
-  // Legge i precedenti lavorativi selezionati
   const prec=document.querySelector('input[name="prec"]:checked')?.value||'';
   const primoImpiego = prec==='Primo impiego'||prec==='Solo contratti a tempo determinato'||prec==='Solo apprendistato';
+  const disoc24 = isDisoccupato(24);
+  const disoc12 = isDisoccupato(12);
+  const privoimp = isPrivoImpiego();
 
-  // Regole: valore checkbox → condizione basata su età/sesso/precedenti
   const rules=[
-    // Under 35: età <35 E (primo impiego o solo TD)
-    {val:'Under 35 disoccupato 24 mesi',     cond: age>=18 && age<35 && primoImpiego},
-    // Under 30: età <30 E primo impiego (mai assunto TI)
-    {val:'Under 30 mai assunto TI',           cond: age>=18 && age<30 && (prec==='Primo impiego'||prec==='Solo contratti a tempo determinato'||prec==='Solo apprendistato')},
-    // Over 50
-    {val:'Over 50 disoccupato +12 mesi',      cond: age>=50},
-    // ADI/SFL: non auto-spuntabile (non conoscibile dall'età)
-    // Donna senza impiego: solo sesso femminile + primo/TD
-    {val:'Donna senza impiego 24 mesi',       cond: sesso==='Femmina' && primoImpiego},
-    // Donna vittima di violenza: solo sesso femminile (non auto-spuntabile: troppo specifico)
-    // Madre 3+ figli: solo sesso femminile (non auto-spuntabile: troppo specifico)
+    // Under 35: disoccupato da ≥24 mesi
+    {val:'Under 35 disoccupato 24 mesi', cond: age>=18 && age<35 && disoc24},
+    // Under 30: mai assunto TI (primo impiego o solo TD)
+    {val:'Under 30 mai assunto TI', cond: age>=18 && age<30 && primoImpiego},
+    // Over 50: disoccupato da ≥12 mesi
+    {val:'Over 50 disoccupato +12 mesi', cond: age>=50 && disoc12},
+    // Donna senza impiego: femmina + privo impiego ≥6 mesi o disoccupata ≥24 mesi
+    {val:'Donna senza impiego 24 mesi', cond: sesso==='Femmina' && (disoc24||privoimp)},
   ];
 
-  // Rimuovi "Nessuna" se era selezionata automaticamente
   const nessuna=document.getElementById('agev-nessuna');
-
   rules.forEach(r=>{
     const cbEl=document.querySelector(`input[name="agev"][value="${r.val}"]`);
     if(!cbEl)return;
     const parent=cbEl.closest('.cc');
     if(r.cond){
       if(!cbEl.checked){
-        cbEl.checked=true;
-        parent?.classList.add('s');
+        cbEl.checked=true;parent?.classList.add('s');
         if(nessuna){nessuna.checked=false;nessuna.closest('.cc')?.classList.remove('s');}
       }
     } else {
-      // Rimuovi auto-spunta solo se non è stata confermata manualmente
-      // (togliamo solo se è l'unica ragione per cui era spuntata)
-      if(cbEl.checked){
-        cbEl.checked=false;
-        parent?.classList.remove('s');
-      }
+      if(cbEl.checked){cbEl.checked=false;parent?.classList.remove('s');}
     }
   });
-
-  // Ricalcola il motore
   calcAgev();
 }
 
@@ -1887,6 +2111,7 @@ document.addEventListener('change', e=>{
       const m=t.getMonth()-b.getMonth();if(m<0||(m===0&&t.getDate()<b.getDate()))a--;
       autoCheckAgev(a, document.getElementById('f-sesso').value);
     }
+    aggiornaAgevolabilita();
   }
 });
 
@@ -1983,11 +2208,14 @@ function suggerisciAgevolazioni(){
   if(dob){const t=new Date(),b=new Date(dob);age=t.getFullYear()-b.getFullYear();const mo=t.getMonth()-b.getMonth();if(mo<0||(mo===0&&t.getDate()<b.getDate()))age--;}
 
   const sugg=[];
+  const disoc24=isDisoccupato(24);
+  const disoc12=isDisoccupato(12);
+  const privoimp=isPrivoImpiego();
+
   if(age<30) sugg.push({p:1,v:'✅ Esonero Under 30 (L.205/2017) — 50% contributi per 36 mesi. Verificare che non abbia mai avuto contratti TI.'});
-  if(age<35) sugg.push({p:2,v:'✅ Bonus Giovani 2026 (D.L.62/2026) — 100% contributi per 24 mesi'+(isZES?' (ZES: max €650/mese)':' (max €500/mese)')+'. Verificare disoccupazione da ≥24 mesi. Previa verifica incremento occupazionale.'});
-  if(sesso==='Femmina') sugg.push({p:3,v:'✅ Bonus Donne 2026 (D.L.62/2026) — 100% contributi per 24 mesi'+(isZES?' (ZES: max €800/mese)':' (max €650/mese)')+'. Verificare assenza di impiego da ≥24 mesi. Previa verifica incremento occupazionale.'});
-  if(age>=50) sugg.push({p:4,v:'✅ Agevolazione Disoccupato Over 50 (L.92/2012) — 50% contributi per 18 mesi. Verificare disoccupazione da >12 mesi.'});
-  // Ex apprendista under 30: suggerito se età < 30
+  if(age<35 && disoc24) sugg.push({p:2,v:'✅ Bonus Giovani 2026 (D.L.62/2026) — 100% contributi per 24 mesi'+(isZES?' (ZES: max €650/mese)':' (max €500/mese)')+'. Disoccupato/a da ≥24 mesi. Previa verifica incremento occupazionale.'});
+  if(sesso==='Femmina' && (disoc24||privoimp)) sugg.push({p:3,v:'✅ Bonus Donne 2026 (D.L.62/2026) — 100% contributi per 24 mesi'+(isZES?' (ZES: max €800/mese)':' (max €650/mese)')+'. Previa verifica incremento occupazionale.'});
+  if(age>=50 && disoc12) sugg.push({p:4,v:'✅ Agevolazione Disoccupato Over 50 (L.92/2012) — 50% contributi per 18 mesi. Disoccupato/a da >12 mesi.'});
   if(age<30) sugg.push({p:1,v:'✅ Agevolazione ex apprendista under 30 (art. 47 co. 7 D.Lgs. 81/2015) — 100% contributi per 36 mesi (TI). Solo se già apprendista presso questo stesso datore. Verificare.'});
   if(isZES) sugg.push({p:5,v:'✅ Bonus ZES 2026 — 100%, max €650/mese per 24 mesi. Verificare requisiti specifici zona ZES.'});
   if(isZES) sugg.push({p:6,v:'✅ Esonero Mezzogiorno dal 2025 — 20% contributi, max €125/mese. Applicabile a TI esistenti e nuove assunzioni.'});
@@ -2104,6 +2332,8 @@ function openPdf(){
     ['Cellulare',gv('f-cell')],
     ['IBAN',gv('f-iban')],
     ['Precedenti lavorativi',rv('prec')],
+    ...(document.getElementById('chk-disoc')?.checked?[['Disoccupato/a da almeno 24 mesi','Sì']]:[] ),
+    ...(document.getElementById('chk-privoimp')?.checked?[['Privo/a d\'impiego da ≥6 mesi','Sì']]:[] ),
     ['Titolo di studio',titoloStr],
     ['Titolo di studio attinente alle mansioni',rv('titolo-attinenza')],
     ['Qualifica',rv('qual')],
@@ -2199,10 +2429,10 @@ function stampaPdf(){
        border-bottom:2px solid #2E75B6;padding-bottom:5px;margin-bottom:10px}
     h3{font-size:9px;font-weight:600;color:#6b7280;text-transform:uppercase;
        letter-spacing:.05em;margin:12px 0 4px;page-break-after:avoid}
-    .row{display:flex;gap:8px;border-bottom:0.5px solid #ddd;
-         padding:2px 0;page-break-inside:avoid}
-    .rk{min-width:155px;font-size:9px;color:#6b7280;flex-shrink:0}
-    .rv{font-size:9px;font-weight:500;word-break:break-word}
+    .row{display:flex;align-items:baseline;gap:8px;border-bottom:0.5px solid #ddd;
+         padding:2px 0;page-break-inside:avoid;flex-wrap:nowrap}
+    .rk{min-width:160px;max-width:160px;font-size:9px;color:#6b7280;flex-shrink:0;white-space:nowrap}
+    .rv{font-size:9px;font-weight:500;flex:1;word-break:break-word}
     .crit-box{border:1px solid #fcd34d;border-radius:4px;padding:7px 10px;
               margin-top:10px;page-break-inside:avoid;background:#fffbeb}
     .crit-box h3{color:#92400e;text-transform:none;letter-spacing:0;font-size:10px;margin:0 0 4px}
@@ -2237,7 +2467,7 @@ function stampaPdf(){
 // ─── LINEE GUIDA ─────────────────────────────────────────────────────────────
 // Contenuto delle linee guida (estratto dai file Word — visualizzazione HTML nel modal)
 const LINEE_GUIDA = {
-  '05.1': {
+  '01': {
     titolo: '05.1 \u2014 Contratto a Tempo Indeterminato Full-Time',
     rif: 'Art. 1 D.Lgs. 81/2015; Art. 2094 c.c.; L. 300/1970; D.Lgs. 23/2015',
     sezioni: [
@@ -2277,25 +2507,7 @@ const LINEE_GUIDA = {
       {h:'Recesso e tutele', body:'Il datore pu\u00f2 recedere solo per giusta causa (art. 2119 c.c.) o giustificato motivo soggettivo/oggettivo. Per i lavoratori assunti dal 7 marzo 2015 si applicano le tutele crescenti ex D.Lgs. 23/2015. Il lavoratore deve rispettare il preavviso previsto dal CCNL in caso di dimissioni.'},
     ]
   },
-  '05.2': {
-    titolo: '05.2 \u2014 Contratto a Tempo Indeterminato Part-Time',
-    rif: 'Artt. 4-12 D.Lgs. 81/2015; art. 2108 c.c.',
-    sezioni: [
-      {h:'Definizione (art. 4 D.Lgs. 81/2015)', body:'Si considera a tempo parziale il contratto di lavoro subordinato la cui durata sia inferiore rispetto a quella del lavoro a tempo pieno come definita dalla legge o dai contratti collettivi nazionali applicati. Il datore di lavoro e il lavoratore possono stipulare un contratto nella forma del tempo parziale.'},
-      {h:'Tipi di part-time', items:[
-        'Orizzontale: riduzione delle ore giornaliere (es. 4 ore/giorno su 5 giorni). Tipo pi\u00f9 comune.',
-        'Verticale: orario pieno ma solo in alcuni giorni della settimana, del mese o dell\u2019anno.',
-        'Misto: combinazione di orizzontale e verticale.',
-      ]},
-      {h:'Forma e contenuto obbligatorio del contratto (art. 5 D.Lgs. 81/2015)', body:'Il contratto deve essere stipulato per iscritto. \u00c8 necessaria la puntuale indicazione della durata della prestazione lavorativa e della collocazione temporale dell\u2019orario con riferimento al giorno, alla settimana, al mese e all\u2019anno. In mancanza di prova scritta, su domanda del lavoratore, il giudice pu\u00f2 determinare le modalit\u00e0 di svolgimento.', nota:'OBBLIGATORIO: compilare almeno un intervallo orario con giorno, ora di inizio e ora di fine. Senza tale indicazione il contratto \u00e8 impugnabile.'},
-      {h:'Lavoro supplementare (art. 6 co. 1 D.Lgs. 81/2015)', body:'Il datore pu\u00f2 richiedere lavoro supplementare nel rispetto di quanto previsto dai contratti collettivi. In assenza di disciplina collettiva, il lavoro supplementare \u00e8 ammesso in misura non superiore al 25% delle ore di lavoro settimanali concordate. Il lavoratore pu\u00f2 rifiutarlo ove ricorrano comprovate esigenze lavorative, di salute, familiari o di formazione. \u00c8 retribuito con una maggiorazione stabilita dai contratti collettivi.'},
-      {h:'Clausole elastiche (art. 6 co. 5 D.Lgs. 81/2015)', body:'I contratti collettivi possono prevedere clausole elastiche riguardanti la variazione della collocazione temporale o la variazione in aumento della durata della prestazione. Richiedono il consenso scritto del lavoratore. L\u2019esercizio del potere di modifica comporta il diritto del lavoratore a una maggiorazione della retribuzione nella misura prevista dai contratti collettivi.'},
-      {h:'Trattamento del lavoratore (art. 7 D.Lgs. 81/2015)', body:'Il lavoratore a tempo parziale non deve ricevere un trattamento meno favorevole rispetto al lavoratore a tempo pieno comparabile. Il trattamento economico e normativo \u00e8 riproporzionato in ragione della ridotta prestazione lavorativa (principio del pro rata temporis).'},
-      {h:'Trasformazione del rapporto (art. 8 D.Lgs. 81/2015)', body:'Il lavoratore affetto da patologie oncologiche o gravi patologie cronico-degenerative ha diritto alla trasformazione del rapporto da tempo pieno a part-time. Il datore \u00e8 tenuto a dare precedenza ai lavoratori gi\u00e0 in forza rispetto a nuove assunzioni part-time.'},
-      {h:'Agevolazioni contributive', body:'Si applicano in misura proporzionale all\u2019orario ridotto. Il massimale mensile \u00e8 ridotto proporzionalmente al rapporto tra orario part-time e orario full-time contrattuale. Bonus Giovani 2026 e Bonus Donne 2026 si applicano anche al part-time indeterminato, con massimale proporzionato. Agevolazioni NASpI e CIGS riservate esclusivamente al TI full-time.'},
-    ]
-  },
-  '05.3': {
+  '02': {
     titolo: '05.3 \u2014 Contratto a Tempo Determinato Full-Time',
     rif: 'Artt. 19-29 D.Lgs. 81/2015; D.L. 87/2018 conv. L. 96/2018; D.L. 48/2023 conv. L. 85/2023',
     sezioni: [
@@ -2314,28 +2526,7 @@ const LINEE_GUIDA = {
       {h:'Agevolazioni', body:'Il TD full-time accede alle agevolazioni contributive in misura ridotta (es. ADI/SFL: 50% per 12 mesi). Bonus Giovani 2026, Bonus Donne 2026, esonero Under 30, Over 50, NASpI e CIGS sono riservati esclusivamente ai contratti a tempo indeterminato.', nota:'Se negli ultimi 12 mesi sono cessati contratti a termine con altri lavoratori per le stesse mansioni alcune agevolazioni potrebbero non spettare (art. 20).'},
     ]
   },
-  '05.3b': {
-    titolo: '05.3b \u2014 Contratto a Tempo Determinato Part-Time',
-    rif: 'Artt. 4-12 + artt. 19-29 D.Lgs. 81/2015 (applicazione combinata)',
-    sezioni: [
-      {h:'Disciplina applicabile', body:'Il contratto a tempo determinato part-time combina due normative: quella del contratto a termine (artt. 19-29 D.Lgs. 81/2015) per durata e causale, e quella del lavoro a tempo parziale (artt. 4-12 D.Lgs. 81/2015) per l\u2019orario. Entrambe devono essere rispettate contemporaneamente.'},
-      {h:'Obblighi relativi al termine (artt. 19-21 D.Lgs. 81/2015)', items:[
-        'Data di scadenza obbligatoria: max 24 mesi complessivi per le stesse mansioni (proroghe incluse)',
-        'Causale: libera nei primi 12 mesi; obbligatoria per durata superiore a 12 mesi o in caso di rinnovo',
-        'Max 4 proroghe nell\u2019arco dei 24 mesi',
-        'Contributo addizionale 1,40% sulla retribuzione imponibile; rimborsato in caso di trasformazione a TI',
-        'Divieti art. 20: validi anche per il part-time determinato',
-      ]},
-      {h:'Obblighi relativi all\u2019orario (art. 5 D.Lgs. 81/2015)', body:'Il contratto deve indicare per iscritto la durata della prestazione e la collocazione temporale dell\u2019orario con riferimento al giorno, alla settimana, al mese e all\u2019anno. \u00c8 obbligatorio compilare almeno un intervallo orario con giorno, ora di inizio e ora di fine. In mancanza, il giudice pu\u00f2 determinarne le modalit\u00e0 su domanda del lavoratore.', nota:'OBBLIGATORIO: compilare la tabella orario. La scadenza del termine non esime dall\u2019indicare la distribuzione settimanale delle ore.'},
-      {h:'Tipi di orario part-time', items:[
-        'Orizzontale: riduzione giornaliera (es. 4 ore/giorno). Tipo pi\u00f9 frequente nei contratti a termine.',
-        'Verticale: orario pieno ma solo in alcuni giorni della settimana o del mese.',
-        'Misto: combinazione di orizzontale e verticale.',
-      ]},
-      {h:'Agevolazioni contributive', body:'Le agevolazioni si applicano con doppia limitazione: (a) in misura ridotta per la tipologia contrattuale (TD vs TI); (b) proporzionalmente all\u2019orario part-time. Bonus Giovani 2026, Bonus Donne 2026, NASpI e CIGS non si applicano ai contratti a termine.', nota:'La combinazione TD+part-time genera una doppia riduzione sulle agevolazioni. Valutare attentamente la convenienza con lo Studio.'},
-    ]
-  },
-  '05.4': {
+  '03': {
     titolo: '05.4 \u2014 Apprendistato Professionalizzante (2\u00b0 Tipo)',
     rif: 'Artt. 41-47 D.Lgs. 81/2015; DM 12 ottobre 2015; Circ. Min. Lav. n. 18/2012',
     sezioni: [
@@ -2364,7 +2555,7 @@ const LINEE_GUIDA = {
       {h:'Retribuzione', body:'La retribuzione \u00e8 stabilita dal CCNL applicato. Pu\u00f2 essere sottoinquadrata fino a 2 livelli rispetto alla qualifica finale a cui aspira l\u2019apprendista. Il CCNL pu\u00f2 prevedere percentuali crescenti della retribuzione del lavoratore qualificato di riferimento.'},
     ]
   },
-  '05.5': {
+  '04': {
     titolo: '05.5 \u2014 Contratto di Lavoro Intermittente (Job on Call)',
     rif: 'Artt. 13-18 D.Lgs. 81/2015; D.M. 23 ottobre 2004; Circ. Min. Lav. n. 20/2012',
     sezioni: [
@@ -2388,21 +2579,17 @@ const LINEE_GUIDA = {
 const LG_BASE_URL = 'https://raw.githubusercontent.com/studio-lab-blip/portale-assunzioni/main/linee-guida/';
 
 const LG_FILES = {
-  '05.1':  '05.1%20-%20Tempo%20indeterminato%20full-time.docx',
-  '05.2':  '05.2%20-%20Tempo%20indeterminato%20part-time.docx',
-  '05.3':  '05.3%20-%20Tempo%20determinato%20full-time.docx',
-  '05.3b': '05.3b%20-%20Tempo%20determinato%20part-time.docx',
-  '05.4':  '05.4%20-%20Apprendistato%20professionalizzante.docx',
-  '05.5':  '05.5%20-%20Lavoro%20a%20chiamata.docx',
+  '01': '01%20-%20Tempo%20indeterminato.docx',
+  '02': '02%20-%20Tempo%20determinato.docx',
+  '03': '03%20-%20Apprendistato%20professionalizzante.docx',
+  '04': '04%20-%20Lavoro%20a%20chiamata.docx',
 };
 
 const LG_TITOLI = {
-  '05.1':  '05.1 — Tempo Indeterminato Full-Time',
-  '05.2':  '05.2 — Tempo Indeterminato Part-Time',
-  '05.3':  '05.3 — Tempo Determinato Full-Time',
-  '05.3b': '05.3b — Tempo Determinato Part-Time',
-  '05.4':  '05.4 — Apprendistato Professionalizzante',
-  '05.5':  '05.5 — Lavoro a Chiamata',
+  '01': '01 — Tempo Indeterminato',
+  '02': '02 — Tempo Determinato',
+  '03': '03 — Apprendistato Professionalizzante',
+  '04': '04 — Lavoro a Chiamata',
 };
 
 async function apriLineaGuida(codice) {
@@ -2516,7 +2703,92 @@ function buildLgHtml(codice) {
 
 function getLgLette() { return Array.from(lgLette); }
 
-// ─── LAVORATORE STRANIERO ─────────────────────────────────────────────────────
+// ─── DISOCCUPATO / PRIVO DI IMPIEGO ──────────────────────────────────────────
+function togcDisoc(el){
+  el.classList.toggle('s');
+  aggiornaAgevolabilitaDisoc();
+}
+
+function togcPrivoImp(el){
+  el.classList.toggle('s');
+  aggiornaAgevolabilitaDisoc();
+}
+
+function aggiornaAgevolabilitaDisoc(){
+  const dob=document.getElementById('f-dob')?.value;
+  if(dob){
+    const t=new Date(),b=new Date(dob);
+    let a=t.getFullYear()-b.getFullYear();
+    const m=t.getMonth()-b.getMonth();
+    if(m<0||(m===0&&t.getDate()<b.getDate()))a--;
+    autoCheckAgev(a, document.getElementById('f-sesso').value);
+  }
+}
+
+function isDisoccupato(mesiMin){
+  // Il campo indica disoccupazione da almeno 24 mesi
+  return !!document.getElementById('chk-disoc')?.checked;
+}
+
+function isPrivoImpiego(){
+  return !!document.getElementById('chk-privoimp')?.checked;
+}
+// ─── APPRENDISTA NELLA QUALIFICA ─────────────────────────────────────────────
+function aggiornaVisibilitaQualApprendista(age){
+  const rcQualAppr=document.getElementById('rc-qual-appr');
+  if(!rcQualAppr) return;
+  const visibile=age>=18&&age<=29;
+  rcQualAppr.style.display=visibile?'':'none';
+  if(!visibile&&rcQualAppr.querySelector('input')?.checked){
+    rcQualAppr.querySelector('input').checked=false;
+    rcQualAppr.classList.remove('s');
+    ripristinaContratti();
+  }
+}
+
+function selezionaApprendistato(){
+  const radioAppr=document.getElementById('radio-appr');
+  if(!radioAppr) return;
+  radioAppr.disabled=false;
+  radioAppr.checked=true;
+  document.getElementById('rc-appr')?.classList.add('s');
+  // Nascondi sub-orario
+  document.getElementById('sub-orario-ti').style.display='none';
+  document.getElementById('sub-orario-td').style.display='none';
+  // Disabilita tutti gli altri contr-base
+  document.querySelectorAll('input[name="contr-base"]').forEach(r=>{
+    if(r.value!=='Apprendistato professionalizzante'){
+      r.checked=false;
+      r.disabled=true;
+      const rc=r.closest('.rc');
+      if(rc){rc.classList.remove('s');rc.style.opacity='0.35';rc.style.cursor='not-allowed';}
+    }
+  });
+  tipoContr='Apprendistato professionalizzante';
+}
+
+function ripristinaContratti(){
+  document.querySelectorAll('input[name="contr-base"]').forEach(r=>{
+    r.disabled=false;
+    const rc=r.closest('.rc');
+    if(rc){rc.style.opacity='';rc.style.cursor='';}
+  });
+}
+
+// Listener per deselezionare apprendistato se si cambia qualifica
+document.addEventListener('change',e=>{
+  if(e.target.name==='qual'&&e.target.value!=='Apprendista'){
+    ripristinaContratti();
+    // Deseleziona apprendistato se era selezionato automaticamente
+    const radioAppr=document.getElementById('radio-appr');
+    if(radioAppr?.checked){
+      radioAppr.checked=false;
+      document.getElementById('rc-appr')?.classList.remove('s');
+      tipoContr='';
+    }
+  }
+});
+
 const NOTE_PERMESSO = {
   'Lavoro subordinato': '',
   'Lavoro stagionale': '⚠️ Consentito solo lavoro stagionale nei limiti del provvedimento di autorizzazione.',
@@ -2757,89 +3029,75 @@ function invia(){
 
 // ─── GENERA PDF E INVIA EMAIL ─────────────────────────────────────────────────
 async function generaEInviaEmail(){
+  // Verifica EmailJS disponibile
+  if(typeof emailjs === 'undefined'){
+    console.error('[Email] EmailJS non disponibile — libreria non caricata');
+    return;
+  }
+
   try {
-    // 1. Genera il riepilogo HTML (stesso di openPdf)
+    // 1. Genera riepilogo HTML
     openPdf();
-    await new Promise(r=>setTimeout(r,400));
-
+    await new Promise(r=>setTimeout(r,600));
     const pdfContent = document.getElementById('pdf-c');
-
-    // 2. Cattura con html2canvas
-    const canvas = await html2canvas(pdfContent, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      logging: false,
-    });
-
-    // 3. Genera PDF con jsPDF
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
-    const margin = 10;
-    const imgW = pageW - margin * 2;
-    const imgH = (canvas.height * imgW) / canvas.width;
-    const pageImgH = pageH - margin * 2;
-
-    // Divide in pagine
-    let srcY = 0;
-    const imgData = canvas.toDataURL('image/jpeg', 0.90);
-    while(srcY < canvas.height) {
-      if(srcY > 0) pdf.addPage();
-      const sliceCanvas = document.createElement('canvas');
-      const sliceH = Math.min(canvas.height - srcY, Math.round(pageImgH * canvas.width / imgW));
-      sliceCanvas.width = canvas.width;
-      sliceCanvas.height = sliceH;
-      sliceCanvas.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
-      const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.90);
-      const actualH = (sliceH * imgW) / canvas.width;
-      pdf.addImage(sliceData, 'JPEG', margin, margin, imgW, actualH);
-      srcY += sliceH;
-    }
-
-    // 4. PDF come base64
-    const pdfBase64 = pdf.output('datauristring'); // "data:application/pdf;base64,..."
-
+    const htmlRiepilogo = pdfContent ? pdfContent.innerHTML : '(riepilogo non disponibile)';
     closePdf();
 
-    // 5. Parametri comuni email
-    const emailBase = {
-      datore:              gv('f-datore'),
-      dipendente:          gv('f-dip'),
-      data_assunzione:     gv('f-dass'),
+    const dipendente = gv('f-dip');
+    const datore     = gv('f-datore');
+    const dass       = gv('f-dass');
+    const emailAzienda = (gv('f-email-cop') || azLoggata?.email || '').trim();
+
+    console.log('[Email] Invio a studio: studiopelati@gmail.com');
+    console.log('[Email] Invio ad azienda:', emailAzienda);
+
+    const params = {
+      to_email:            'studiopelati@gmail.com',
+      to_name:             'Studio Pelati',
+      reply_to:            emailAzienda,
+      datore,
+      dipendente,
+      data_assunzione:     dass,
       tipologia_contratto: tipoContr || rv('contr'),
       agevolazioni:        getAgevSel().join(', ') || 'Nessuna',
       compilato_da:        gv('f-comp-da'),
-      riepilogo_html:      pdfContent.innerHTML,
+      riepilogo_html:      htmlRiepilogo,
     };
 
-    const emailAzienda = gv('f-email-cop') || azLoggata?.email || '';
+    // 2. Email allo Studio
+    const r1 = await emailjs.send('service_b512xwh', 'template_jvpchue', params);
+    console.log('[Email] ✅ Studio:', r1.status, r1.text);
 
-    // 6. Email allo Studio
-    await emailjs.send('service_v6yh8a8', 'template_jvpchue', {
-      ...emailBase,
-      to_email:  'studiopelati@gmail.com',
-      to_name:   'Studio Pelati',
-      reply_to:  emailAzienda,
-    });
-    console.log('[EmailJS] ✅ Email studio inviata');
-
-    // 7. Email all'azienda (destinatario diverso)
-    if(emailAzienda) {
-      await emailjs.send('service_v6yh8a8', 'template_jvpchue', {
-        ...emailBase,
-        to_email:  emailAzienda,
-        to_name:   gv('f-datore'),
-        reply_to:  'studiopelati@gmail.com',
+    // 3. Email all'azienda (se diversa dallo studio)
+    if(emailAzienda && emailAzienda !== 'studiopelati@gmail.com'){
+      const r2 = await emailjs.send('service_b512xwh', 'template_jvpchue', {
+        ...params,
+        to_email: emailAzienda,
+        to_name:  datore,
+        reply_to: 'studiopelati@gmail.com',
       });
-      console.log('[EmailJS] ✅ Email azienda inviata a:', emailAzienda);
+      console.log('[Email] ✅ Azienda:', r2.status, r2.text);
     }
 
-  } catch(err) {
-    console.error('[Email] Errore:', err);
+  } catch(err){
+    console.error('[Email] ❌ Errore:', err?.status, err?.text, err?.message || err);
   }
 }
 </script>
+<!-- Librerie esterne — caricate in fondo per non bloccare il form -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" 
+  onerror="console.warn('[CDN] EmailJS non caricato')"></script>
+<script>
+  if(typeof emailjs !== 'undefined') {
+    emailjs.init('oueuoED95Jwy4zyQ-');
+    console.log('[EmailJS] Inizializzato');
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"
+  onerror="console.warn('[CDN] Mammoth non caricato — le linee guida useranno il testo incorporato')"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"
+  onerror="console.warn('[CDN] jsPDF non caricato')"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
+  onerror="console.warn('[CDN] html2canvas non caricato')"></script>
 </body>
 </html>
