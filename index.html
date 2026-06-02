@@ -239,8 +239,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="fld" data-hint="Il riepilogo delle risposte sarà consegnato a questo indirizzo. Pre-compilato con l'email del profilo aziendale. Se modificata verrà chiesta conferma e salvata." data-label="Email riepilogo">
     <label class="lbl">Il riepilogo delle risposte sarà consegnato a questo indirizzo — <span style="font-weight:400;color:#6b7280">puoi modificarlo</span> <span class="req">*</span></label>
     <input type="text" id="f-email-cop" placeholder="amministrazione@azienda.it" 
-           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-           onfocus="emailCopFocus(this)" onchange="emailCopBlur(this)"
+           autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+           onfocus="emailCopFocus(this)"
+           onblur="setTimeout(()=>emailCopBlur(this),200)"
            oninput="this.value=this.value.replace(/\s/g,'')"/>
     <div id="email-cop-confirm" style="display:none;margin-top:6px;background:#fffbeb;border:1px solid #FFA500;border-radius:8px;padding:8px 12px;font-size:12px;color:#7A4400">
       ⚠️ L'email è stata modificata rispetto a quella registrata (<span id="email-cop-originale" style="font-weight:600"></span>).
@@ -1571,13 +1572,10 @@ function tornaInizio(){
 
 // ─── GESTIONE MODIFICA EMAIL DATORE ──────────────────────────────────────────
 let emailCopOriginale='';
-function emailCopFocus(el){
-  hint(el.closest('.fld'));
-  emailCopOriginale=el.value;
-}
+function emailCopFocus(el){ emailCopOriginale=el.value; hint(el.closest('.fld')); }
 function emailCopBlur(el){
-  const nuova=el.value.trim();
-  if(!nuova||!azLoggata)return;
+  const nuova=(el||document.getElementById('f-email-cop')).value.trim();
+  if(!nuova||!azLoggata) return;
   const originale=azLoggata.email||'';
   if(nuova!==originale){
     document.getElementById('email-cop-originale').textContent=originale||'(vuota)';
@@ -1886,6 +1884,25 @@ function nextPg3(){
     document.getElementById('err3').classList.remove('on');
     go(4);
   } else {
+    // TD full-time: valida causale e scadenza
+    const causVal=document.querySelector('input[name="caus"]:checked')?.value||'';
+    if(!causVal){
+      document.getElementById('err3').innerHTML='⛔ Selezionare la causale del contratto.';
+      document.getElementById('err3').classList.add('on'); return;
+    }
+    // Valida scadenza per Senza causale max 12 mesi
+    if(causVal==='Senza causale prorogabile'){
+      const scad=document.getElementById('f-scad-std')?.value;
+      const dass=document.getElementById('f-dass')?.value;
+      if(scad&&dass){
+        const maxDate=new Date(dass);maxDate.setMonth(maxDate.getMonth()+12);
+        if(new Date(scad)>maxDate){
+          document.getElementById('err3').innerHTML='⛔ Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione.';
+          document.getElementById('err3').classList.add('on'); return;
+        }
+      }
+    }
+    document.getElementById('err3').classList.remove('on');
     go(4);
   }
 }
@@ -2019,20 +2036,21 @@ function togcNessuna(el){
 }
 function showCaus(t){
   ['mat','ass','esi'].forEach(x=>document.getElementById('cf-'+x)?.classList.toggle('on',x===t));
-  // Mostra scadenza standard solo per Senza causale e Esigenze temporanee
   const fldStd=document.getElementById('fld-scad-std');
   if(fldStd) fldStd.style.display=(t===''||t==='esi')?'block':'none';
-  // Aggiorna hint scadenza per Senza causale
   const hint12=document.getElementById('hint-scad-std');
   if(hint12){
     if(t==='') hint12.textContent='Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione.';
     else hint12.textContent='Il contratto è liberamente stipulabile nei primi 12 mesi; la durata massima è di 24 mesi, comprensivi di proroghe e rinnovi.';
   }
+  // Aggiorna il max del campo data e resetta se non valido
+  setTimeout(checkScadSenzaCausale, 50);
 }
 function showCausPt(t){
   ['mat-pt','ass-pt','esi-pt'].forEach(x=>document.getElementById('cf-'+x)?.classList.toggle('on',x===t));
   const fldStd=document.getElementById('fld-scad-std-pt');
   if(fldStd) fldStd.style.display=(t===''||t==='esi-pt')?'block':'none';
+  setTimeout(checkScadSenzaCausalePt, 50);
 }
 
 // Rientro lavoratore: se spuntato disabilita e pulisce il campo data
@@ -2054,34 +2072,52 @@ function checkScadSenzaCausale(){
   const scadEl=document.getElementById('f-scad-std');
   const err24=document.getElementById('e-scad-std');
   const err12=document.getElementById('e-scad-12m');
-  if(!scadEl?.value) return;
+  if(!scadEl) return;
   const dass=document.getElementById('f-dass')?.value;
   if(!dass) return;
-  const maxMesi=caus==='Senza causale prorogabile'?12:24;
+  const isSenzaCausale=caus==='Senza causale prorogabile';
+  const maxMesi=isSenzaCausale?12:24;
   const maxDate=new Date(dass);
   maxDate.setMonth(maxDate.getMonth()+maxMesi);
+  // Imposta il max del campo data per bloccare nativamente il browser
+  scadEl.max=maxDate.toISOString().split('T')[0];
+  if(!scadEl.value) return;
   const scad=new Date(scadEl.value);
   if(scad>maxDate){
-    err24?.classList.remove('on');
-    if(maxMesi===12){err12.style.display='block';err12.textContent='Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione.';}
-    else{err24?.classList.add('on');err12.style.display='none';}
+    if(isSenzaCausale){
+      // Mostra errore 12m solo per senza causale
+      if(err12){err12.style.display='block';}
+      if(err24){err24.classList.remove('on');}
+      // Cancella la data non valida
+      scadEl.value='';
+    } else {
+      if(err24){err24.classList.add('on');}
+      if(err12){err12.style.display='none';}
+    }
   } else {
-    err24?.classList.remove('on');
-    if(err12) err12.style.display='none';
+    if(err24){err24.classList.remove('on');}
+    if(err12){err12.style.display='none';}
   }
 }
 function checkScadSenzaCausalePt(){
   const caus=document.querySelector('input[name="caus-pt"]:checked')?.value||'';
   const scadEl=document.getElementById('f-scad-std-pt');
   const err12=document.getElementById('e-scad-12m-pt');
-  if(!scadEl?.value) return;
+  if(!scadEl) return;
   const dass=document.getElementById('f-dass')?.value;
   if(!dass) return;
-  const maxMesi=caus==='Senza causale prorogabile'?12:24;
+  const isSenzaCausale=caus==='Senza causale prorogabile';
+  const maxMesi=isSenzaCausale?12:24;
   const maxDate=new Date(dass);maxDate.setMonth(maxDate.getMonth()+maxMesi);
+  scadEl.max=maxDate.toISOString().split('T')[0];
+  if(!scadEl.value) return;
   const scad=new Date(scadEl.value);
-  if(scad>maxDate&&maxMesi===12){err12.style.display='block';}
-  else{if(err12)err12.style.display='none';}
+  if(scad>maxDate&&isSenzaCausale){
+    if(err12)err12.style.display='block';
+    scadEl.value='';
+  } else {
+    if(err12)err12.style.display='none';
+  }
 }
 
 // Controlla scadenza max 12 mesi per sostituzione (a seconda della causale)
