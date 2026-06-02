@@ -1483,17 +1483,22 @@ function dismissResume(){
 
 // ─── DATA ASSUNZIONE ─────────────────────────────────────────────────────────
 function primoGiornoLavorativoSuccessivo(){
-  const d=new Date();
-  d.setDate(d.getDate()+1);
-  while(d.getDay()===0||d.getDay()===6) d.setDate(d.getDate()+1);
+  // Usa ora locale (non UTC) per evitare problemi di fuso orario
+  const oggi = new Date();
+  const d = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate() + 1);
+  while(d.getDay()===0 || d.getDay()===6) d.setDate(d.getDate()+1);
   return d;
 }
 function setDefaultAss(){
-  const d=primoGiornoLavorativoSuccessivo();
-  const minStr=d.toISOString().split('T')[0];
-  const el=document.getElementById('f-dass');
-  el.value=minStr;
-  el.min=minStr; // blocca nativamente la selezione di date precedenti
+  const d = primoGiornoLavorativoSuccessivo();
+  // Formatta in YYYY-MM-DD usando la data locale
+  const yyyy = d.getFullYear();
+  const mm   = String(d.getMonth()+1).padStart(2,'0');
+  const dd   = String(d.getDate()).padStart(2,'0');
+  const minStr = `${yyyy}-${mm}-${dd}`;
+  const el = document.getElementById('f-dass');
+  el.value = minStr;
+  el.min   = minStr;
   checkDataAss(el);
 }
 
@@ -3233,12 +3238,12 @@ async function generaEInviaEmail(){
     };
 
     // 2. Email allo Studio
-    const r1 = await emailjs.send('service_b512xwh', 'template_jvpchue', params);
+    const r1 = await emailjs.send('service_v6yh8a8', 'template_jvpchue', params);
     console.log('[Email] ✅ Studio:', r1.status, r1.text);
 
     // 3. Email all'azienda (se diversa dallo studio)
     if(emailAzienda && emailAzienda !== 'studiopelati@gmail.com'){
-      const r2 = await emailjs.send('service_b512xwh', 'template_jvpchue', {
+      const r2 = await emailjs.send('service_v6yh8a8', 'template_jvpchue', {
         ...params,
         to_email: emailAzienda,
         to_name:  datore,
