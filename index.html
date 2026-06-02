@@ -414,7 +414,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span class="err-msg" id="e-titolo-attinenza">Campo obbligatorio</span>
   </div>
 
-  <div class="fld" data-label="Qualifica" data-hint="La qualifica determina il CCNL applicabile e i costi contributivi INAIL. Gli impiegati soggetti a rischio produttivo hanno la stessa aliquota INAIL degli operai.">
+  <div class="fld" data-label="Qualifica" data-hint="L'impiegato soggetto a rischio elettrico è colui che svolge esclusivamente lavori d'ufficio utilizzando strumenti informatici. Sarà applicabile un tasso INAIL più specifico (rischio operai) qualora per lo svolgimento dell'attività venga utilizzata anche l'autovettura (propria o aziendale) in via non occasionale, oppure quando accede a cantieri o reparti produttivi aziendali o esterni. In quest'ultimo caso è normalmente compresa la copertura assicurativa per l'utilizzo dell'autovettura." data-norm="Tasso INAIL — classificazione per tipologia di rischio effettivo">
     <label class="lbl">Qualifica <span class="req">*</span></label>
     <div class="rg">
       <label class="rc" onclick="pick(this,'qual')"><input type="radio" name="qual" value="Dirigente"/><div class="rb"><div class="rt">Dirigente</div></div></label>
@@ -427,9 +427,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span class="err-msg" id="e-qual">Campo obbligatorio</span>
   </div>
 
-  <div class="fld">
+  <div class="fld" data-label="Livello contrattuale" data-hint="Il livello da attribuire è quello relativo alle prevalenti mansioni di più alto grado che il lavoratore dovrà svolgere. Regolamentazione particolare per l'apprendistato (sottoinquadramento fino a 2 livelli rispetto alla qualifica finale)." data-norm="CCNL applicato — classificazione del personale">
     <label class="lbl">Livello contrattuale</label>
-    <input type="text" id="f-liv" placeholder="es. 3° livello CCNL Metalmeccanici"/>
+    <input type="text" id="f-liv" placeholder="es. 3° livello CCNL Metalmeccanici" onfocus="hint(this.closest('.fld'))"/>
     <p class="hint">Facoltativo. Se non noto lo Studio provvederà alla verifica.</p>
   </div>
 
@@ -557,7 +557,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <!-- BENEFITS — obbligatorio -->
-  <div class="fld" data-label="Benefits" data-hint="I beni aziendali in uso costituiscono 'fringe benefit' soggetti a tassazione oltre soglia. L'autovettura richiede comunicazione di targa e valore convenzionale ACI." data-norm="Art. 51 TUIR — fringe benefit; soglia 2024: €1.000 (€2.000 con figli a carico)">
+  <div class="fld" data-label="Utilizzo beni aziendali e benefit" data-hint="Nel caso in cui l'azienda assegni a un dipendente un'autovettura di proprietà aziendale per utilizzo sia a fini lavorativi che personali (uso promiscuo), l'uso personale concorre alla formazione del reddito per il dipendente (benefit), con conseguente tassazione, salvo che il relativo importo gli venga fatturato. L'ammontare del reddito annuo va calcolato con una percentuale che dipende dal tipo di alimentazione del veicolo (premiante per le auto elettriche e plug-in). La tassazione sarà calcolata su una percentuale del costo km dell'autovettura, calcolata sul valore della percorrenza media di 15.000 km annui. Non costituisce benefit il corrispettivo dovuto per utilizzo ad uso promiscuo fatturato (dietro pagamento) al dipendente." data-norm="Art. 51 TUIR — fringe benefit; soglia 2024: €1.000 (€2.000 con figli a carico)">
     <label class="lbl">Utilizzo beni aziendali e benefit <span class="req">*</span></label>
     <div class="cg" id="benef-group">
       <label class="cc" onclick="togc(this)"><input type="checkbox" value="Autovettura aziendale non occasionale"/><div class="rb"><div class="rt">Autovettura aziendale esclusivamente per lavoro in via non occasionale</div></div></label>
@@ -570,7 +570,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span class="err-msg" id="e-benef">Selezionare almeno un'opzione</span>
   </div>
 
-  <div class="fld" data-label="Trasferte">
+  <div class="fld" data-label="Trasferte fuori dal territorio comunale" data-hint="Il CCNL disciplina criteri e modalità relativi al trattamento economico della trasferta." data-norm="CCNL applicato — disciplina della trasferta">
     <label class="lbl">Soggetto/a a trasferte fuori dal territorio comunale? <span class="req">*</span></label>
     <div class="rg-h">
       <label class="rc" onclick="pick(this,'trasf')"><input type="radio" name="trasf" value="No"/><div class="rb"><div class="rt">No</div></div></label>
@@ -718,50 +718,98 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <!-- Determinato -->
   <!-- Tempo determinato full-time -->
   <div id="card-det" style="display:none">
-    <div class="hero"><div class="hero-t">Tempo determinato full-time</div><button class="btn-info" onclick="toggleInfo('ip-det')">Informazioni</button></div>
+    <div class="hero"><div class="hero-t">Tempo determinato</div><button class="btn-info" onclick="toggleInfo('ip-det')">Informazioni</button></div>
     <div class="info-panel" id="ip-det"><h4>Contratto a termine — D.Lgs. 81/2015 artt. 19-29</h4><ul><li>Durata massima 24 mesi (proroghe incluse) per stesse mansioni stesso datore</li><li>Causale obbligatoria per contratti >12 mesi o ogni rinnovo</li><li>Contributo addizionale 1,40% (rimborsato se trasformazione a TI)</li></ul></div>
     <div class="fld" data-label="Causale" data-hint="La causale deve essere specifica e veritiera. Per esigenze temporanee o incrementi non programmabili: applicabile solo per far fronte a picchi di lavoro non prevedibili o necessità oggettive ed estranee all'attività ordinaria." data-norm="Art.19 D.Lgs.81/2015 — causale obbligatoria per contratti >12 mesi">
       <label class="lbl">Causale del contratto <span class="req">*</span></label>
       <div class="rg">
         <label class="rc" onclick="pick(this,'caus');showCaus('mat')"><input type="radio" name="caus" value="Sostituzione maternità/paternità"/><div class="rb"><div class="rt">Sostituzione maternità / paternità</div><div class="rd">Esonero contributo addizionale 1,40% e dai limiti percentuali.</div></div></label>
-        <label class="rc" onclick="pick(this,'caus');showCaus('ass')"><input type="radio" name="caus" value="Sostituzione ferie/malattia/infortunio/aspettativa"/><div class="rb"><div class="rt">Sostituzione ferie / malattia / infortunio / aspettativa</div></div></label>
+        <label class="rc" onclick="pick(this,'caus');showCaus('ass')"><input type="radio" name="caus" value="Sostituzione di lavoratori in ferie/malattia/infortunio/aspettativa"/><div class="rb"><div class="rt">Sostituzione di lavoratori in ferie / malattia / infortunio / aspettativa</div></div></label>
         <label class="rc" onclick="pick(this,'caus');showCaus('')"><input type="radio" name="caus" value="Senza causale prorogabile"/><div class="rb"><div class="rt">Senza causale (prorogabile)</div><div class="rd">Solo per contratti fino a 12 mesi.</div></div></label>
         <label class="rc" onclick="pick(this,'caus');showCaus('esi')"><input type="radio" name="caus" value="Esigenze temporanee o incrementi non programmabili"/><div class="rb"><div class="rt">Esigenze temporanee o incrementi non programmabili</div><div class="rd">Applicabile solo per far fronte a picchi di lavoro non prevedibili o necessità oggettive ed estranee all'attività ordinaria.</div></div></label>
       </div>
-      <div class="cf" id="cf-mat"><label class="lbl">Nominativo in maternità/paternità <span class="req">*</span></label><input type="text" id="f-sost-mat" placeholder="es. Bianchi Anna" oninput="capitalizeWords(this)"/></div>
-      <div class="cf" id="cf-ass"><label class="lbl">Nominativo lavoratore sostituito <span class="req">*</span></label><input type="text" id="f-sost-ass" placeholder="es. Verdi Paolo" oninput="capitalizeWords(this)"/></div>
+      <!-- Sostituzione maternità/paternità -->
+      <div class="cf" id="cf-mat">
+        <label class="lbl">Nominativo del lavoratore da sostituire <span class="req">*</span></label>
+        <input type="text" id="f-sost-mat" placeholder="es. Bianchi Anna" oninput="capitalizeWords(this)"/>
+        <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
+        <input type="date" id="f-scad" oninput="checkScadMax12('f-scad','e-scad','caus')" min="2020-01-01"/>
+        <label class="cc" id="cc-rientro-mat" onclick="togcRientro(this,'f-scad','e-scad')" style="margin-top:6px">
+          <input type="checkbox" id="chk-rientro-mat"/><div class="rb"><div class="rt">Al rientro della persona sostituita</div></div>
+        </label>
+        <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
+        <span class="err-msg" id="e-scad">Indicare la data prevista di rientro oppure spuntare "Al rientro della persona sostituita"</span>
+      </div>
+      <!-- Sostituzione ferie/malattia/infortunio/aspettativa -->
+      <div class="cf" id="cf-ass">
+        <label class="lbl">Nominativo del lavoratore da sostituire <span class="req">*</span></label>
+        <input type="text" id="f-sost-ass" placeholder="es. Verdi Paolo" oninput="capitalizeWords(this)"/>
+        <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
+        <input type="date" id="f-scad-ass" oninput="checkScadMax12('f-scad-ass','e-scad-ass','caus')" min="2020-01-01"/>
+        <label class="cc" id="cc-rientro-ass" onclick="togcRientro(this,'f-scad-ass','e-scad-ass')" style="margin-top:6px">
+          <input type="checkbox" id="chk-rientro-ass"/><div class="rb"><div class="rt">Al rientro della persona sostituita</div></div>
+        </label>
+        <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
+        <span class="err-msg" id="e-scad-ass">Indicare la data prevista di rientro oppure spuntare "Al rientro della persona sostituita"</span>
+      </div>
+      <!-- Senza causale / Esigenze: scadenza standard -->
       <div class="cf" id="cf-esi"><label class="lbl">Descrizione causale specifica <span class="req">*</span></label><textarea id="f-caus-desc" placeholder="Descrivere nel dettaglio..."></textarea></div>
     </div>
-    <div class="fld">
+    <!-- Scadenza per Senza causale e Esigenze temporanee -->
+    <div class="fld" id="fld-scad-std">
       <label class="lbl">Scadenza del contratto <span class="req">*</span></label>
-      <input type="date" id="f-scad" oninput="checkScad('f-scad','e-scad')" min="2020-01-01"/>
-      <p class="hint">Il contratto è liberamente stipulabile nei primi 12 mesi; la durata massima è di 24 mesi, comprensivi di proroghe e rinnovi. Solo i primi 12 mesi di durata non necessitano di causale, superati i quali l'eventuale proroga necessita di "specifiche causali".</p>
-      <span class="err-msg" id="e-scad">La scadenza non può superare 24 mesi dalla data di assunzione</span>
+      <input type="date" id="f-scad-std" oninput="checkScadSenzaCausale()" min="2020-01-01"/>
+      <p class="hint" id="hint-scad-std">Il contratto è liberamente stipulabile nei primi 12 mesi; la durata massima è di 24 mesi, comprensivi di proroghe e rinnovi.</p>
+      <span class="err-msg" id="e-scad-std">La scadenza non può superare 24 mesi dalla data di assunzione</span>
+      <span class="err-msg" id="e-scad-12m" style="display:none">Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione</span>
     </div>
   </div>
 
-  <!-- Tempo determinato part-time: sezione causale (stessa di det) -->
+  <!-- Tempo determinato part-time: sezione causale -->
   <div id="card-det-pt" style="display:none">
-    <div class="hero"><div class="hero-t">Tempo determinato part-time</div><button class="btn-info" onclick="toggleInfo('ip-det-pt')">Informazioni</button></div>
-    <div class="info-panel" id="ip-det-pt"><h4>Contratto a termine part-time — combinazione D.Lgs. 81/2015 artt. 19-29 + artt. 4-12</h4><ul><li>Richiede sia la causale obbligatoria del contratto a termine che la specificazione dell'orario ridotto</li><li>Durata massima 24 mesi (proroghe incluse) per stesse mansioni stesso datore</li><li>Contributo addizionale 1,40% a carico datore</li><li>Agevolazioni contributive si applicano in misura proporzionale all'orario part-time</li><li>Alla pagina successiva verrà richiesta la distribuzione dell'orario settimanale</li></ul></div>
+    <div class="hero"><div class="hero-t">Tempo determinato</div><button class="btn-info" onclick="toggleInfo('ip-det-pt')">Informazioni</button></div>
+    <div class="info-panel" id="ip-det-pt"><h4>Contratto a termine part-time — D.Lgs. 81/2015 artt. 19-29 + artt. 4-12</h4><ul><li>Causale obbligatoria per contratti >12 mesi o ogni rinnovo</li><li>Durata massima 24 mesi (proroghe incluse)</li><li>Contributo addizionale 1,40% a carico datore</li></ul></div>
     <p class="sub-title" style="margin-top:0">📅 Passo 1 di 2 — Caratteristiche del contratto a termine</p>
-    <div class="fld" data-label="Causale (tempo determinato)" data-hint="La causale deve essere specifica e veritiera. Per esigenze temporanee o incrementi non programmabili: applicabile solo per far fronte a picchi di lavoro non prevedibili o necessità oggettive ed estranee all'attività ordinaria." data-norm="Art.19 D.Lgs.81/2015 — causale obbligatoria per contratti >12 mesi">
+    <div class="fld" data-label="Causale (tempo determinato)" data-hint="La causale deve essere specifica e veritiera." data-norm="Art.19 D.Lgs.81/2015">
       <label class="lbl">Causale del contratto <span class="req">*</span></label>
       <div class="rg">
         <label class="rc" onclick="pick(this,'caus-pt');showCausPt('mat-pt')"><input type="radio" name="caus-pt" value="Sostituzione maternità/paternità"/><div class="rb"><div class="rt">Sostituzione maternità / paternità</div><div class="rd">Esonero contributo addizionale 1,40% e dai limiti percentuali.</div></div></label>
-        <label class="rc" onclick="pick(this,'caus-pt');showCausPt('ass-pt')"><input type="radio" name="caus-pt" value="Sostituzione ferie/malattia/infortunio/aspettativa"/><div class="rb"><div class="rt">Sostituzione ferie / malattia / infortunio / aspettativa</div></div></label>
+        <label class="rc" onclick="pick(this,'caus-pt');showCausPt('ass-pt')"><input type="radio" name="caus-pt" value="Sostituzione di lavoratori in ferie/malattia/infortunio/aspettativa"/><div class="rb"><div class="rt">Sostituzione di lavoratori in ferie / malattia / infortunio / aspettativa</div></div></label>
         <label class="rc" onclick="pick(this,'caus-pt');showCausPt('')"><input type="radio" name="caus-pt" value="Senza causale prorogabile"/><div class="rb"><div class="rt">Senza causale (prorogabile)</div><div class="rd">Solo per contratti fino a 12 mesi.</div></div></label>
         <label class="rc" onclick="pick(this,'caus-pt');showCausPt('esi-pt')"><input type="radio" name="caus-pt" value="Esigenze temporanee o incrementi non programmabili"/><div class="rb"><div class="rt">Esigenze temporanee o incrementi non programmabili</div><div class="rd">Applicabile solo per far fronte a picchi di lavoro non prevedibili o necessità oggettive ed estranee all'attività ordinaria.</div></div></label>
       </div>
-      <div class="cf" id="cf-mat-pt"><label class="lbl">Nominativo in maternità/paternità <span class="req">*</span></label><input type="text" id="f-sost-mat-pt" placeholder="es. Bianchi Anna" oninput="capitalizeWords(this)"/></div>
-      <div class="cf" id="cf-ass-pt"><label class="lbl">Nominativo lavoratore sostituito <span class="req">*</span></label><input type="text" id="f-sost-ass-pt" placeholder="es. Verdi Paolo" oninput="capitalizeWords(this)"/></div>
+      <!-- Sostituzione maternità/paternità PT -->
+      <div class="cf" id="cf-mat-pt">
+        <label class="lbl">Nominativo del lavoratore da sostituire <span class="req">*</span></label>
+        <input type="text" id="f-sost-mat-pt" placeholder="es. Bianchi Anna" oninput="capitalizeWords(this)"/>
+        <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
+        <input type="date" id="f-scad-pt" oninput="checkScadMax12('f-scad-pt','e-scad-pt','caus-pt')" min="2020-01-01"/>
+        <label class="cc" id="cc-rientro-mat-pt" onclick="togcRientro(this,'f-scad-pt','e-scad-pt')" style="margin-top:6px">
+          <input type="checkbox" id="chk-rientro-mat-pt"/><div class="rb"><div class="rt">Al rientro della persona sostituita</div></div>
+        </label>
+        <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
+        <span class="err-msg" id="e-scad-pt">Indicare la data prevista di rientro oppure spuntare "Al rientro della persona sostituita"</span>
+      </div>
+      <!-- Sostituzione ferie/malattia PT -->
+      <div class="cf" id="cf-ass-pt">
+        <label class="lbl">Nominativo del lavoratore da sostituire <span class="req">*</span></label>
+        <input type="text" id="f-sost-ass-pt" placeholder="es. Verdi Paolo" oninput="capitalizeWords(this)"/>
+        <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
+        <input type="date" id="f-scad-ass-pt" oninput="checkScadMax12('f-scad-ass-pt','e-scad-ass-pt','caus-pt')" min="2020-01-01"/>
+        <label class="cc" id="cc-rientro-ass-pt" onclick="togcRientro(this,'f-scad-ass-pt','e-scad-ass-pt')" style="margin-top:6px">
+          <input type="checkbox" id="chk-rientro-ass-pt"/><div class="rb"><div class="rt">Al rientro della persona sostituita</div></div>
+        </label>
+        <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
+        <span class="err-msg" id="e-scad-ass-pt">Indicare la data prevista di rientro oppure spuntare "Al rientro della persona sostituita"</span>
+      </div>
       <div class="cf" id="cf-esi-pt"><label class="lbl">Descrizione causale specifica <span class="req">*</span></label><textarea id="f-caus-desc-pt" placeholder="Descrivere nel dettaglio..."></textarea></div>
     </div>
-    <div class="fld">
+    <div class="fld" id="fld-scad-std-pt">
       <label class="lbl">Scadenza del contratto <span class="req">*</span></label>
-      <input type="date" id="f-scad-pt" oninput="checkScad('f-scad-pt','e-scad-pt')" min="2020-01-01"/>
-      <p class="hint">Il contratto è liberamente stipulabile nei primi 12 mesi; la durata massima è di 24 mesi, comprensivi di proroghe e rinnovi. Solo i primi 12 mesi di durata non necessitano di causale, superati i quali l'eventuale proroga necessita di "specifiche causali".</p>
-      <span class="err-msg" id="e-scad-pt">La scadenza non può superare 24 mesi dalla data di assunzione</span>
+      <input type="date" id="f-scad-std-pt" oninput="checkScadSenzaCausalePt()" min="2020-01-01"/>
+      <p class="hint">Durata massima 24 mesi comprensivi di proroghe e rinnovi. Senza causale: max 12 mesi.</p>
+      <span class="err-msg" id="e-scad-std-pt">La scadenza non può superare 24 mesi dalla data di assunzione</span>
+      <span class="err-msg" id="e-scad-12m-pt" style="display:none">Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione</span>
     </div>
     <div class="info-b" style="margin-top:.5rem">ℹ️ Dopo aver compilato i dati del contratto a termine, nella pagina successiva verrà richiesta la distribuzione dell'orario part-time.</div>
   </div>
@@ -1810,28 +1858,36 @@ function next2(){
 // nextPg3: se TI part-time valida orario; se TD part-time valida causale e va a pg3b
 function nextPg3(){
   if(tipoContr==='Tempo indeterminato part-time'){
-    // Orario obbligatorio
     if(!ptOrarioValido('pt-body')){
-      document.getElementById('err3').classList.add('on');
-      document.getElementById('err3').querySelector? null:null;
       const eb=document.getElementById('err3');
       eb.innerHTML='⛔ È obbligatorio compilare almeno un intervallo orario (giorno, ora inizio e ora fine) per il contratto part-time.';
-      eb.classList.add('on');
-      return;
+      eb.classList.add('on'); return;
     }
     document.getElementById('err3').classList.remove('on');
     go(4);
   } else if(tipoContr==='Tempo determinato part-time'){
-    const causOk=!!document.querySelector('input[name="caus-pt"]:checked');
-    const scadOk=!!document.getElementById('f-scad-pt')?.value;
+    const causVal=document.querySelector('input[name="caus-pt"]:checked')?.value||'';
+    const causOk=!!causVal;
+    // Scadenza: dipende dalla causale
+    let scadOk=false;
+    if(causVal==='Sostituzione maternità/paternità'){
+      scadOk=!!document.getElementById('f-scad-pt')?.value||!!document.getElementById('chk-rientro-mat-pt')?.checked;
+    } else if(causVal.includes('ferie')){
+      scadOk=!!document.getElementById('f-scad-ass-pt')?.value||!!document.getElementById('chk-rientro-ass-pt')?.checked;
+    } else {
+      scadOk=!!document.getElementById('f-scad-std-pt')?.value;
+    }
     if(!causOk||!scadOk){
-      document.getElementById('err3').innerHTML='⛔ Compilare la causale e la data di scadenza prima di procedere.';
-      document.getElementById('err3').classList.add('on');
-      return;
+      document.getElementById('err3').innerHTML='⛔ Compilare la causale e la data di scadenza (o spuntare "Al rientro della persona sostituita") prima di procedere.';
+      document.getElementById('err3').classList.add('on'); return;
+    }
+    // Orario part-time: già inserito inline in pg2
+    if(!ptOrarioValido('pt-body-td')){
+      document.getElementById('err3').innerHTML='⛔ Compilare almeno un intervallo orario part-time prima di procedere.';
+      document.getElementById('err3').classList.add('on'); return;
     }
     document.getElementById('err3').classList.remove('on');
-    if(ptRowsB.length===0) addPtRowB();
-    go('3b');
+    go(4);
   } else {
     go(4);
   }
@@ -1964,7 +2020,83 @@ function togcNessuna(el){
   el.classList.toggle('s');
   el.querySelector('input').checked=el.classList.contains('s');
 }
-function showCaus(t){['mat','ass','esi'].forEach(x=>document.getElementById('cf-'+x)?.classList.toggle('on',x===t));}
+function showCaus(t){
+  ['mat','ass','esi'].forEach(x=>document.getElementById('cf-'+x)?.classList.toggle('on',x===t));
+  // Mostra scadenza standard solo per Senza causale e Esigenze temporanee
+  const fldStd=document.getElementById('fld-scad-std');
+  if(fldStd) fldStd.style.display=(t===''||t==='esi')?'block':'none';
+  // Aggiorna hint scadenza per Senza causale
+  const hint12=document.getElementById('hint-scad-std');
+  if(hint12){
+    if(t==='') hint12.textContent='Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione.';
+    else hint12.textContent='Il contratto è liberamente stipulabile nei primi 12 mesi; la durata massima è di 24 mesi, comprensivi di proroghe e rinnovi.';
+  }
+}
+function showCausPt(t){
+  ['mat-pt','ass-pt','esi-pt'].forEach(x=>document.getElementById('cf-'+x)?.classList.toggle('on',x===t));
+  const fldStd=document.getElementById('fld-scad-std-pt');
+  if(fldStd) fldStd.style.display=(t===''||t==='esi-pt')?'block':'none';
+}
+
+// Rientro lavoratore: se spuntato disabilita e pulisce il campo data
+function togcRientro(el, dateId, errId){
+  el.classList.toggle('s');
+  const checked=el.querySelector('input')?.checked;
+  const dateEl=document.getElementById(dateId);
+  if(dateEl){
+    dateEl.disabled=checked;
+    if(checked){dateEl.style.opacity='0.4';dateEl.value='';}
+    else dateEl.style.opacity='1';
+  }
+  document.getElementById(errId)?.classList.remove('on');
+}
+
+// Controlla che scadenza non superi 12 mesi se Senza causale
+function checkScadSenzaCausale(){
+  const caus=document.querySelector('input[name="caus"]:checked')?.value||'';
+  const scadEl=document.getElementById('f-scad-std');
+  const err24=document.getElementById('e-scad-std');
+  const err12=document.getElementById('e-scad-12m');
+  if(!scadEl?.value) return;
+  const dass=document.getElementById('f-dass')?.value;
+  if(!dass) return;
+  const maxMesi=caus==='Senza causale prorogabile'?12:24;
+  const maxDate=new Date(dass);
+  maxDate.setMonth(maxDate.getMonth()+maxMesi);
+  const scad=new Date(scadEl.value);
+  if(scad>maxDate){
+    err24?.classList.remove('on');
+    if(maxMesi===12){err12.style.display='block';err12.textContent='Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione.';}
+    else{err24?.classList.add('on');err12.style.display='none';}
+  } else {
+    err24?.classList.remove('on');
+    if(err12) err12.style.display='none';
+  }
+}
+function checkScadSenzaCausalePt(){
+  const caus=document.querySelector('input[name="caus-pt"]:checked')?.value||'';
+  const scadEl=document.getElementById('f-scad-std-pt');
+  const err12=document.getElementById('e-scad-12m-pt');
+  if(!scadEl?.value) return;
+  const dass=document.getElementById('f-dass')?.value;
+  if(!dass) return;
+  const maxMesi=caus==='Senza causale prorogabile'?12:24;
+  const maxDate=new Date(dass);maxDate.setMonth(maxDate.getMonth()+maxMesi);
+  const scad=new Date(scadEl.value);
+  if(scad>maxDate&&maxMesi===12){err12.style.display='block';}
+  else{if(err12)err12.style.display='none';}
+}
+
+// Controlla scadenza max 12 mesi per sostituzione (a seconda della causale)
+function checkScadMax12(fieldId, errId, causName){
+  const dateEl=document.getElementById(fieldId);
+  if(!dateEl?.value) return;
+  const dass=document.getElementById('f-dass')?.value;
+  if(!dass) return;
+  const max=new Date(dass);max.setMonth(max.getMonth()+24);
+  const scad=new Date(dateEl.value);
+  document.getElementById(errId)?.classList.toggle('on',scad>max);
+}
 function toggleInfo(id){document.getElementById(id)?.classList.toggle('on');}
 function chkTitoloAltro(){
   const v=document.getElementById('f-titolo').value;
