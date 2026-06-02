@@ -414,7 +414,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span class="err-msg" id="e-titolo-attinenza">Campo obbligatorio</span>
   </div>
 
-  <div class="fld" data-label="Qualifica" data-hint="L'impiegato soggetto a rischio elettrico è colui che svolge esclusivamente lavori d'ufficio utilizzando strumenti informatici. Sarà applicabile un tasso INAIL più specifico (rischio operai) qualora per lo svolgimento dell'attività venga utilizzata anche l'autovettura (propria o aziendale) in via non occasionale, oppure quando accede a cantieri o reparti produttivi aziendali o esterni. In quest'ultimo caso è normalmente compresa la copertura assicurativa per l'utilizzo dell'autovettura." data-norm="Tasso INAIL — classificazione per tipologia di rischio effettivo">
+  <div class="fld" data-label="Qualifica" data-hint="L'impiegato soggetto a rischio elettrico è colui che svolge esclusivamente lavori d'ufficio utilizzando strumenti informatici. Sarà applicabile un tasso INAIL più specifico qualora per lo svolgimento dell'attività venga utilizzata in via non occasionale anche l'autovettura (propria o aziendale) o quando per lo svolgimento dell'incarico accede a cantieri o reparti produttivi aziendali o esterni (rischio operai). In quest'ultimo caso è normalmente compresa la copertura assicurativa per l'utilizzo dell'autovettura." data-norm="Tasso INAIL — classificazione per tipologia di rischio effettivo">
     <label class="lbl">Qualifica <span class="req">*</span></label>
     <div class="rg">
       <label class="rc" onclick="pick(this,'qual')"><input type="radio" name="qual" value="Dirigente"/><div class="rb"><div class="rt">Dirigente</div></div></label>
@@ -433,7 +433,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <p class="hint">Facoltativo. Se non noto lo Studio provvederà alla verifica.</p>
   </div>
 
-  <div class="fld" data-label="Retribuzione lorda">
+  <div class="fld" data-label="Retribuzione lorda" data-hint="La retribuzione contrattuale è quella prevista dal Contratto Collettivo Nazionale di Lavoro (CCNL) applicato dall'azienda." data-norm="CCNL applicato — minimi retributivi">
     <label class="lbl">Retribuzione lorda <span class="req">*</span></label>
     <div class="rg-h">
       <label class="rc" onclick="pick(this,'retrib');document.getElementById('cf-imp').classList.remove('on')"><input type="radio" name="retrib" value="Contrattuale"/><div class="rb"><div class="rt">Contrattuale</div></div></label>
@@ -735,10 +735,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
         <input type="date" id="f-scad" oninput="checkScadMax12('f-scad','e-scad','caus')" min="2020-01-01"/>
         <label class="cc" id="cc-rientro-mat" onclick="togcRientro(this,'f-scad','e-scad')" style="margin-top:6px">
-          <input type="checkbox" id="chk-rientro-mat"/><div class="rb"><div class="rt">Al rientro della persona sostituita</div></div>
+          <input type="checkbox" id="chk-rientro-mat"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
         </label>
         <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
-        <span class="err-msg" id="e-scad">Indicare la data prevista di rientro oppure spuntare "Al rientro della persona sostituita"</span>
+        <span class="err-msg" id="e-scad">Indicare la data prevista di rientro oppure spuntare "oppure al rientro della persona sostituita"</span>
       </div>
       <!-- Sostituzione ferie/malattia/infortunio/aspettativa -->
       <div class="cf" id="cf-ass">
@@ -747,10 +747,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
         <input type="date" id="f-scad-ass" oninput="checkScadMax12('f-scad-ass','e-scad-ass','caus')" min="2020-01-01"/>
         <label class="cc" id="cc-rientro-ass" onclick="togcRientro(this,'f-scad-ass','e-scad-ass')" style="margin-top:6px">
-          <input type="checkbox" id="chk-rientro-ass"/><div class="rb"><div class="rt">Al rientro della persona sostituita</div></div>
+          <input type="checkbox" id="chk-rientro-ass"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
         </label>
         <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
-        <span class="err-msg" id="e-scad-ass">Indicare la data prevista di rientro oppure spuntare "Al rientro della persona sostituita"</span>
+        <span class="err-msg" id="e-scad-ass">Indicare la data prevista di rientro oppure spuntare "oppure al rientro della persona sostituita"</span>
       </div>
       <!-- Senza causale / Esigenze: scadenza standard -->
       <div class="cf" id="cf-esi"><label class="lbl">Descrizione causale specifica <span class="req">*</span></label><textarea id="f-caus-desc" placeholder="Descrivere nel dettaglio..."></textarea></div>
@@ -785,10 +785,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
         <input type="date" id="f-scad-pt" oninput="checkScadMax12('f-scad-pt','e-scad-pt','caus-pt')" min="2020-01-01"/>
         <label class="cc" id="cc-rientro-mat-pt" onclick="togcRientro(this,'f-scad-pt','e-scad-pt')" style="margin-top:6px">
-          <input type="checkbox" id="chk-rientro-mat-pt"/><div class="rb"><div class="rt">Al rientro della persona sostituita</div></div>
+          <input type="checkbox" id="chk-rientro-mat-pt"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
         </label>
         <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
-        <span class="err-msg" id="e-scad-pt">Indicare la data prevista di rientro oppure spuntare "Al rientro della persona sostituita"</span>
+        <span class="err-msg" id="e-scad-pt">Indicare la data prevista di rientro oppure spuntare "oppure al rientro della persona sostituita"</span>
       </div>
       <!-- Sostituzione ferie/malattia PT -->
       <div class="cf" id="cf-ass-pt">
@@ -797,10 +797,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
         <input type="date" id="f-scad-ass-pt" oninput="checkScadMax12('f-scad-ass-pt','e-scad-ass-pt','caus-pt')" min="2020-01-01"/>
         <label class="cc" id="cc-rientro-ass-pt" onclick="togcRientro(this,'f-scad-ass-pt','e-scad-ass-pt')" style="margin-top:6px">
-          <input type="checkbox" id="chk-rientro-ass-pt"/><div class="rb"><div class="rt">Al rientro della persona sostituita</div></div>
+          <input type="checkbox" id="chk-rientro-ass-pt"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
         </label>
         <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
-        <span class="err-msg" id="e-scad-ass-pt">Indicare la data prevista di rientro oppure spuntare "Al rientro della persona sostituita"</span>
+        <span class="err-msg" id="e-scad-ass-pt">Indicare la data prevista di rientro oppure spuntare "oppure al rientro della persona sostituita"</span>
       </div>
       <div class="cf" id="cf-esi-pt"><label class="lbl">Descrizione causale specifica <span class="req">*</span></label><textarea id="f-caus-desc-pt" placeholder="Descrivere nel dettaglio..."></textarea></div>
     </div>
@@ -1845,11 +1845,8 @@ function next2(){
   }
   else if(tipoContr==='Tempo determinato full-time'){document.getElementById('card-det').style.display='block';go(3);}
   else if(tipoContr==='Tempo determinato part-time'){
-    if(!ptOrarioValido('pt-body-td')){
-      document.getElementById('err2').innerHTML='⛔ Compilare almeno un intervallo orario per il part-time.';
-      document.getElementById('err2').classList.add('on');return;
-    }
-    document.getElementById('card-det').style.display='block';go(3);
+    // Orario già inserito inline in pg2 — vai a pg3 per la causale (card-det-pt)
+    document.getElementById('card-det-pt').style.display='block';go(3);
   }
   else if(tipoContr==='Apprendistato professionalizzante'){document.getElementById('card-appr').style.display='block';go(3);}
   else if(tipoContr==='Lavoro a chiamata'){document.getElementById('card-ch').style.display='block';go(3);}
@@ -1878,7 +1875,7 @@ function nextPg3(){
       scadOk=!!document.getElementById('f-scad-std-pt')?.value;
     }
     if(!causOk||!scadOk){
-      document.getElementById('err3').innerHTML='⛔ Compilare la causale e la data di scadenza (o spuntare "Al rientro della persona sostituita") prima di procedere.';
+      document.getElementById('err3').innerHTML='⛔ Compilare la causale e la data di scadenza (o spuntare "oppure al rientro della persona sostituita") prima di procedere.';
       document.getElementById('err3').classList.add('on'); return;
     }
     // Orario part-time: già inserito inline in pg2
