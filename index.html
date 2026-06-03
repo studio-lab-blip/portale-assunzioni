@@ -1757,14 +1757,16 @@ function addPtRowTI(){
   const tbody=document.getElementById('pt-body-ti');
   const giorni=['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
   const tr=document.createElement('tr');
-  const idx=tbody.children.length;
-  tr.innerHTML=`<td><select style="width:88px;font-size:12px" onchange="calcPtTI()">
+  tr.innerHTML=`<td><select style="width:88px;font-size:12px" onchange="calcPtTI();aggiornaRipeti(this,'pt-body-ti')">
     <option value="">—</option>${giorni.map(g=>`<option>${g}</option>`).join('')}
   </select></td>
   <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTI()"/></td>
   <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTI()"/></td>
-  <td id="ore-ti-${idx}" style="font-size:12px;font-weight:600;text-align:center">0h</td>
-  <td><button onclick="this.closest('tr').remove();calcPtTI()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button></td>`;
+  <td style="font-size:12px;font-weight:600;text-align:center">0h</td>
+  <td style="white-space:nowrap">
+    <button onclick="ripeti(this,'pt-body-ti')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
+    <button onclick="this.closest('tr').remove();calcPtTI()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button>
+  </td>`;
   tbody.appendChild(tr);
 }
 function calcPtTI(){
@@ -1787,13 +1789,16 @@ function addPtRowTD(){
   const tbody=document.getElementById('pt-body-td');
   const giorni=['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
   const tr=document.createElement('tr');
-  tr.innerHTML=`<td><select style="width:88px;font-size:12px" onchange="calcPtTD()">
+  tr.innerHTML=`<td><select style="width:88px;font-size:12px" onchange="calcPtTD();aggiornaRipeti(this,'pt-body-td')">
     <option value="">—</option>${giorni.map(g=>`<option>${g}</option>`).join('')}
   </select></td>
   <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTD()"/></td>
   <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTD()"/></td>
   <td style="font-size:12px;font-weight:600;text-align:center">0h</td>
-  <td><button onclick="this.closest('tr').remove();calcPtTD()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button></td>`;
+  <td style="white-space:nowrap">
+    <button onclick="ripeti(this,'pt-body-td')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
+    <button onclick="this.closest('tr').remove();calcPtTD()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button>
+  </td>`;
   tbody.appendChild(tr);
 }
 function calcPtTD(){
@@ -1938,7 +1943,11 @@ let ptRowsB=[];
 function addPtRowB(){
   const id='b'+Date.now();ptRowsB.push(id);
   const tr=document.createElement('tr');tr.id='ptrb-'+id;
-  tr.innerHTML=`<td><select style="height:26px;font-size:12px;border-radius:5px;padding:0 5px;width:100%">${GIORNI.map(g=>`<option>${g}</option>`).join('')}</select></td><td><input type="time" style="width:100%" oninput="calcPtB()"/></td><td><input type="time" style="width:100%" oninput="calcPtB()"/></td><td id="ob-${id}" style="font-size:12px;color:#185FA5;font-weight:500;white-space:nowrap">—</td><td><button class="pt-del" onclick="rmPtB('${id}')" aria-label="Rimuovi">✕</button></td>`;
+  tr.innerHTML=`<td><select style="height:26px;font-size:12px;border-radius:5px;padding:0 5px;width:100%" onchange="aggiornaRipeti(this,'pt-body-b')">${GIORNI.map(g=>`<option>${g}</option>`).join('')}</select></td><td><input type="time" style="width:100%" oninput="calcPtB()"/></td><td><input type="time" style="width:100%" oninput="calcPtB()"/></td><td id="ob-${id}" style="font-size:12px;color:#185FA5;font-weight:500;white-space:nowrap">—</td>
+  <td style="white-space:nowrap">
+    <button onclick="ripeti(this,'pt-body-b')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
+    <button class="pt-del" onclick="rmPtB('${id}')" aria-label="Rimuovi">✕</button>
+  </td>`;
   document.getElementById('pt-body-b').appendChild(tr);
 }
 function rmPtB(id){ptRowsB=ptRowsB.filter(r=>r!==id);document.getElementById('ptrb-'+id)?.remove();calcPtB();}
@@ -2397,10 +2406,52 @@ function suggerisciAgevolazioni(){
 }
 
 // ─── PART-TIME ───────────────────────────────────────────────────────────────
+// Ripeti: copia gli orari (dalle/alle) dalla riga precedente
+function ripeti(btn, bodyId){
+  const tbody=document.getElementById(bodyId);
+  if(!tbody) return;
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  const curTr=btn.closest('tr');
+  const curIdx=rows.indexOf(curTr);
+  if(curIdx<=0) return;
+  const prevTr=rows[curIdx-1];
+  const prevIns=prevTr.querySelectorAll('input[type=time]');
+  const curIns=curTr.querySelectorAll('input[type=time]');
+  if(prevIns[0]?.value&&prevIns[1]?.value){
+    curIns[0].value=prevIns[0].value;
+    curIns[1].value=prevIns[1].value;
+    curIns[0].dispatchEvent(new Event('input'));
+    curIns[1].dispatchEvent(new Event('input'));
+    curIns[0].dispatchEvent(new Event('change'));
+    btn.style.color='#166534';btn.style.borderColor='#166534';
+    setTimeout(()=>{btn.style.color='';btn.style.borderColor='';},1500);
+  } else {
+    btn.textContent='Vuota';
+    setTimeout(()=>{btn.textContent='Ripeti';},1000);
+  }
+}
+
+// Mostra/nasconde il bottone Ripeti in base alla posizione e al giorno selezionato
+function aggiornaRipeti(sel, bodyId){
+  const tbody=document.getElementById(bodyId);
+  if(!tbody) return;
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  const curTr=sel.closest('tr');
+  const curIdx=rows.indexOf(curTr);
+  const btn=curTr.querySelector('.btn-ripeti');
+  if(!btn) return;
+  // Mostra solo se: non è la prima riga E il giorno è stato selezionato
+  btn.style.display=(curIdx>0&&sel.value)?'inline-block':'none';
+}
+
 function addPtRow(){
   const id=Date.now();ptRows.push(id);
   const tr=document.createElement('tr');tr.id='ptr-'+id;
-  tr.innerHTML=`<td><select style="height:26px;font-size:12px;border-radius:5px;padding:0 5px;width:100%">${GIORNI.map(g=>`<option>${g}</option>`).join('')}</select></td><td><input type="time" style="width:100%" oninput="calcPt()"/></td><td><input type="time" style="width:100%" oninput="calcPt()"/></td><td id="o-${id}" style="font-size:12px;color:#185FA5;font-weight:500;white-space:nowrap">—</td><td><button class="pt-del" onclick="rmPt(${id})" aria-label="Rimuovi">✕</button></td>`;
+  tr.innerHTML=`<td><select style="height:26px;font-size:12px;border-radius:5px;padding:0 5px;width:100%" onchange="aggiornaRipeti(this,'pt-body')">${GIORNI.map(g=>`<option>${g}</option>`).join('')}</select></td><td><input type="time" style="width:100%" oninput="calcPt()"/></td><td><input type="time" style="width:100%" oninput="calcPt()"/></td><td id="o-${id}" style="font-size:12px;color:#185FA5;font-weight:500;white-space:nowrap">—</td>
+  <td style="white-space:nowrap">
+    <button onclick="ripeti(this,'pt-body')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
+    <button class="pt-del" onclick="rmPt(${id})" aria-label="Rimuovi">✕</button>
+  </td>`;
   document.getElementById('pt-body').appendChild(tr);
 }
 function rmPt(id){ptRows=ptRows.filter(r=>r!==id);document.getElementById('ptr-'+id)?.remove();calcPt();}
