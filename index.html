@@ -361,10 +361,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- CCNL da applicare — visibile solo se azienda ha più di 1 CCNL compilato -->
   <div class="fld" id="fld-ccnl" style="display:none" data-label="CCNL da applicare" data-hint="L'azienda applica più contratti collettivi nazionali. Selezionare il CCNL applicabile al lavoratore in base alle mansioni svolte." data-norm="Art. 2 D.Lgs. 81/2015 — CCNL applicato">
-    <label class="lbl">CCNL da applicare <span class="req">*</span></label>
-    <select id="f-ccnl" onfocus="hint(this.closest('.fld'))">
-      <option value="">— Seleziona —</option>
-    </select>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <label class="lbl" style="margin:0;flex-shrink:0">CCNL da applicare <span class="req">*</span></label>
+      <select id="f-ccnl" onfocus="hint(this.closest('.fld'))" style="flex:1;min-width:180px">
+        <option value="">— Seleziona —</option>
+      </select>
+    </div>
     <span class="err-msg" id="e-ccnl">Campo obbligatorio</span>
   </div>
   <div class="fld" data-label="Stato di disoccupazione"
@@ -460,21 +462,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span class="err-msg" id="e-mans">Campo obbligatorio</span>
   </div>
 
+  <div class="fld" data-label="Giorni come somministrato" data-hint="I giorni di prestazione come somministrato nella stessa mansione possono rendere incompatibile il periodo di prova." data-norm="D.Lgs. 81/2015 art.19 — limite 20% contratti a termine">
+    <label class="lbl">Giorni di prestazione come somministrato nella stessa mansione</label>
+    <input type="number" id="f-somm" placeholder="0" min="0" value="0" style="max-width:150px" onfocus="hint(this.closest('.fld'))"/>
+  </div>
+
   <div class="g2">
-    <div class="fld" data-label="Esperienza nelle mansioni" data-hint="Se il lavoratore ha già esperienza nelle mansioni, il periodo di prova potrebbe essere incompatibile." data-norm="Se esperienza = Sì → periodo di prova da verificare">
+    <div class="fld" data-label="Esperienza nelle mansioni" data-hint="Se il lavoratore ha già esperienza nelle mansioni svolte, il periodo di prova potrebbe essere nullo. Verificare con lo Studio prima di indicare un periodo di prova." data-norm="Art. 2096 c.c. — il periodo di prova è incompatibile con pregresse esperienze nelle stesse mansioni presso lo stesso datore">
       <label class="lbl">Ha già esperienza nelle mansioni? <span class="req">*</span></label>
       <div class="rg-h">
-        <label class="rc" onclick="pick(this,'esp')"><input type="radio" name="esp" value="No"/><div class="rb"><div class="rt">No</div></div></label>
-        <label class="rc" onclick="pick(this,'esp')"><input type="radio" name="esp" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
+        <label class="rc" onclick="pick(this,'esp');aggiornaHintProva()"><input type="radio" name="esp" value="No"/><div class="rb"><div class="rt">No</div></div></label>
+        <label class="rc" onclick="pick(this,'esp');aggiornaHintProva()"><input type="radio" name="esp" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
       </div>
       <span class="err-msg" id="e-esp">Campo obbligatorio</span>
     </div>
-    <div class="fld" data-label="Periodo di prova">
+    <div class="fld" id="fld-prova" data-label="Periodo di prova" data-hint="Se il lavoratore ha già esperienza nelle mansioni il periodo di prova potrebbe essere nullo." data-norm="Art. 2096 c.c. — durata massima prevista dal CCNL per il livello di inquadramento">
       <label class="lbl">Periodo di prova <span class="req">*</span></label>
       <div class="rg-h">
         <label class="rc" onclick="pick(this,'prova')"><input type="radio" name="prova" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
         <label class="rc" onclick="pick(this,'prova')"><input type="radio" name="prova" value="No"/><div class="rb"><div class="rt">No</div></div></label>
       </div>
+      <div id="prova-sicuro" style="display:none;color:#dc2626;font-weight:700;font-size:13px;margin-top:6px">⚠️ Sicuro?</div>
       <span class="err-msg" id="e-prova">Campo obbligatorio</span>
     </div>
   </div>
@@ -586,11 +594,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="rc" onclick="pick(this,'trasf')"><input type="radio" name="trasf" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
     </div>
     <span class="err-msg" id="e-trasf">Campo obbligatorio</span>
-  </div>
-
-  <div class="fld" data-label="Giorni come somministrato" data-hint="I giorni di prestazione come somministrato nella stessa mansione possono rendere incompatibile il periodo di prova." data-norm="D.Lgs. 81/2015 art.19 — limite 20% contratti a termine">
-    <label class="lbl">Giorni di prestazione come somministrato nella stessa mansione</label>
-    <input type="number" id="f-somm" placeholder="0" min="0" value="0" style="max-width:150px" onfocus="hint(this.closest('.fld'))"/>
   </div>
 
   <div class="fld" data-label="Cessati contratti a termine" data-hint="Se negli ultimi 12 mesi sono cessati contratti a termine per le stesse mansioni potrebbero esserci limitazioni alle agevolazioni." data-norm="Art.19 D.Lgs.81/2015 — preclude agevolazioni contributive">
@@ -789,6 +792,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="lbl">Scadenza del contratto <span class="req">*</span></label>
       <input type="date" id="f-scad-std" oninput="checkScadSenzaCausale()" min="2020-01-01"/>
       <p class="hint" id="hint-scad-std">Il contratto è liberamente stipulabile nei primi 12 mesi; la durata massima è di 24 mesi, comprensivi di proroghe e rinnovi.</p>
+      <p id="hint-scad-12m-rosso" style="display:none;color:#dc2626;font-size:12px;font-weight:600;margin-top:4px">⚠️ La scadenza non può superare 12 mesi dalla data di assunzione.</p>
       <span class="err-msg" id="e-scad-std">La scadenza non può superare 24 mesi dalla data di assunzione</span>
       <span class="err-msg" id="e-scad-12m" style="display:none">Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione</span>
     </div>
@@ -929,7 +933,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- DVR — obbligatorio -->
   <div class="fld" style="margin-top:.875rem" data-label="DVR" data-hint="Il DVR è obbligatorio per tutte le aziende con dipendenti (D.Lgs. 81/2008). Se mancante verrà segnalato nel riepilogo come criticità." data-norm="D.Lgs. 81/2008 art.17 — obbligo DVR">
-    <label class="lbl">È stato redatto e aggiornato il DVR (D.Lgs. 81/2008)? <span class="req">*</span></label>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <label class="lbl" style="margin:0;flex:1">È stato redatto e aggiornato il DVR (D.Lgs. 81/2008)? <span class="req">*</span></label>
+      <button class="lg-btn" style="flex-shrink:0" onclick="apriLineaGuida('dvr')">📖 Leggi di più</button>
+    </div>
     <div class="rg-h">
       <label class="rc" onclick="pick(this,'dvr')"><input type="radio" name="dvr" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
       <label class="rc" onclick="pick(this,'dvr')"><input type="radio" name="dvr" value="No"/><div class="rb"><div class="rt">No</div></div></label>
@@ -1936,12 +1943,22 @@ function nextPg3(){
     document.getElementById('err3').classList.remove('on');
     go(4);
   } else if(tipoContr==='Tempo determinato full-time'||tipoContr==='Apprendistato professionalizzante'){
-    // TD full-time: valida causale e scadenza
     if(tipoContr==='Tempo determinato full-time'){
       const causVal=document.querySelector('input[name="caus"]:checked')?.value||'';
       if(!causVal){
         document.getElementById('err3').innerHTML='⛔ Selezionare la causale del contratto.';
         document.getElementById('err3').classList.add('on'); return;
+      }
+      // Valida causale specifica per Esigenze temporanee
+      if(causVal==='Esigenze temporanee o incrementi non programmabili'){
+        const desc=(document.getElementById('f-caus-desc')?.value||'').trim();
+        if(!desc){
+          document.getElementById('err3').innerHTML='⛔ Descrivere la causale specifica prima di procedere.';
+          document.getElementById('err3').classList.add('on');
+          document.getElementById('f-caus-desc')?.classList.add('err-field');
+          return;
+        }
+        document.getElementById('f-caus-desc')?.classList.remove('err-field');
       }
       if(causVal==='Senza causale prorogabile'){
         const scad=document.getElementById('f-scad-std')?.value;
@@ -2136,6 +2153,8 @@ function showCaus(t){
     if(t==='') hint12.textContent='Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione.';
     else hint12.textContent='Il contratto è liberamente stipulabile nei primi 12 mesi; la durata massima è di 24 mesi, comprensivi di proroghe e rinnovi.';
   }
+  const hint12r=document.getElementById('hint-scad-12m-rosso');
+  if(hint12r) hint12r.style.display=(t==='')?'block':'none';
   // Aggiorna il max del campo data e resetta se non valido
   setTimeout(checkScadSenzaCausale, 50);
 }
@@ -2891,6 +2910,17 @@ const LINEE_GUIDA = {
       {h:'Limite delle giornate e computo (art. 18 D.Lgs. 81/2015)', body:'Il contratto pu\u00f2 essere stipulato per un periodo complessivamente non superiore a 400 giornate di effettivo lavoro nell\u2019arco di 3 anni solari con lo stesso datore. Superato il limite, il rapporto si trasforma automaticamente a tempo pieno e indeterminato. Il lavoratore intermittente \u00e8 computato nell\u2019organico in proporzione all\u2019orario effettivo svolto in ciascun semestre.', nota:'Le 400 giornate si calcolano negli ultimi 3 anni solari, non dalla data di stipula. Monitorare attentamente per evitare la conversione automatica del contratto.'},
       {h:'Agevolazioni', body:'Il contratto di lavoro intermittente non accede alle principali agevolazioni contributive (Bonus Giovani 2026, Bonus Donne 2026, esonero Under 30, Over 50, NASpI, CIGS), riservate ai contratti a tempo indeterminato. Potrebbe beneficiare dell\u2019incentivo ADI/SFL in misura ridotta: verificare le condizioni con lo Studio.'},
     ]
+  },
+  'dvr': {
+    titolo: 'DVR — Documento di Valutazione dei Rischi',
+    rif: 'D.Lgs. 81/2008 — Testo Unico sulla Sicurezza sul Lavoro',
+    sezioni: [
+      {h:'Cos\'è il DVR', body:'Il DVR è il documento nel quale vengono analizzati e valutati tutti i rischi per la salute e la sicurezza dei lavoratori all\'interno di un\'azienda. Non è opzionale: è richiesto ai sensi del D.Lgs. 81/2008.'},
+      {h:'Obbligatorietà', body:'Il DVR è obbligatorio per tutte le aziende in cui è presente almeno un lavoratore. La mancata redazione è considerata una grave violazione e può comportare sanzioni severe (ammenda o arresto) e la sospensione dell\'attività aziendale.'},
+      {h:'Chi lo redige', body:'Il DVR deve essere redatto dal datore di lavoro, avvalendosi del Servizio di Prevenzione e Protezione (SPP) e del Medico Competente.'},
+      {h:'Aggiornamento', body:'Il DVR deve essere aggiornato periodicamente e ogni volta che vengono assunti lavoratori per mansioni non già contemplate nel documento.'},
+      {h:'Data certa', body:'Il documento deve essere firmato e datato dal datore di lavoro per attestare che è stato redatto prima di eventuali incidenti o infortuni sul lavoro.', nota:'Il DVR è il primo documento richiesto in occasione di visite ispettive e in caso di infortunio. La sua mancanza o irregolarità comporta la perdita delle agevolazioni contributive in corso.'},
+    ]
   }
 };
 
@@ -2902,6 +2932,7 @@ const LG_FILES = {
   '02': '02%20-%20Tempo%20determinato.docx',
   '03': '03%20-%20Apprendistato%20professionalizzante.docx',
   '04': '04%20-%20Lavoro%20a%20chiamata.docx',
+  'dvr': '05%20-%20DVR.docx',
 };
 
 const LG_TITOLI = {
@@ -2909,55 +2940,69 @@ const LG_TITOLI = {
   '02': '02 — Tempo Determinato',
   '03': '03 — Apprendistato Professionalizzante',
   '04': '04 — Lavoro a Chiamata',
+  'dvr': 'DVR — Documento di Valutazione dei Rischi',
 };
 
 async function apriLineaGuida(codice) {
   const titolo = LG_TITOLI[codice] || codice;
-  const nomeFile = LG_FILES[codice];
 
   document.getElementById('lg-title').textContent = titolo + ' — Linea Guida';
   document.getElementById('lg-body').innerHTML =
     '<div style="text-align:center;padding:2rem;color:#6b7280">⏳ Caricamento in corso…</div>';
   document.getElementById('lg-ov').classList.add('on');
 
-  // Segna come letto subito
+  // Segna come letto
   lgLette.add(codice);
   document.querySelectorAll('.lg-btn').forEach(btn => {
     const c = btn.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
     if (c === codice) btn.classList.add('letto');
   });
 
-  if (!nomeFile) {
-    document.getElementById('lg-body').innerHTML = '<p style="color:#dc2626">File non trovato per il codice: ' + codice + '</p>';
-    return;
+  // 1. Prova a leggere da Supabase
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/linee_guida?codice=eq.${encodeURIComponent(codice)}&select=titolo,riferimento,contenuto_html&attivo=eq.true`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
+    );
+    if (res.ok) {
+      const dati = await res.json();
+      if (dati && dati.length > 0) {
+        const lg = dati[0];
+        document.getElementById('lg-title').textContent = lg.titolo + ' — Linea Guida';
+        document.getElementById('lg-body').innerHTML =
+          `<div style="font-family:Arial,sans-serif;font-size:13px;line-height:1.7;color:#1a1a1a">
+            ${lg.riferimento ? `<p style="font-size:11px;color:#6b7280;font-style:italic;margin-bottom:12px">📋 ${lg.riferimento}</p>` : ''}
+            ${lg.contenuto_html}
+          </div>`;
+        return;
+      }
+    }
+  } catch(e) { console.warn('[LG] Supabase non disponibile:', e.message); }
+
+  // 2. Prova a leggere il file Word da GitHub
+  const nomeFile = LG_FILES[codice];
+  if (nomeFile) {
+    try {
+      const res = await fetch(LG_BASE_URL + nomeFile);
+      if (res.ok) {
+        const arrayBuffer = await res.arrayBuffer();
+        const result = await mammoth.convertToHtml({ arrayBuffer });
+        document.getElementById('lg-body').innerHTML =
+          '<div style="font-family:Arial,sans-serif;font-size:13px;line-height:1.7;color:#1a1a1a">' +
+          result.value + '</div>';
+        return;
+      }
+    } catch(e) { console.warn('[LG] File Word non disponibile:', e.message); }
   }
 
-  const url = LG_BASE_URL + nomeFile;
-
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const arrayBuffer = await res.arrayBuffer();
-
-    // Converte il .docx in HTML con mammoth.js
-    const result = await mammoth.convertToHtml({ arrayBuffer });
-    const html = result.value;
-
+  // 3. Fallback: dizionario locale
+  const lgLocale = LINEE_GUIDA[codice];
+  if (lgLocale) {
+    document.getElementById('lg-body').innerHTML = buildLgHtml(codice);
+  } else {
     document.getElementById('lg-body').innerHTML =
-      '<div style="font-family:Arial,sans-serif;font-size:13px;line-height:1.7;color:#1a1a1a">' +
-      html + '</div>';
-
-  } catch (err) {
-    // Fallback: mostra contenuto dal dizionario locale se il file non è ancora su GitHub
-    console.warn('[LG] File non disponibile su GitHub, uso contenuto locale:', err.message);
-    const lgLocale = LINEE_GUIDA[codice];
-    if (lgLocale) {
-      document.getElementById('lg-body').innerHTML = buildLgHtml(codice);
-    } else {
-      document.getElementById('lg-body').innerHTML =
-        '<div class="warn-box" style="margin:1rem">⚠️ File non ancora disponibile. Caricare il file <strong>' +
-        (nomeFile || codice) + '</strong> nella cartella <code>linee-guida/</code> del repository GitHub.</div>';
-    }
+      '<div class="warn-b">⚠️ Contenuto non disponibile. Caricare il file <strong>' +
+      (nomeFile || codice) + '</strong> nella cartella <code>linee-guida/</code> su GitHub oppure inserire il testo su Supabase → tabella <code>linee_guida</code>.</div>';
   }
 }
 
@@ -3022,7 +3067,39 @@ function buildLgHtml(codice) {
 
 function getLgLette() { return Array.from(lgLette); }
 
-// ─── DISOCCUPATO / PRIVO DI IMPIEGO ──────────────────────────────────────────
+// Aggiorna hint periodo di prova in base a esperienza
+function aggiornaHintProva(){
+  const esp=document.querySelector('input[name="esp"]:checked')?.value;
+  const fld=document.getElementById('fld-prova');
+  const sicuro=document.getElementById('prova-sicuro');
+  if(!fld) return;
+  if(esp==='Si'){
+    // Esperienza sì → mostra hint specifico e Sicuro?
+    fld.dataset.hint='Se il lavoratore ha già esperienza nella mansione il periodo di prova potrebbe essere nullo.';
+    fld.dataset.norm='Art. 2096 c.c. — incompatibilità con pregresse esperienze nelle stesse mansioni';
+    // Mostra "Sicuro?" se ha selezionato Sì al periodo di prova
+    const prova=document.querySelector('input[name="prova"]:checked')?.value;
+    if(sicuro) sicuro.style.display=(prova==='Si')?'block':'none';
+    // Aggiorna sidebar
+    hint(fld);
+  } else if(esp==='No'){
+    // Esperienza no → stessa guida di esperienza nelle mansioni
+    fld.dataset.hint='Se il lavoratore ha già esperienza nelle mansioni svolte, il periodo di prova potrebbe essere nullo. Verificare con lo Studio prima di indicare un periodo di prova.';
+    fld.dataset.norm='Art. 2096 c.c. — il periodo di prova è incompatibile con pregresse esperienze nelle stesse mansioni presso lo stesso datore';
+    if(sicuro) sicuro.style.display='none';
+    hint(fld);
+  }
+}
+
+// Mostra/nascondi "Sicuro?" quando cambia periodo di prova
+document.addEventListener('change',e=>{
+  if(e.target.name==='prova'){
+    const esp=document.querySelector('input[name="esp"]:checked')?.value;
+    const sicuro=document.getElementById('prova-sicuro');
+    if(sicuro&&esp==='Si')
+      sicuro.style.display=(e.target.value==='Si')?'block':'none';
+  }
+});
 function togcDisoc(el){
   el.classList.toggle('s');
   aggiornaAgevolabilitaDisoc();
