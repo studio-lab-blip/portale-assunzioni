@@ -52,6 +52,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* Asterisco obbligatorio — spostato in fondo via JS al caricamento */
 .req{ display:none }                  /* nascosto nel posto originale */
 .req-end{ color:#dc2626; font-weight:700; margin-left:3px } /* asterisco in fondo */
+.contr-sep{border:none;border-top:1px solid #e5e7eb;margin:6px 0;opacity:.7}
 .err-field{border-color:#dc2626!important;box-shadow:0 0 0 2px rgba(220,38,38,.15)!important}
 .err-msg{font-size:11px;color:#dc2626;margin-top:3px;display:none}
 .err-msg.on{display:block}
@@ -199,7 +200,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="fld">
     <label class="lbl">Password <span class="req">*</span></label>
     <div style="position:relative">
-      <input type="password" id="f-pwd" placeholder="Password" style="font-size:16px;height:44px;padding-right:40px" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <input type="password" autocomplete="new-password" id="f-pwd" placeholder="Password" style="font-size:16px;height:44px;padding-right:40px" onkeydown="if(event.key==='Enter')doLogin()"/>
       <button onclick="togglePwd()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6b7280;font-size:16px" title="Mostra/Nascondi">👁</button>
     </div>
     <p style="font-size:11px;color:#6b7280;margin-top:4px">Minimo 8 caratteri, di cui almeno un numero e una lettera maiuscola.</p>
@@ -358,7 +359,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span class="err-msg" id="e-prec">Campo obbligatorio</span>
   </div>
 
-  <!-- DISOCCUPATO DA ALMENO N MESI -->
+  <!-- CCNL da applicare — visibile solo se azienda ha più di 1 CCNL compilato -->
+  <div class="fld" id="fld-ccnl" style="display:none" data-label="CCNL da applicare" data-hint="L'azienda applica più contratti collettivi nazionali. Selezionare il CCNL applicabile al lavoratore in base alle mansioni svolte." data-norm="Art. 2 D.Lgs. 81/2015 — CCNL applicato">
+    <label class="lbl">CCNL da applicare <span class="req">*</span></label>
+    <select id="f-ccnl" onfocus="hint(this.closest('.fld'))">
+      <option value="">— Seleziona —</option>
+    </select>
+    <span class="err-msg" id="e-ccnl">Campo obbligatorio</span>
+  </div>
   <div class="fld" data-label="Stato di disoccupazione"
     data-hint="Sono considerati disoccupati i soggetti privi di impiego che dichiarano, in forma telematica, al sistema informativo unitario delle politiche del lavoro di cui all'art. 13, la propria immediata disponibilità allo svolgimento di attività lavorativa e alla partecipazione alle misure di politica attiva del lavoro concordate con il centro per l'impiego (art. 19 co. 1 D.Lgs. 150/2015). Sono in stato di disoccupazione anche i lavoratori il cui reddito da lavoro dipendente o autonomo corrisponde a un'imposta lorda pari o inferiore alle detrazioni spettanti ai sensi dell'art. 13 TUIR D.P.R. 917/1986 (co. 15-quater art. 4 D.L. 4/2019)."
     data-norm="Art. 19 co. 1 D.Lgs. 150/2015; co. 15-quater art. 4 D.L. 4/2019">
@@ -612,11 +620,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="rg">
 
       <!-- 01 — Tempo indeterminato -->
-      <label class="rc" id="rc-ti" onclick="pick(this,'contr-base');mostraOrarioTI()">
-        <input type="radio" name="contr-base" value="Tempo indeterminato"/>
-        <div class="rb"><div class="rt">01 — Tempo indeterminato</div></div>
-      </label>
-      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('01')">📖 Leggi di più</button></div>
+      <div class="contr-sep"></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="rc" id="rc-ti" style="flex:1" onclick="pick(this,'contr-base');mostraOrarioTI()">
+          <input type="radio" name="contr-base" value="Tempo indeterminato"/>
+          <div class="rb"><div class="rt">01 — Tempo indeterminato</div></div>
+        </label>
+        <button class="lg-btn" onclick="apriLineaGuida('01')" style="flex-shrink:0">📖 Leggi di più</button>
+      </div>
       <!-- Sub-selezione orario TI -->
       <div id="sub-orario-ti" style="display:none;margin:6px 0 4px 18px">
         <label class="lbl" style="font-size:12px;margin-bottom:4px">Orario di lavoro <span class="req">*</span></label>
@@ -624,12 +635,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <label class="rc" onclick="pick(this,'orario-ti');setContrTI('ft')"><input type="radio" name="orario-ti" value="full-time" checked/><div class="rb"><div class="rt">Full-time</div></div></label>
           <label class="rc" onclick="pick(this,'orario-ti');setContrTI('pt')"><input type="radio" name="orario-ti" value="part-time"/><div class="rb"><div class="rt">Part-time</div></div></label>
         </div>
-        <!-- Distribuzione orario PT — TI -->
         <div id="sub-pt-ti" style="display:none;margin-top:10px">
           <label class="lbl" style="font-size:12px">Distribuzione orario settimanale <span class="req">*</span></label>
           <table class="pt-tbl"><thead><tr><th style="width:90px">Giorno</th><th>Dalle</th><th>Alle</th><th>Ore</th><th></th></tr></thead><tbody id="pt-body-ti"></tbody></table>
           <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
-            <button class="btn-g" style="font-size:12px;padding:4px 10px" onclick="addPtRowTI()">+ Aggiungi riga</button>
+            <button class="btn-g" style="font-size:12px;padding:4px 10px" onclick="addPtRowTI()">+ Aggiungi giorno</button>
             <span style="font-size:12px;color:#6b7280">Totale ore settimanali: <strong id="pt-tot-ti">0</strong></span>
           </div>
           <div class="fld" style="margin-top:8px">
@@ -640,24 +650,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
 
       <!-- 02 — Tempo determinato -->
-      <label class="rc" id="rc-td" onclick="pick(this,'contr-base');mostraOrarioTD()">
-        <input type="radio" name="contr-base" value="Tempo determinato"/>
-        <div class="rb"><div class="rt">02 — Tempo determinato</div><div class="rd">Richiede data di scadenza e causale obbligatoria se di durata superiore a 12 mesi.</div></div>
-      </label>
-      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('02')">📖 Leggi di più</button></div>
-      <!-- Sub-selezione orario TD -->
+      <div class="contr-sep"></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="rc" id="rc-td" style="flex:1" onclick="pick(this,'contr-base');mostraOrarioTD()">
+          <input type="radio" name="contr-base" value="Tempo determinato"/>
+          <div class="rb"><div class="rt">02 — Tempo determinato</div><div class="rd">Richiede data di scadenza e causale obbligatoria se di durata superiore a 12 mesi.</div></div>
+        </label>
+        <button class="lg-btn" onclick="apriLineaGuida('02')" style="flex-shrink:0">📖 Leggi di più</button>
+      </div>
       <div id="sub-orario-td" style="display:none;margin:6px 0 4px 18px">
         <label class="lbl" style="font-size:12px;margin-bottom:4px">Orario di lavoro <span class="req">*</span></label>
         <div class="rg-h">
           <label class="rc" onclick="pick(this,'orario-td');setContrTD('ft')"><input type="radio" name="orario-td" value="full-time" checked/><div class="rb"><div class="rt">Full-time</div></div></label>
           <label class="rc" onclick="pick(this,'orario-td');setContrTD('pt')"><input type="radio" name="orario-td" value="part-time"/><div class="rb"><div class="rt">Part-time</div></div></label>
         </div>
-        <!-- Distribuzione orario PT — TD -->
         <div id="sub-pt-td" style="display:none;margin-top:10px">
           <label class="lbl" style="font-size:12px">Distribuzione orario settimanale <span class="req">*</span></label>
           <table class="pt-tbl"><thead><tr><th style="width:90px">Giorno</th><th>Dalle</th><th>Alle</th><th>Ore</th><th></th></tr></thead><tbody id="pt-body-td"></tbody></table>
           <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
-            <button class="btn-g" style="font-size:12px;padding:4px 10px" onclick="addPtRowTD()">+ Aggiungi riga</button>
+            <button class="btn-g" style="font-size:12px;padding:4px 10px" onclick="addPtRowTD()">+ Aggiungi giorno</button>
             <span style="font-size:12px;color:#6b7280">Totale ore settimanali: <strong id="pt-tot-td">0</strong></span>
           </div>
           <div class="fld" style="margin-top:8px">
@@ -668,12 +679,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
 
       <!-- 03 — Apprendistato -->
-      <label class="rc" id="rc-appr" onclick="pick(this,'contr-base')"><input type="radio" name="contr-base" value="Apprendistato professionalizzante" id="radio-appr"/><div class="rb"><div class="rt">03 — Apprendistato professionalizzante</div><div class="rd">Contratto formativo con piano individuale e tutor. Contribuzione ridotta. <strong>Età da 18 a 29 anni.</strong></div></div></label>
-      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('03')">📖 Leggi di più</button></div>
+      <div class="contr-sep"></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="rc" id="rc-appr" style="flex:1" onclick="pick(this,'contr-base')">
+          <input type="radio" name="contr-base" value="Apprendistato professionalizzante" id="radio-appr"/>
+          <div class="rb"><div class="rt">03 — Apprendistato professionalizzante</div><div class="rd">Contratto formativo con piano individuale e tutor. Contribuzione ridotta. <strong>Età da 18 a 29 anni.</strong></div></div>
+        </label>
+        <button class="lg-btn" onclick="apriLineaGuida('03')" style="flex-shrink:0">📖 Leggi di più</button>
+      </div>
 
       <!-- 04 — Lavoro a chiamata -->
-      <label class="rc" onclick="pick(this,'contr-base')"><input type="radio" name="contr-base" value="Lavoro a chiamata"/><div class="rb"><div class="rt">04 — Lavoro a chiamata (job on call)</div><div class="rd">Prestazione non continuativa. Richiede aggiornamento DVR. Limitazioni alle agevolazioni.</div></div></label>
-      <div class="lg-btn-wrap"><button class="lg-btn" onclick="apriLineaGuida('04')">📖 Leggi di più</button></div>
+      <div class="contr-sep"></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <label class="rc" style="flex:1" onclick="pick(this,'contr-base')">
+          <input type="radio" name="contr-base" value="Lavoro a chiamata"/>
+          <div class="rb"><div class="rt">04 — Lavoro a chiamata (job on call)</div><div class="rd">Prestazione non continuativa. Richiede aggiornamento DVR. Limitazioni alle agevolazioni.</div></div>
+        </label>
+        <button class="lg-btn" onclick="apriLineaGuida('04')" style="flex-shrink:0">📖 Leggi di più</button>
+      </div>
+      <div class="contr-sep"></div>
 
     </div>
     <span class="err-msg" id="e-contr">Selezionare la tipologia di contratto</span>
@@ -707,12 +731,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="card-ch" style="display:none">
     <div class="hero"><div class="hero-t">Lavoro a chiamata</div><button class="btn-info" onclick="toggleInfo('ip-ch')">Informazioni</button></div>
     <div class="info-panel" id="ip-ch"><h4>Lavoro intermittente — D.Lgs. 81/2015 artt. 13-18</h4><ul><li>Max 400 giornate/anno negli ultimi 3 anni</li><li>Comunicazione preventiva al Ministero entro 60 min. prima della prestazione</li><li>Non accede alla maggior parte degli incentivi contributivi</li></ul></div>
-    <div class="warn-b">⚠️ Aggiornare il DVR e fare comunicazione preventiva al Ministero prima di ogni prestazione.</div>
+    <div class="warn-b" data-hint="Il mancato adeguamento del DVR alla specifica tutela dei lavoratori a chiamata comporta la nullità del contratto e la conseguente trasformazione del rapporto di lavoro a tempo indeterminato." data-label="DVR — Lavoro a chiamata" data-norm="Art. 14 D.Lgs. 81/2015">⚠️ Aggiornare il DVR e fare comunicazione preventiva al Ministero prima di ogni prestazione. <strong style="color:#dc2626">Il mancato adeguamento del DVR comporta la nullità del contratto e la trasformazione a TI.</strong></div>
     <div class="g2">
       <div class="fld"><label class="lbl">Tipo preavviso <span class="req">*</span></label><div class="rg-h"><label class="rc" onclick="pick(this,'prev')"><input type="radio" name="prev" value="Ore"/><div class="rb"><div class="rt">Ore</div></div></label><label class="rc" onclick="pick(this,'prev')"><input type="radio" name="prev" value="Giorni"/><div class="rb"><div class="rt">Giorni</div></div></label></div></div>
-      <div class="fld"><label class="lbl">Quantità preavviso <span class="req">*</span></label><input type="number" id="f-prev-qt" placeholder="es. 2" min="0"/></div>
+      <div class="fld"><label class="lbl">Quanti? <span class="req">*</span></label><input type="number" id="f-prev-qt" placeholder="es. 2" min="0"/></div>
     </div>
-    <div class="fld"><label class="lbl">Modalità di chiamata <span class="req">*</span></label><div class="rg-h"><label class="cc" onclick="togc(this)"><input type="checkbox" value="SMS"/><div class="rb"><div class="rt">SMS</div></div></label><label class="cc" onclick="togc(this)"><input type="checkbox" value="Email"/><div class="rb"><div class="rt">Email</div></div></label><label class="cc" onclick="togc(this)"><input type="checkbox" value="Telefono"/><div class="rb"><div class="rt">Telefono</div></div></label><label class="cc" onclick="togc(this)"><input type="checkbox" value="Portale Min."/><div class="rb"><div class="rt">Portale Ministero</div></div></label></div></div>
+    <div class="fld"><label class="lbl">Modalità di chiamata <span class="req">*</span></label><div class="rg-h"><label class="cc" onclick="togc(this)"><input type="checkbox" value="SMS"/><div class="rb"><div class="rt">SMS</div></div></label><label class="cc" onclick="togc(this)"><input type="checkbox" value="Email"/><div class="rb"><div class="rt">Email</div></div></label><label class="cc" onclick="togc(this)"><input type="checkbox" value="Telefono"/><div class="rb"><div class="rt">Telefono</div></div></label></div></div>
     <div class="fld"><label class="lbl">Indennità di disponibilità? <span class="req">*</span></label><div class="rg-h"><label class="rc" onclick="pick(this,'ind');document.getElementById('cf-ind').classList.remove('on')"><input type="radio" name="ind" value="No"/><div class="rb"><div class="rt">No</div></div></label><label class="rc" onclick="pick(this,'ind');document.getElementById('cf-ind').classList.add('on')"><input type="radio" name="ind" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label></div><div class="cf" id="cf-ind"><label class="lbl">Importo mensile (€)</label><input type="number" id="f-ind-imp" placeholder="es. 300" min="0"/></div></div>
   </div>
 
@@ -722,7 +746,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="hero"><div class="hero-t">Tempo determinato</div><button class="btn-info" onclick="toggleInfo('ip-det')">Informazioni</button></div>
     <div class="info-panel" id="ip-det"><h4>Contratto a termine — D.Lgs. 81/2015 artt. 19-29</h4><ul><li>Durata massima 24 mesi (proroghe incluse) per stesse mansioni stesso datore</li><li>Causale obbligatoria per contratti >12 mesi o ogni rinnovo</li><li>Contributo addizionale 1,40% (rimborsato se trasformazione a TI)</li></ul></div>
     <div class="fld" data-label="Causale" data-hint="La causale deve essere specifica e veritiera. Per esigenze temporanee o incrementi non programmabili: applicabile solo per far fronte a picchi di lavoro non prevedibili o necessità oggettive ed estranee all'attività ordinaria." data-norm="Art.19 D.Lgs.81/2015 — causale obbligatoria per contratti >12 mesi">
-      <label class="lbl">Causale del contratto <span class="req">*</span></label>
+      <label class="lbl" style="font-size:15px;color:#dc2626;font-weight:700">Causale del contratto <span class="req">*</span></label>
       <div class="rg">
         <label class="rc" onclick="pick(this,'caus');showCaus('mat')"><input type="radio" name="caus" value="Sostituzione maternità/paternità"/><div class="rb"><div class="rt">Sostituzione maternità / paternità</div><div class="rd">Esonero contributo addizionale 1,40% e dai limiti percentuali.</div></div></label>
         <label class="rc" onclick="pick(this,'caus');showCaus('ass')"><input type="radio" name="caus" value="Sostituzione di lavoratori in ferie/malattia/infortunio/aspettativa"/><div class="rb"><div class="rt">Sostituzione di lavoratori in ferie / malattia / infortunio / aspettativa</div></div></label>
@@ -734,10 +758,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="lbl">Nominativo del lavoratore da sostituire <span class="req">*</span></label>
         <input type="text" id="f-sost-mat" placeholder="es. Bianchi Anna" oninput="capitalizeWords(this)"/>
         <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
-        <input type="date" id="f-scad" oninput="checkScadMax12('f-scad','e-scad','caus')" min="2020-01-01"/>
-        <label class="cc" id="cc-rientro-mat" onclick="togcRientro(this,'f-scad','e-scad')" style="margin-top:6px">
-          <input type="checkbox" id="chk-rientro-mat"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
-        </label>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <input type="date" id="f-scad" oninput="checkScadMax12('f-scad','e-scad','caus')" min="2020-01-01" style="flex:0 0 auto"/>
+          <label class="cc" id="cc-rientro-mat" onclick="togcRientro(this,'f-scad','e-scad')" style="flex:1;min-width:200px;margin:0">
+            <input type="checkbox" id="chk-rientro-mat"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
+          </label>
+        </div>
         <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
         <span class="err-msg" id="e-scad">Indicare la data prevista di rientro oppure spuntare "oppure al rientro della persona sostituita"</span>
       </div>
@@ -746,10 +772,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="lbl">Nominativo del lavoratore da sostituire <span class="req">*</span></label>
         <input type="text" id="f-sost-ass" placeholder="es. Verdi Paolo" oninput="capitalizeWords(this)"/>
         <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
-        <input type="date" id="f-scad-ass" oninput="checkScadMax12('f-scad-ass','e-scad-ass','caus')" min="2020-01-01"/>
-        <label class="cc" id="cc-rientro-ass" onclick="togcRientro(this,'f-scad-ass','e-scad-ass')" style="margin-top:6px">
-          <input type="checkbox" id="chk-rientro-ass"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
-        </label>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <input type="date" id="f-scad-ass" oninput="checkScadMax12('f-scad-ass','e-scad-ass','caus')" min="2020-01-01" style="flex:0 0 auto"/>
+          <label class="cc" id="cc-rientro-ass" onclick="togcRientro(this,'f-scad-ass','e-scad-ass')" style="flex:1;min-width:200px;margin:0">
+            <input type="checkbox" id="chk-rientro-ass"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
+          </label>
+        </div>
         <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
         <span class="err-msg" id="e-scad-ass">Indicare la data prevista di rientro oppure spuntare "oppure al rientro della persona sostituita"</span>
       </div>
@@ -772,7 +800,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="info-panel" id="ip-det-pt"><h4>Contratto a termine part-time — D.Lgs. 81/2015 artt. 19-29 + artt. 4-12</h4><ul><li>Causale obbligatoria per contratti >12 mesi o ogni rinnovo</li><li>Durata massima 24 mesi (proroghe incluse)</li><li>Contributo addizionale 1,40% a carico datore</li></ul></div>
     <p class="sub-title" style="margin-top:0">📅 Passo 1 di 2 — Caratteristiche del contratto a termine</p>
     <div class="fld" data-label="Causale (tempo determinato)" data-hint="La causale deve essere specifica e veritiera." data-norm="Art.19 D.Lgs.81/2015">
-      <label class="lbl">Causale del contratto <span class="req">*</span></label>
+      <label class="lbl" style="font-size:15px;color:#dc2626;font-weight:700">Causale del contratto <span class="req">*</span></label>
       <div class="rg">
         <label class="rc" onclick="pick(this,'caus-pt');showCausPt('mat-pt')"><input type="radio" name="caus-pt" value="Sostituzione maternità/paternità"/><div class="rb"><div class="rt">Sostituzione maternità / paternità</div><div class="rd">Esonero contributo addizionale 1,40% e dai limiti percentuali.</div></div></label>
         <label class="rc" onclick="pick(this,'caus-pt');showCausPt('ass-pt')"><input type="radio" name="caus-pt" value="Sostituzione di lavoratori in ferie/malattia/infortunio/aspettativa"/><div class="rb"><div class="rt">Sostituzione di lavoratori in ferie / malattia / infortunio / aspettativa</div></div></label>
@@ -784,10 +812,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="lbl">Nominativo del lavoratore da sostituire <span class="req">*</span></label>
         <input type="text" id="f-sost-mat-pt" placeholder="es. Bianchi Anna" oninput="capitalizeWords(this)"/>
         <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
-        <input type="date" id="f-scad-pt" oninput="checkScadMax12('f-scad-pt','e-scad-pt','caus-pt')" min="2020-01-01"/>
-        <label class="cc" id="cc-rientro-mat-pt" onclick="togcRientro(this,'f-scad-pt','e-scad-pt')" style="margin-top:6px">
-          <input type="checkbox" id="chk-rientro-mat-pt"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
-        </label>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <input type="date" id="f-scad-pt" oninput="checkScadMax12('f-scad-pt','e-scad-pt','caus-pt')" min="2020-01-01" style="flex:0 0 auto"/>
+          <label class="cc" id="cc-rientro-mat-pt" onclick="togcRientro(this,'f-scad-pt','e-scad-pt')" style="flex:1;min-width:200px;margin:0">
+            <input type="checkbox" id="chk-rientro-mat-pt"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
+          </label>
+        </div>
         <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
         <span class="err-msg" id="e-scad-pt">Indicare la data prevista di rientro oppure spuntare "oppure al rientro della persona sostituita"</span>
       </div>
@@ -796,10 +826,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="lbl">Nominativo del lavoratore da sostituire <span class="req">*</span></label>
         <input type="text" id="f-sost-ass-pt" placeholder="es. Verdi Paolo" oninput="capitalizeWords(this)"/>
         <label class="lbl" style="margin-top:8px">Data prevista di rientro del/della dipendente da sostituire <span class="req">*</span></label>
-        <input type="date" id="f-scad-ass-pt" oninput="checkScadMax12('f-scad-ass-pt','e-scad-ass-pt','caus-pt')" min="2020-01-01"/>
-        <label class="cc" id="cc-rientro-ass-pt" onclick="togcRientro(this,'f-scad-ass-pt','e-scad-ass-pt')" style="margin-top:6px">
-          <input type="checkbox" id="chk-rientro-ass-pt"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
-        </label>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <input type="date" id="f-scad-ass-pt" oninput="checkScadMax12('f-scad-ass-pt','e-scad-ass-pt','caus-pt')" min="2020-01-01" style="flex:0 0 auto"/>
+          <label class="cc" id="cc-rientro-ass-pt" onclick="togcRientro(this,'f-scad-ass-pt','e-scad-ass-pt')" style="flex:1;min-width:200px;margin:0">
+            <input type="checkbox" id="chk-rientro-ass-pt"/><div class="rb"><div class="rt">oppure al rientro della persona sostituita</div></div>
+          </label>
+        </div>
         <div class="warn-b" style="margin-top:6px;font-size:12px">⚠️ In ogni caso il rientro anticipato della persona sostituita rispetto alla data prevista determina l'automatica cessazione del contratto a termine.</div>
         <span class="err-msg" id="e-scad-ass-pt">Indicare la data prevista di rientro oppure spuntare "oppure al rientro della persona sostituita"</span>
       </div>
@@ -812,7 +844,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <span class="err-msg" id="e-scad-std-pt">La scadenza non può superare 24 mesi dalla data di assunzione</span>
       <span class="err-msg" id="e-scad-12m-pt" style="display:none">Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione</span>
     </div>
-    <div class="info-b" style="margin-top:.5rem">ℹ️ Dopo aver compilato i dati del contratto a termine, nella pagina successiva verrà richiesta la distribuzione dell'orario part-time.</div>
   </div>
 
   <!-- Apprendistato -->
@@ -820,7 +851,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="hero"><div class="hero-t">Apprendistato professionalizzante</div><button class="btn-info" onclick="toggleInfo('ip-appr')">Informazioni</button></div>
     <div class="info-panel" id="ip-appr"><h4>Apprendistato — D.Lgs. 81/2015 art.44</h4><ul><li>Età: da 18 a 29 anni</li><li>Durata: da 6 mesi a 3 anni</li><li>Tutor obbligatorio con almeno 8 ore di formazione certificata</li><li>Piano Formativo Individuale obbligatorio — lo Studio lo redige</li></ul></div>
     <div class="fld"><label class="lbl">Mansioni cui aspira <span class="req">*</span></label><input type="text" id="f-appr-mans" placeholder="es. addetto contabilità"/></div>
-    <div class="fld"><label class="lbl">Qualifica alla quale aspira <span class="req">*</span></label><div class="rg"><label class="rc" onclick="pick(this,'qappr')"><input type="radio" name="qappr" value="Impiegato concetto"/><div class="rb"><div class="rt">Impiegato — mansioni di concetto</div></div></label><label class="rc" onclick="pick(this,'qappr')"><input type="radio" name="qappr" value="Impiegato ordine"/><div class="rb"><div class="rt">Impiegato — mansioni d'ordine</div></div></label><label class="rc" onclick="pick(this,'qappr')"><input type="radio" name="qappr" value="Operaio qualificato"/><div class="rb"><div class="rt">Operaio qualificato</div></div></label><label class="rc" onclick="pick(this,'qappr')"><input type="radio" name="qappr" value="Operaio specializzato"/><div class="rb"><div class="rt">Operaio specializzato</div></div></label></div></div>
+    <div class="fld"><label class="lbl">Qualifica alla quale aspira <span class="req">*</span></label><div class="rg"><label class="rc" onclick="pick(this,'qappr');document.getElementById('cf-qappr-altro').style.display='none'"><input type="radio" name="qappr" value="Impiegato concetto"/><div class="rb"><div class="rt">Impiegato — mansioni di concetto</div></div></label><label class="rc" onclick="pick(this,'qappr');document.getElementById('cf-qappr-altro').style.display='none'"><input type="radio" name="qappr" value="Impiegato ordine"/><div class="rb"><div class="rt">Impiegato — mansioni d'ordine</div></div></label><label class="rc" onclick="pick(this,'qappr');document.getElementById('cf-qappr-altro').style.display='none'"><input type="radio" name="qappr" value="Operaio qualificato"/><div class="rb"><div class="rt">Operaio qualificato</div></div></label><label class="rc" onclick="pick(this,'qappr');document.getElementById('cf-qappr-altro').style.display='none'"><input type="radio" name="qappr" value="Operaio specializzato"/><div class="rb"><div class="rt">Operaio specializzato</div></div></label><label class="rc" onclick="pick(this,'qappr');document.getElementById('cf-qappr-altro').style.display='block'"><input type="radio" name="qappr" value="Altro"/><div class="rb"><div class="rt">Altro</div></div></label></div>
+      <div id="cf-qappr-altro" style="display:none;margin-top:6px"><input type="text" id="f-qappr-altro" placeholder="Specificare la qualifica..." oninput="capitalizeWords(this)"/></div>
+    </div>
     <div class="fld"><label class="lbl">Nominativo tutor aziendale <span class="req">*</span></label><input type="text" id="f-tutor" placeholder="Cognome e Nome"/></div>
     <div class="fld"><label class="lbl">Tutor con requisiti formativi ≥ 8 ore? <span class="req">*</span></label><div class="rg-h"><label class="rc" onclick="pick(this,'tutor-req');document.getElementById('cf-tutor').classList.add('on')"><input type="radio" name="tutor-req" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label><label class="rc" onclick="pick(this,'tutor-req');document.getElementById('cf-tutor').classList.remove('on')"><input type="radio" name="tutor-req" value="No"/><div class="rb"><div class="rt">No</div></div></label></div><div class="cf" id="cf-tutor"><div class="g2"><div><label class="lbl">Ore formazione</label><input type="number" id="f-tutor-ore" placeholder="es. 8" min="0"/></div><div><label class="lbl">Ente formatore</label><input type="text" id="f-tutor-ente" placeholder="es. Confindustria BS"/></div></div></div></div>
   </div>
@@ -828,27 +861,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="nav">
     <button class="btn-g" onclick="go(2)">← Indietro</button>
     <button class="btn-p" onclick="nextPg3()">Avanti →</button>
-  </div>
-</div>
-</div>
-
-<!-- ══ PAGINA 3b — Orario part-time (solo per det-pt) ══ -->
-<div class="page" id="pg3b">
-<div class="card">
-  <div class="err-b" id="err3b">⛔ Compila i campi obbligatori prima di procedere.</div>
-  <div class="hero"><div class="hero-t">Tempo determinato part-time</div></div>
-  <p class="sub-title" style="margin-top:0">🕐 Passo 2 di 2 — Orario part-time</p>
-  <div class="info-b">ℹ️ Hai già indicato le caratteristiche del contratto a termine. Compila ora la distribuzione dell'orario settimanale part-time che verrà riportata nel contratto individuale.</div>
-  <div class="fld">
-    <label class="lbl">Distribuzione orario settimanale <span class="req">*</span></label>
-    <table class="pt-tbl"><thead><tr><th style="width:90px">Giorno</th><th>Dalle</th><th>Alle</th><th>Ore</th><th></th></tr></thead><tbody id="pt-body-b"></tbody></table>
-    <button class="pt-add" onclick="addPtRowB()">+ Aggiungi intervallo</button>
-    <div style="margin-top:.5rem"><span class="ore-tot">⏱ Totale settimanale: <strong id="ore-tot-b">0h 00m</strong></span></div>
-  </div>
-  <div class="fld"><label class="lbl">Ulteriori precisazioni sull'orario</label><textarea id="f-orario-note-b" placeholder="Variazioni, turni, clausole elastiche, orario verticale/orizzontale/misto..."></textarea></div>
-  <div class="nav">
-    <button class="btn-g" onclick="go(3)">← Indietro (causale)</button>
-    <button class="btn-p" onclick="nextPg3b()">Avanti →</button>
   </div>
 </div>
 </div>
@@ -938,7 +950,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <!-- ALLEGA DOCUMENTI -->
   <div class="fld" style="margin-top:.5rem">
     <label class="lbl">Allega documenti</label>
-    <p class="hint" style="margin-bottom:6px">Documento d'identità, codice fiscale, eventuale certificato di disabilità, permesso di soggiorno.</p>
+    <p style="margin-bottom:6px;font-size:13px;font-weight:700;color:#185FA5;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:6px;padding:8px 12px">📎 Documento d'identità, codice fiscale, eventuale certificato di disabilità, permesso di soggiorno.</p>
     <input type="file" id="f-allegati" multiple accept=".pdf,.jpg,.jpeg,.png,.docx" style="display:none" onchange="gestisciAllegati(this)"/>
     <button type="button" onclick="document.getElementById('f-allegati').click()" style="background:#fff;border:0.5px solid #185FA5;color:#185FA5;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
       📎 Seleziona file da allegare
@@ -1045,9 +1057,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="pdf-bd" style="padding:1.25rem">
     <div class="err-b" id="err-chg">⛔ <span id="err-chg-txt">Le password non corrispondono o la password attuale è errata.</span></div>
-    <div class="fld"><label class="lbl">Password attuale <span class="req">*</span></label><input type="password" id="f-pwd-old" placeholder="Password attuale" style="height:40px"/></div>
-    <div class="fld"><label class="lbl">Nuova password <span class="req">*</span></label><input type="password" id="f-pwd-new" placeholder="Nuova password (min. 6 caratteri)" style="height:40px"/></div>
-    <div class="fld"><label class="lbl">Conferma nuova password <span class="req">*</span></label><input type="password" id="f-pwd-new2" placeholder="Ripeti nuova password" style="height:40px"/></div>
+    <div class="fld"><label class="lbl">Password attuale <span class="req">*</span></label><input type="password" autocomplete="new-password" id="f-pwd-old" placeholder="Password attuale" style="height:40px"/></div>
+    <div class="fld"><label class="lbl">Nuova password <span class="req">*</span></label><input type="password" autocomplete="new-password" id="f-pwd-new" placeholder="Nuova password (min. 6 caratteri)" style="height:40px"/></div>
+    <div class="fld"><label class="lbl">Conferma nuova password <span class="req">*</span></label><input type="password" autocomplete="new-password" id="f-pwd-new2" placeholder="Ripeti nuova password" style="height:40px"/></div>
     <div id="chg-pwd-ok" style="display:none;background:#f0fdf4;border:0.5px solid #86efac;border-radius:8px;padding:10px;text-align:center;font-size:13px;color:#166534;margin-top:.5rem">✅ Password modificata. Usala al prossimo accesso.</div>
   </div>
   <div class="pdf-ft">
@@ -1217,62 +1229,58 @@ const PROV_REG={
 // ─── DATABASE AZIENDE (in produzione caricato da aziende.json via API) ────────
 // Struttura: codice → { ragione_sociale, password, email, settore }
 const AZIENDE_DB = {
-  "73":{"ragione_sociale":"CLAREN S.A.S DI DILONARDO GABRIELE E C.","password":"prova","email":"gabrieledilonardo@virgilio.it","settore":"Edilizia"},
-  "76":{"ragione_sociale":"ELITOP S.R.L.","password":"prova","email":"alberto@elitop.it","settore":"Metalmeccanico"},
-  "77":{"ragione_sociale":"NAEDIL SRLS","password":"prova","email":"segreteria@naedilcostruzioni.it","settore":"Edilizia"},
-  "78":{"ragione_sociale":"STUDIO VALCAMONICO PIERLEONARDO","password":"prova","email":"studiovalcamonico@gmail.com","settore":"Servizi"},
-  "80":{"ragione_sociale":"AUTOSCUOLA MONTEORFANO DI PLATTO ANGELO","password":"prova","email":"plattopaola@gmail.com","settore":"Servizi"},
-  "87":{"ragione_sociale":"CENTRO ABBIGLIAMENTO TUROTTI ANGELO","password":"prova","email":"centroabbta@gmail.com","settore":"Commercio"},
-  "88":{"ragione_sociale":"RAMERA G. S.R.L.","password":"prova","email":"maria@giorgioramera.it","settore":"Metalmeccanico"},
-  "90":{"ragione_sociale":"STILE S.R.L.","password":"prova","email":"info@stileoriginaldesign.it","settore":"Servizi"},
-  "98":{"ragione_sociale":"PELATI DOTT. PIERGIORGIO","password":"prova","email":"info@studiopelati.it","settore":"Servizi"},
-  "99":{"ragione_sociale":"STUDIO PELATI SNC DI PELATI DOTT.P.& C.","password":"prova","email":"info@studiopelati.it","settore":"Servizi"},
-  "141":{"ragione_sociale":"P.R.I.M.A. SRL","password":"prova","email":"amministrazione@primaimpianti.it","settore":"Metalmeccanico"},
-  "142":{"ragione_sociale":"O.C.OFFICINE CLARENSI S.R.L.","password":"prova","email":"segreteria@officineclarensi.it","settore":"Metalmeccanico"},
-  "200":{"ragione_sociale":"BOTRUGNO COSIMO","password":"prova","email":"botru@tiscali.it","settore":"Servizi"},
-  "203":{"ragione_sociale":"STUDIO DENTISTICO SVANETTI VIVIANI SRL","password":"prova","email":"amministrazione@studiodentisticosvanettiviviani.it","settore":"Servizi"},
-  "1107":{"ragione_sociale":"CALZATURIFICIO BRASILEN SRL","password":"prova","email":"massimo.bonotti@brasilen.it","settore":"Metalmeccanico"},
-  "1108":{"ragione_sociale":"MANIFATTURA EUROPA RITORCIT.FILATI SRL","password":"prova","email":"maneuritfil@yahoo.it","settore":"Metalmeccanico"},
-  "1112":{"ragione_sociale":"MM AUTOMOTIVE SRL","password":"prova","email":"amministrazione@mm-automotive.it","settore":"Metalmeccanico"},
-  "1512":{"ragione_sociale":"INNOVA IMPIANTI SRL","password":"prova","email":"lorini.alberto@gmail.com","settore":"Edilizia"},
-  "2129":{"ragione_sociale":"LINKONLINE S.P.A.","password":"prova","email":"maurizia.frigoli@psf.it","settore":"Servizi"},
-  "2134":{"ragione_sociale":"SANFAUSTINO LABEL S.P.A.","password":"prova","email":"maurizia.frigoli@psf.it","settore":"Metalmeccanico"},
-  "2137":{"ragione_sociale":"SANFAUSTINO IMMOBILIARE SRL","password":"prova","email":"paghe@psf.it","settore":"Servizi"},
-  "2309":{"ragione_sociale":"GAMMA MOTORI SRL","password":"prova","email":"silvia.begni@fiscalfranciacorta.it","settore":"Metalmeccanico"},
-  "2502":{"ragione_sociale":"CARROZZERIA LUCCHINI MARINO","password":"prova","email":"carrozzeria.lucchini@gmail.com","settore":"Metalmeccanico"},
-  "2508":{"ragione_sociale":"SIRANI SNC DI SIRANI A. & C.","password":"prova","email":"agri@siranisnc.it","settore":"Altro"},
-  "3238":{"ragione_sociale":"CARROZZERIA CESARE FERRAMI DI OLIVIERI MARIA PAOLA","password":"prova","email":"cesare.ferrami@tin.it","settore":"Metalmeccanico"},
-  "3325":{"ragione_sociale":"GRUPPO IDEALSTAMPI S.r.l. unipersonale","password":"prova","email":"direzione@idealstampi.it","settore":"Metalmeccanico"},
-  "3402":{"ragione_sociale":"RAULSTAFF SAS DI FASSAN ROMINA & C.","password":"prova","email":"raul.vasconi@gmail.com","settore":"Servizi"},
-  "3536":{"ragione_sociale":"CFC di Camoni G.Pietro e Facchi R. snc","password":"prova","email":"amministrazione@cfcmeccanica.it","settore":"Metalmeccanico"},
-  "6287":{"ragione_sociale":"AMPELIO SRL","password":"prova","email":"angelo@parladori.it","settore":"Edilizia"},
-  "6288":{"ragione_sociale":"SOLAREA SRL","password":"prova","email":"direzione@solarea.eu","settore":"Edilizia"},
-  "6289":{"ragione_sociale":"PAROLA SRL","password":"prova","email":"amministrazione@parolasrl.com","settore":"Servizi"},
-  "6290":{"ragione_sociale":"Y-KEY SRL","password":"prova","email":"contabilita@y-key.it","settore":"Servizi"},
-  "6297":{"ragione_sociale":"FORNONI S.R.L.","password":"prova","email":"daniela@fornoni.it","settore":"Metalmeccanico"},
-  "6601":{"ragione_sociale":"BETONBRIXIA SRL","password":"prova","email":"amministrazione@betonbrixia.it","settore":"Edilizia"},
-  "6602":{"ragione_sociale":"OPERA SRL","password":"prova","email":"ufficio.operaiseo@libero.it","settore":"Servizi"},
-  "7354":{"ragione_sociale":"ETERNACELL ITALIA SRL","password":"prova","email":"beatrice.bellobuono@eternacell.ch","settore":"Servizi"},
-  "7356":{"ragione_sociale":"B2BEAUTY SRL","password":"prova","email":"maurisun@gmail.com","settore":"Commercio"},
-  "7357":{"ragione_sociale":"LA IMPRESA EDILE SRL","password":"prova","email":"amministrazione@la-impresaedile.com","settore":"Edilizia"},
-  "7358":{"ragione_sociale":"SSCB SWISS STEM CELLS BIOTECH ITALIA","password":"prova","email":"massimo.seravalle@stembiotech.ch","settore":"Servizi"},
-  "7359":{"ragione_sociale":"WHERE TECH SRL","password":"prova","email":"malbertelli@wheretech.it","settore":"Servizi"},
-  "7361":{"ragione_sociale":"NOVECENTO DI BEGNI CRISTIAN","password":"prova","email":"begni.cristian@gmail.com","settore":"Commercio"},
-  "7362":{"ragione_sociale":"D&D SAS DI OPRANDI D. & C.","password":"prova","email":"giannirossi@studiogiannirossi.it","settore":"Servizi"},
-  "7368":{"ragione_sociale":"PROGETTO CARAVAGGIO SAS di BIANCHI A. & C.","password":"prova","email":"bghda@tecnocasa.it","settore":"Servizi"},
-  "7373":{"ragione_sociale":"STUDIO BAGNOLO SAS di Cavalli Giuseppe & C.","password":"prova","email":"crhn0@tecnocasa.it","settore":"Servizi"},
-  "7380":{"ragione_sociale":"AG SERVICE SAS di ROSSI DR.GIOVANNI & C.","password":"prova","email":"giannirossi@studiogiannirossi.it","settore":"Servizi"},
-  "7384":{"ragione_sociale":"TECNOPANDINO S.A.S. DI GRASSO ETTORE & C.","password":"prova","email":"crhn3@tecnocasa.it","settore":"Metalmeccanico"},
-  "7392":{"ragione_sociale":"CASA DEL TENDAGGIO DI MORSIA DAVIDE","password":"prova","email":"morsia@casadeltendaggiomorsia.com","settore":"Commercio"},
-  "7399":{"ragione_sociale":"CENTRO CLIMA di OLMI MICHELE","password":"prova","email":"centroclima.miti@gmail.com","settore":"Edilizia"},
-  "7427":{"ragione_sociale":"FOGLIO LUIGI","password":"prova","email":"giannirossi@studiogiannirossi.it","settore":"Commercio"},
-  "7478":{"ragione_sociale":"SAPORE DI GRANO DI ALBERTELLI GIUSEPPE","password":"prova","email":"giannirossi@studiogiannirossi.it","settore":"Commercio"},
-  "7482":{"ragione_sociale":"PARBLEU CAFE' S.N.C. di TOTI A. & C.","password":"prova","email":"giannirossi@studiogiannirossi.it","settore":"Commercio"},
-  "7484":{"ragione_sociale":"OLMI GROUP DI OLMI TIZIANO","password":"prova","email":"idraulicaolmi.timi@gmail.com","settore":"Edilizia"},
-  "7494":{"ragione_sociale":"STUDIO VAILATE SRL","password":"prova","email":"crhnb@tecnocasa.it","settore":"Servizi"},
-  "9705":{"ragione_sociale":"MAIKO COSTRUZIONI EDILI S.R.L.","password":"prova","email":"info@edilmaiko.com","settore":"Edilizia"},
-  "9790":{"ragione_sociale":"L.R DI LONATI ROBERTO SRL","password":"prova","email":"lr.lonati@libero.it","settore":"Metalmeccanico"},
-  "9907":{"ragione_sociale":"COSTRUZIONI EDILI TONELLI S.P.A.","password":"prova","email":"adriano.stefani@tonellispa.it","settore":"Edilizia"}
+  "80":{"ragione_sociale":"AUTOSCUOLA MONTEORFANO DI PLATTO ANGELO","password":"prova","ccnl_1":"Autoscuole","ccnl_2":"","ccnl_3":"","email":"plattopaola@gmail.com"},
+  "7356":{"ragione_sociale":"B2BEAUTY SRL","password":"prova","ccnl_1":"Barbieri parrucchieri","ccnl_2":"","ccnl_3":"","email":"maurisun@gmail.com"},
+  "6601":{"ragione_sociale":"BETONBRIXIA SRL","password":"prova","ccnl_1":"Edilizia","ccnl_2":"","ccnl_3":"","email":"amministrazione@betonbrixia.it"},
+  "200":{"ragione_sociale":"BOTRUGNO COSIMO","password":"prova","ccnl_1":"Studi professionali","ccnl_2":"","ccnl_3":"","email":"botru@tiscali.it"},
+  "1107":{"ragione_sociale":"CALZATURIFICIO BRASILEN SRL","password":"prova","ccnl_1":"Calzature Ind.","ccnl_2":"","ccnl_3":"","email":"massimo.bonotti@brasilen.it"},
+  "3238":{"ragione_sociale":"CARROZZERIA CESARE FERRAMI DI OLIVIERI MARIA PAOLA","password":"prova","ccnl_1":"Metalmeccanici art.","ccnl_2":"","ccnl_3":"","email":"cesare.ferrami@tin.it"},
+  "2502":{"ragione_sociale":"CARROZZERIA LUCCHINI MARINO","password":"prova","ccnl_1":"Metalmeccanici art.","ccnl_2":"","ccnl_3":"","email":"carrozzeria.lucchini@gmail.com"},
+  "7392":{"ragione_sociale":"CASA DEL TENDAGGIO DI MORSIA DAVIDE","password":"prova","ccnl_1":"Tessili artig.","ccnl_2":"","ccnl_3":"","email":"morsia@casadeltendaggiomorsia.com"},
+  "87":{"ragione_sociale":"CENTRO ABBIGLIAMENTO TUROTTI ANGELO","password":"prova","ccnl_1":"Barbieri parrucchieri","ccnl_2":"","ccnl_3":"","email":"centroabbta@gmail.com"},
+  "7399":{"ragione_sociale":"CENTRO CLIMA di OLMI MICHELE","password":"prova","ccnl_1":"Metalmeccanici art.","ccnl_2":"","ccnl_3":"","email":"centroclima.miti@gmail.com"},
+  "3536":{"ragione_sociale":"CFC di Camoni G.Pietro e Facchi R. snc","password":"prova","ccnl_1":"Metalmeccanici art.","ccnl_2":"","ccnl_3":"","email":"amministrazione@cfcmeccanica.it"},
+  "73":{"ragione_sociale":"CLAREN S.A.S DI DILONARDO GABRIELE E C.","password":"prova","ccnl_1":"Commercio","ccnl_2":"","ccnl_3":"","email":"gabrieledilonardo@virgilio.it"},
+  "9907":{"ragione_sociale":"COSTRUZIONI EDILI TONELLI S.P.A.","password":"prova","ccnl_1":"Edilizia","ccnl_2":"","ccnl_3":"","email":"adriano.stefani@tonellispa.it"},
+  "7362":{"ragione_sociale":"D&D SAS DI OPRANDI D. & C.","password":"prova","ccnl_1":"Metalmeccanici art.","ccnl_2":"","ccnl_3":"","email":"giannirossi@studiogiannirossi.it"},
+  "76":{"ragione_sociale":"ELITOP S.R.L.","password":"prova","ccnl_1":"Piloti elic.","ccnl_2":"","ccnl_3":"","email":"alberto@elitop.it"},
+  "7354":{"ragione_sociale":"ETERNACELL ITALIA SRL","password":"prova","ccnl_1":"Commercio","ccnl_2":"","ccnl_3":"","email":"beatrice.bellobuono@eternacell.ch"},
+  "6297":{"ragione_sociale":"FORNONI S.R.L.","password":"prova","ccnl_1":"Metalmeccanici art.","ccnl_2":"","ccnl_3":"","email":"daniela@fornoni.it"},
+  "2309":{"ragione_sociale":"GAMMA MOTORI SRL","password":"prova","ccnl_1":"Metalmeccanici art.","ccnl_2":"","ccnl_3":"","email":"silvia.begni@fiscalfranciacorta.it"},
+  "3325":{"ragione_sociale":"GRUPPO IDEALSTAMPI S.r.l. unipersonale","password":"prova","ccnl_1":"Metalmeccanici Industria","ccnl_2":"","ccnl_3":"","email":"direzione@idealstampi.it"},
+  "1512":{"ragione_sociale":"INNOVA IMPIANTI SRL","password":"prova","ccnl_1":"Metalmeccanici art.","ccnl_2":"","ccnl_3":"","email":"lorini.alberto@gmail.com"},
+  "9790":{"ragione_sociale":"L.R DI LONATI ROBERTO SRL","password":"prova","ccnl_1":"Edilizia","ccnl_2":"","ccnl_3":"","email":"lr.lonati@libero.it"},
+  "7357":{"ragione_sociale":"LA IMPRESA EDILE SRL","password":"prova","ccnl_1":"Edilizia","ccnl_2":"","ccnl_3":"","email":"amministrazione@la-impresaedile.com"},
+  "2129":{"ragione_sociale":"LINKONLINE S.P.A.","password":"prova","ccnl_1":"Commercio","ccnl_2":"","ccnl_3":"","email":"maurizia.frigoli@psf.it"},
+  "9705":{"ragione_sociale":"MAIKO COSTRUZIONI EDILI S.R.L.","password":"prova","ccnl_1":"Edilizia","ccnl_2":"","ccnl_3":"","email":"info@edilmaiko.com"},
+  "1108":{"ragione_sociale":"MANIFATTURA EUROPA RITORCIT.FILATI SRL","password":"prova","ccnl_1":"Tessili industria","ccnl_2":"","ccnl_3":"","email":"maneuritfil@yahoo.it"},
+  "1112":{"ragione_sociale":"MM AUTOMOTIVE SRL","password":"prova","ccnl_1":"Metalmeccanici Industria","ccnl_2":"","ccnl_3":"","email":"amministrazione@mm-automotive.it"},
+  "77":{"ragione_sociale":"NAEDIL SRLS","password":"prova","ccnl_1":"Edilizia","ccnl_2":"","ccnl_3":"","email":"segreteria@naedilcostruzioni.it"},
+  "7361":{"ragione_sociale":"NOVECENTO DI BEGNI CRISTIAN","password":"prova","ccnl_1":"Commercio","ccnl_2":"","ccnl_3":"","email":"begni.cristian@gmail.com"},
+  "142":{"ragione_sociale":"O.C.OFFICINE CLARENSI S.R.L.","password":"prova","ccnl_1":"Metalmeccanici Industria","ccnl_2":"","ccnl_3":"","email":"segreteria@officineclarensi.it"},
+  "7484":{"ragione_sociale":"OLMI GROUP DI OLMI TIZIANO","password":"prova","ccnl_1":"Metalmeccanici art.","ccnl_2":"Commercio","ccnl_3":"Pubblici esercizi","email":"idraulicaolmi.timi@gmail.com"},
+  "6602":{"ragione_sociale":"OPERA SRL","password":"prova","ccnl_1":"Pubblici esercizi","ccnl_2":"","ccnl_3":"","email":"ufficio.operaiseo@libero.it"},
+  "141":{"ragione_sociale":"P.R.I.M.A. SRL","password":"prova","ccnl_1":"Metalmeccanici Industria","ccnl_2":"","ccnl_3":"","email":"amministrazione@primaimpianti.it"},
+  "7482":{"ragione_sociale":"PARBLEU CAFE' S.N.C. di TOTI A. & C.","password":"prova","ccnl_1":"Pubblici esercizi","ccnl_2":"","ccnl_3":"","email":"giannirossi@studiogiannirossi.it"},
+  "98":{"ragione_sociale":"PELATI DOTT. PIERGIORGIO","password":"prova","ccnl_1":"Studi professionali","ccnl_2":"","ccnl_3":"","email":"info@studiopelati.it"},
+  "7368":{"ragione_sociale":"PROGETTO CARAVAGGIO SAS di BIANCHI A. & C.","password":"prova","ccnl_1":"Agenzie immob.","ccnl_2":"","ccnl_3":"","email":"bghda@tecnocasa.it"},
+  "88":{"ragione_sociale":"RAMERA G. S.R.L.","password":"prova","ccnl_1":"Commercio","ccnl_2":"","ccnl_3":"","email":"maria@giorgioramera.it"},
+  "3402":{"ragione_sociale":"RAULSTAFF SAS DI FASSAN ROMINA & C.","password":"prova","ccnl_1":"Barbieri parrucchieri","ccnl_2":"","ccnl_3":"","email":"raul.vasconi@gmail.com"},
+  "2137":{"ragione_sociale":"SANFAUSTINO IMMOBILIARE SRL","password":"prova","ccnl_1":"Commercio","ccnl_2":"","ccnl_3":"","email":"paghe@psf.it"},
+  "2134":{"ragione_sociale":"SANFAUSTINO LABEL S.P.A.","password":"prova","ccnl_1":"Grafici industria","ccnl_2":"","ccnl_3":"","email":"maurizia.frigoli@psf.it"},
+  "7478":{"ragione_sociale":"SAPORE DI GRANO DI ALBERTELLI GIUSEPPE","password":"prova","ccnl_1":"Panificatori artig.","ccnl_2":"","ccnl_3":"","email":"giannirossi@studiogiannirossi.it"},
+  "2508":{"ragione_sociale":"SIRANI SNC DI SIRANI A. & C.","password":"prova","ccnl_1":"Commercio","ccnl_2":"","ccnl_3":"","email":"agri@siranisnc.it"},
+  "6288":{"ragione_sociale":"SOLAREA SRL","password":"prova","ccnl_1":"Commercio","ccnl_2":"","ccnl_3":"","email":"direzione@solarea.eu"},
+  "7358":{"ragione_sociale":"SSCB SWISS STEM CELLS BIOTECH ITALIA","password":"prova","ccnl_1":"Commercio","ccnl_2":"","ccnl_3":"","email":"massimo.seravalle@stembiotech.ch"},
+  "90":{"ragione_sociale":"STILE S.R.L.","password":"prova","ccnl_1":"Commercio","ccnl_2":"","ccnl_3":"","email":"info@stileoriginaldesign.it"},
+  "7373":{"ragione_sociale":"STUDIO BAGNOLO SAS di Cavalli Giuseppe & C.","password":"prova","ccnl_1":"Agenzie immob.","ccnl_2":"","ccnl_3":"","email":"crhn0@tecnocasa.it"},
+  "203":{"ragione_sociale":"STUDIO DENTISTICO SVANETTI VIVIANI SRL","password":"prova","ccnl_1":"Studi professionali","ccnl_2":"","ccnl_3":"","email":"amministrazione@studiodentisticosvanettiviviani.it"},
+  "99":{"ragione_sociale":"STUDIO PELATI SNC DI PELATI DOTT.P.& C.","password":"prova","ccnl_1":"Studi professionali","ccnl_2":"","ccnl_3":"","email":"info@studiopelati.it"},
+  "7494":{"ragione_sociale":"STUDIO VAILATE SRL","password":"prova","ccnl_1":"Agenzie immob.","ccnl_2":"","ccnl_3":"","email":"crhnb@tecnocasa.it"},
+  "78":{"ragione_sociale":"STUDIO VALCAMONICO PIERLEONARDO","password":"prova","ccnl_1":"Studi professionali","ccnl_2":"","ccnl_3":"","email":"studiovalcamonico@gmail.com"},
+  "7384":{"ragione_sociale":"TECNOPANDINO S.A.S. DI GRASSO ETTORE & C.","password":"prova","ccnl_1":"Agenzie immob.","ccnl_2":"","ccnl_3":"","email":"crhn3@tecnocasa.it"},
+  "7359":{"ragione_sociale":"WHERE TECH SRL","password":"prova","ccnl_1":"Metalmeccanici Industria","ccnl_2":"","ccnl_3":"","email":"malbertelli@wheretech.it"},
+  "6290":{"ragione_sociale":"Y-KEY SRL","password":"prova","ccnl_1":"Commercio","ccnl_2":"","ccnl_3":"","email":"contabilita@y-key.it"}
 };
 
 // Sovrascritture password dalla sessione (modifiche locali)
@@ -1310,8 +1318,8 @@ function doLogin(){
   document.getElementById('f-email-cop').value=az.email;
   document.getElementById('az-lbl').textContent=az.ragione_sociale;
   document.getElementById('az-nome-display').textContent=az.ragione_sociale;
-  if(az.settore==='Edilizia') document.getElementById('sez-cantiere').style.display='block';
-  else document.getElementById('sez-cantiere').style.display='none';
+  const isEdile=az.ccnl_1==='Edilizia'||az.ccnl_2==='Edilizia'||az.ccnl_3==='Edilizia';
+  document.getElementById('sez-cantiere').style.display=isEdile?'block':'none';
 
   // Passa alla pagina 1 del form
   document.getElementById('pg-login').classList.remove('on');
@@ -1323,7 +1331,8 @@ function doLogin(){
   setInterval(saveDraft,3000);
   window.addEventListener('beforeunload',e=>{if(formInProgress&&!formSent){saveDraft();e.preventDefault();e.returnValue='';}});
   // Mostra dichiarazione edile se settore = Edilizia
-  aggiornaDich5(az.settore);
+  aggiornaDich5(az.ccnl_1,az.ccnl_2,az.ccnl_3);
+  aggiornaCcnlSelector(az);
   // Controlla bozze in sospeso per questa azienda
   setTimeout(()=>controllaBozzeSospese(codice), 400);
 }
@@ -1447,8 +1456,9 @@ window.onload=()=>{
     document.getElementById('f-email-cop').value=az.email||'';
     document.getElementById('az-lbl').textContent=az.ragione_sociale;
     document.getElementById('az-nome-display').textContent=az.ragione_sociale;
-    if(az.settore==='Edilizia') document.getElementById('sez-cantiere').style.display='block';
-    aggiornaDich5(az.settore);
+    if(az.ccnl_1==='Edilizia') document.getElementById('sez-cantiere').style.display='block';
+    aggiornaDich5(az.ccnl_1,az.ccnl_2,az.ccnl_3);
+  aggiornaCcnlSelector(az);
     setDefaultAss();
     // Ripristino bozza
     const draft=sessionStorage.getItem('form_draft');
@@ -1635,7 +1645,7 @@ function go(n){
   document.getElementById('pg'+curPage)?.classList.remove('on');
   curPage=n;
   document.getElementById('pg'+n)?.classList.add('on');
-  const pct={1:25,2:50,3:63,'3b':75,4:100};
+  const pct={1:25,2:50,3:63,4:100};
   document.getElementById('prog').style.width=(pct[n]||25)+'%';
   window.scrollTo({top:0,behavior:'smooth'});
   formInProgress=true;
@@ -1650,7 +1660,13 @@ function next1(){
   chk('f-iban','e-iban');
   chkR('prec','e-prec');chkR('qual','e-qual');chkR('retrib','e-retrib');
   chkR('esp','e-esp');chkR('prova','e-prova');chkR('min','e-min');chkR('trasf','e-trasf');chkR('cess','e-cess');chkR('titolo-attinenza','e-titolo-attinenza');
-  chkR('straniero','e-straniero');
+  // CCNL da applicare — obbligatorio se visibile (azienda multi-CCNL)
+  if(document.getElementById('fld-ccnl')?.style.display!=='none'){
+    const ccnlOk=!!document.getElementById('f-ccnl')?.value;
+    document.getElementById('f-ccnl')?.classList.toggle('err-field',!ccnlOk);
+    document.getElementById('e-ccnl')?.classList.toggle('on',!ccnlOk);
+    if(!ccnlOk) errs.push('ccnl');
+  }
   if(rv('straniero')==='Si'){
     const pok=document.getElementById('f-permesso')?.value;
     document.getElementById('e-permesso')?.classList.toggle('on',!pok);
@@ -1658,7 +1674,7 @@ function next1(){
   }
 
   // Cantiere obbligatorio solo per aziende edili
-  if(azLoggata?.settore==='Edilizia'){
+  if(azLoggata?.ccnl_1==='Edilizia'){
     const cant=document.getElementById('f-cant')?.value.trim();
     document.getElementById('f-cant')?.classList.toggle('err-field',!cant);
     document.getElementById('e-cant')?.classList.toggle('on',!cant);
@@ -1716,15 +1732,16 @@ function ptOrarioValido(bodyId){
 function mostraOrarioTI(){
   document.getElementById('sub-orario-ti').style.display='block';
   document.getElementById('sub-orario-td').style.display='none';
-  // Default full-time
+  document.getElementById('sub-pt-td').style.display='none';
   const ft=document.querySelector('input[name="orario-ti"][value="full-time"]');
-  if(ft&&!document.querySelector('input[name="orario-ti"]:checked')){ft.checked=true;ft.closest('.rc')?.classList.add('s');}
-  setContrTI(document.querySelector('input[name="orario-ti"]:checked')?.value==='part-time'?'pt':'ft');
+  if(ft){ft.checked=true;ft.closest('.rc')?.classList.add('s');
+    document.querySelector('input[name="orario-ti"][value="part-time"]')?.closest('.rc')?.classList.remove('s');}
+  setContrTI('ft');
 }
 function mostraOrarioTD(){
   document.getElementById('sub-orario-td').style.display='block';
   document.getElementById('sub-orario-ti').style.display='none';
-  // Full-time di default
+  document.getElementById('sub-pt-ti').style.display='none';
   const ft=document.querySelector('input[name="orario-td"][value="full-time"]');
   if(ft){
     ft.checked=true;
@@ -1762,7 +1779,7 @@ function addPtRowTI(){
   </select></td>
   <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTI()"/></td>
   <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTI()"/></td>
-  <td style="font-size:12px;font-weight:600;text-align:center">0h</td>
+  <td style="font-size:12px;font-weight:600;text-align:center">0</td>
   <td style="white-space:nowrap">
     <button onclick="ripeti(this,'pt-body-ti')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
     <button onclick="this.closest('tr').remove();calcPtTI()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button>
@@ -1771,15 +1788,24 @@ function addPtRowTI(){
 }
 function calcPtTI(){
   let tot=0;
-  document.querySelectorAll('#pt-body-ti tr').forEach((tr,i)=>{
+  document.querySelectorAll('#pt-body-ti tr').forEach((tr)=>{
     const ins=tr.querySelectorAll('input[type=time]');
-    const oreEl=tr.querySelector(`[id^="ore-ti-"]`)||tr.cells[3];
+    const oreEl=tr.cells[3];
     if(ins[0]?.value&&ins[1]?.value){
       const [h1,m1]=ins[0].value.split(':').map(Number);
       const [h2,m2]=ins[1].value.split(':').map(Number);
       const min=(h2*60+m2)-(h1*60+m1);
-      if(min>0){tot+=min;if(oreEl)oreEl.textContent=(min/60).toFixed(1)+'h';}
-    } else {if(oreEl)oreEl.textContent='0h';}
+      if(min>0){
+        tot+=min;
+        if(oreEl) oreEl.textContent=(min/60).toFixed(1);
+        ins[1].style.borderColor='';
+      } else {
+        if(oreEl) oreEl.textContent='⚠️';
+        ins[1].style.borderColor='#dc2626';
+      }
+    } else {
+      if(oreEl) oreEl.textContent='0';
+    }
   });
   document.getElementById('pt-tot-ti').textContent=(tot/60).toFixed(1);
 }
@@ -1794,7 +1820,7 @@ function addPtRowTD(){
   </select></td>
   <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTD()"/></td>
   <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTD()"/></td>
-  <td style="font-size:12px;font-weight:600;text-align:center">0h</td>
+  <td style="font-size:12px;font-weight:600;text-align:center">0</td>
   <td style="white-space:nowrap">
     <button onclick="ripeti(this,'pt-body-td')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
     <button onclick="this.closest('tr').remove();calcPtTD()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button>
@@ -1810,8 +1836,17 @@ function calcPtTD(){
       const [h1,m1]=ins[0].value.split(':').map(Number);
       const [h2,m2]=ins[1].value.split(':').map(Number);
       const min=(h2*60+m2)-(h1*60+m1);
-      if(min>0){tot+=min;if(oreEl)oreEl.textContent=(min/60).toFixed(1)+'h';}
-    } else {if(oreEl)oreEl.textContent='0h';}
+      if(min>0){
+        tot+=min;
+        if(oreEl) oreEl.textContent=(min/60).toFixed(1);
+        ins[1].style.borderColor='';
+      } else {
+        if(oreEl) oreEl.textContent='⚠️';
+        ins[1].style.borderColor='#dc2626';
+      }
+    } else {
+      if(oreEl) oreEl.textContent='0';
+    }
   });
   document.getElementById('pt-tot-td').textContent=(tot/60).toFixed(1);
 }
@@ -1863,7 +1898,7 @@ function next2(){
   else if(tipoContr==='Lavoro a chiamata'){document.getElementById('card-ch').style.display='block';go(3);}
 }
 
-// nextPg3: se TI part-time valida orario; se TD part-time valida causale e va a pg3b
+// nextPg3: se TI part-time valida orario; se TD part-time valida causale e va a pg4
 function nextPg3(){
   if(tipoContr==='Tempo indeterminato part-time'){
     if(!ptOrarioValido('pt-body')){
@@ -1873,10 +1908,19 @@ function nextPg3(){
     }
     document.getElementById('err3').classList.remove('on');
     go(4);
+  } else if(tipoContr==='Lavoro a chiamata'){
+    // Nessuna causale richiesta — valida solo preavviso e modalità
+    const prevTipo=document.querySelector('input[name="prev"]:checked')?.value;
+    const prevQt=document.getElementById('f-prev-qt')?.value;
+    if(!prevTipo||!prevQt){
+      document.getElementById('err3').innerHTML='⛔ Compilare il tipo e la quantità di preavviso prima di procedere.';
+      document.getElementById('err3').classList.add('on'); return;
+    }
+    document.getElementById('err3').classList.remove('on');
+    go(4);
   } else if(tipoContr==='Tempo determinato part-time'){
     const causVal=document.querySelector('input[name="caus-pt"]:checked')?.value||'';
     const causOk=!!causVal;
-    // Scadenza: dipende dalla causale
     let scadOk=false;
     if(causVal==='Sostituzione maternità/paternità'){
       scadOk=!!document.getElementById('f-scad-pt')?.value||!!document.getElementById('chk-rientro-mat-pt')?.checked;
@@ -1889,32 +1933,31 @@ function nextPg3(){
       document.getElementById('err3').innerHTML='⛔ Compilare la causale e la data di scadenza (o spuntare "oppure al rientro della persona sostituita") prima di procedere.';
       document.getElementById('err3').classList.add('on'); return;
     }
-    // Orario part-time: già inserito inline in pg2
-    if(!ptOrarioValido('pt-body-td')){
-      document.getElementById('err3').innerHTML='⛔ Compilare almeno un intervallo orario part-time prima di procedere.';
-      document.getElementById('err3').classList.add('on'); return;
+    document.getElementById('err3').classList.remove('on');
+    go(4);
+  } else if(tipoContr==='Tempo determinato full-time'||tipoContr==='Apprendistato professionalizzante'){
+    // TD full-time: valida causale e scadenza
+    if(tipoContr==='Tempo determinato full-time'){
+      const causVal=document.querySelector('input[name="caus"]:checked')?.value||'';
+      if(!causVal){
+        document.getElementById('err3').innerHTML='⛔ Selezionare la causale del contratto.';
+        document.getElementById('err3').classList.add('on'); return;
+      }
+      if(causVal==='Senza causale prorogabile'){
+        const scad=document.getElementById('f-scad-std')?.value;
+        const dass=document.getElementById('f-dass')?.value;
+        if(scad&&dass){
+          const maxDate=new Date(dass);maxDate.setMonth(maxDate.getMonth()+12);
+          if(new Date(scad)>maxDate){
+            document.getElementById('err3').innerHTML='⛔ Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione.';
+            document.getElementById('err3').classList.add('on'); return;
+          }
+        }
+      }
     }
     document.getElementById('err3').classList.remove('on');
     go(4);
   } else {
-    // TD full-time: valida causale e scadenza
-    const causVal=document.querySelector('input[name="caus"]:checked')?.value||'';
-    if(!causVal){
-      document.getElementById('err3').innerHTML='⛔ Selezionare la causale del contratto.';
-      document.getElementById('err3').classList.add('on'); return;
-    }
-    // Valida scadenza per Senza causale max 12 mesi
-    if(causVal==='Senza causale prorogabile'){
-      const scad=document.getElementById('f-scad-std')?.value;
-      const dass=document.getElementById('f-dass')?.value;
-      if(scad&&dass){
-        const maxDate=new Date(dass);maxDate.setMonth(maxDate.getMonth()+12);
-        if(new Date(scad)>maxDate){
-          document.getElementById('err3').innerHTML='⛔ Senza causale: la scadenza non può superare 12 mesi dalla data di assunzione.';
-          document.getElementById('err3').classList.add('on'); return;
-        }
-      }
-    }
     document.getElementById('err3').classList.remove('on');
     go(4);
   }
@@ -1923,8 +1966,7 @@ function nextPg3(){
 // nextPg3b: valida orario TD part-time prima di andare a pg4
 function nextPg3b(){
   if(!ptOrarioValido('pt-body-b')){
-    // Mostra messaggio di errore nella pg3b
-    let eb=document.getElementById('err3b');
+
     if(!eb){
       eb=document.createElement('div');
       eb.id='err3b';eb.className='err-b on';
@@ -1956,14 +1998,21 @@ function calcPtB(){
   ptRowsB.forEach(id=>{
     const r=document.getElementById('ptrb-'+id);if(!r)return;
     const ins=r.querySelectorAll('input[type=time]');
+    const oreEl=document.getElementById('ob-'+id);
     if(ins[0]?.value&&ins[1]?.value){
       const[dh,dm]=ins[0].value.split(':').map(Number);const[ah,am]=ins[1].value.split(':').map(Number);
       const min=(ah*60+am)-(dh*60+dm);
-      if(min>0){tot+=min;document.getElementById('ob-'+id).textContent=`${Math.floor(min/60)}h ${String(min%60).padStart(2,'0')}m`;}
-      else document.getElementById('ob-'+id).textContent='—';
+      if(min>0){
+        tot+=min;
+        if(oreEl) oreEl.textContent=`${Math.floor(min/60)}:${String(min%60).padStart(2,'0')}`;
+        ins[1].style.borderColor='';
+      } else {
+        if(oreEl) oreEl.textContent='⚠️';
+        ins[1].style.borderColor='#dc2626';
+      }
     }
   });
-  document.getElementById('ore-tot-b').textContent=`${Math.floor(tot/60)}h ${String(tot%60).padStart(2,'0')}m`;
+  document.getElementById('ore-tot-b').textContent=`${Math.floor(tot/60)}:${String(tot%60).padStart(2,'0')}`;
 }
 
 // ─── UI HELPERS ───────────────────────────────────────────────────────────────
@@ -1975,13 +2024,40 @@ function capitalizeWords(el){
 }
 
 // ─── DICHIARAZIONE EDILE (dich5) ─────────────────────────────────────────────
-function aggiornaDich5(settore){
+function aggiornaDich5(ccnl_1, ccnl_2='', ccnl_3=''){
   const wrap=document.getElementById('dich5-wrap');
   if(!wrap)return;
-  const isEdile=settore==='Edilizia';
+  const isEdile=[ccnl_1,ccnl_2,ccnl_3].some(c=>c==='Edilizia');
   wrap.style.display=isEdile?'flex':'none';
   const cb=document.getElementById('dich5');
   if(!isEdile&&cb){cb.checked=false;wrap.classList.remove('s');}
+}
+
+// CCNL da applicare — mostra menu a discesa se l'azienda ha più CCNL
+function aggiornaCcnlSelector(az){
+  const ccnls=[az.ccnl_1,az.ccnl_2,az.ccnl_3].filter(c=>c&&c.trim()!='');
+  const fld=document.getElementById('fld-ccnl');
+  const sel=document.getElementById('f-ccnl');
+  if(!fld||!sel) return;
+  if(ccnls.length>1){
+    // Popola le opzioni
+    sel.innerHTML='<option value="">— Seleziona —</option>';
+    ccnls.forEach(c=>{
+      const opt=document.createElement('option');
+      opt.value=c;opt.textContent=c;
+      sel.appendChild(opt);
+    });
+    fld.style.display='block';
+  } else {
+    fld.style.display='none';
+    sel.innerHTML='';
+    if(ccnls.length===1){
+      const opt=document.createElement('option');
+      opt.value=ccnls[0];opt.textContent=ccnls[0];sel.selected=true;
+      sel.appendChild(opt);
+      sel.value=ccnls[0];
+    }
+  }
 }
 
 // ─── BLOCCO AGEVOLAZIONI PER ETA'/SESSO ──────────────────────────────────────
@@ -2271,6 +2347,17 @@ function autoCheckAgev(age, sesso){
       if(cbEl.checked){cbEl.checked=false;parent?.classList.remove('s');}
     }
   });
+  // Soggetto svantaggiato: auto-spunta se over 50 o privo di impiego ≥6 mesi
+  const cbSvantaggiato=document.querySelector('input[name="agev"][value="Soggetto svantaggiato"]');
+  if(cbSvantaggiato&&!cbSvantaggiato.disabled){
+    const isSvantaggiato=(age>=50)||privoimp;
+    if(isSvantaggiato&&!cbSvantaggiato.checked){
+      cbSvantaggiato.checked=true;cbSvantaggiato.closest('.cc')?.classList.add('s');
+      if(nessuna){nessuna.checked=false;nessuna.closest('.cc')?.classList.remove('s');}
+    } else if(!isSvantaggiato&&cbSvantaggiato.checked){
+      cbSvantaggiato.checked=false;cbSvantaggiato.closest('.cc')?.classList.remove('s');
+    }
+  }
   calcAgev();
 }
 
@@ -2460,14 +2547,21 @@ function calcPt(){
   ptRows.forEach(id=>{
     const r=document.getElementById('ptr-'+id);if(!r)return;
     const ins=r.querySelectorAll('input[type=time]');
+    const oreEl=document.getElementById('o-'+id);
     if(ins[0]?.value&&ins[1]?.value){
       const[dh,dm]=ins[0].value.split(':').map(Number);const[ah,am]=ins[1].value.split(':').map(Number);
       const min=(ah*60+am)-(dh*60+dm);
-      if(min>0){tot+=min;document.getElementById('o-'+id).textContent=`${Math.floor(min/60)}h ${String(min%60).padStart(2,'0')}m`;}
-      else document.getElementById('o-'+id).textContent='—';
+      if(min>0){
+        tot+=min;
+        if(oreEl) oreEl.textContent=`${Math.floor(min/60)}:${String(min%60).padStart(2,'0')}`;
+        ins[1].style.borderColor='';
+      } else {
+        if(oreEl) oreEl.textContent='⚠️';
+        ins[1].style.borderColor='#dc2626';
+      }
     }
   });
-  document.getElementById('ore-tot').textContent=`${Math.floor(tot/60)}h ${String(tot%60).padStart(2,'0')}m`;
+  document.getElementById('ore-tot').textContent=`${Math.floor(tot/60)}:${String(tot%60).padStart(2,'0')}`;
 }
 
 // ─── RACCOLTA DATI ────────────────────────────────────────────────────────────
@@ -2514,7 +2608,7 @@ function generaCrit(){
   if(!document.getElementById('dich1')?.checked) items.push({t:'warn',v:'Dichiarazione obbligatoria non resa: "Si impegna a comunicare allo Studio l\'eventuale impiego di lavoratori somministrati"'});
   if(!document.getElementById('dich4')?.checked) items.push({t:'warn',v:'Dichiarazione obbligatoria non resa: "L\'azienda è informata che dovrà sottoporre il/la dipendente a controllo medico dal medico competente"'});
   // dich5 solo per aziende edili
-  if(azLoggata?.settore==='Edilizia'&&!document.getElementById('dich5')?.checked)
+  if(azLoggata?.ccnl_1==='Edilizia'&&!document.getElementById('dich5')?.checked)
     items.push({t:'warn',v:'Dichiarazione obbligatoria non resa: "Corso obbligatorio sicurezza 16 ore ogni 3 anni (artt. 36-37 D.Lgs. 81/2008)"'});
   // Dichiarazioni facoltative non rese — segnalate come criticità
   if(!document.getElementById('dich2')?.checked) items.push({t:'info',v:'Dichiarazione non resa: "Regolarità contributiva INPS / INAIL (e Cassa Edile se applicabile)" — verificare la situazione con il datore.'});
@@ -2544,6 +2638,7 @@ function openPdf(){
   const titoloStr=gv('f-titolo')==='Altro'?`Altro — ${gv('f-titolo-altro')}`:gv('f-titolo');
   const vals=[
     ['Datore di lavoro',gv('f-datore')],
+    ...(document.getElementById('fld-ccnl')?.style.display!=='none'?[['CCNL da applicare',document.getElementById('f-ccnl')?.value||'—']]:[] ),
     ['Email riepilogo',gv('f-email-cop')],
     ['Dipendente',nome],
     ['Sesso',rv('sesso')],
@@ -3188,10 +3283,24 @@ function recuperaBozza(chiave){
 
 // Torna indietro dalla pagina 4 in base alla tipologia contratto
 function backFrom4(){
-  if(tipoContr==='Tempo indeterminato full-time') go(2);
-  else if(tipoContr==='Tempo determinato part-time') go('3b');
-  else if(tipoContr) go(3);
-  else go(3); // fallback se tipoContr non è impostato
+  if(tipoContr==='Tempo indeterminato full-time'||tipoContr==='Tempo indeterminato part-time'){
+    // TI — torna a pg2 (orario inline)
+    go(2);
+  } else {
+    // TD, Apprendistato, Lavoro a chiamata — torna a pg3 assicurandosi che la card giusta sia visibile
+    ['card-pt','card-ch','card-det','card-det-pt','card-appr'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.style.display='none';
+    });
+    const cardMap={
+      'Tempo determinato full-time':'card-det',
+      'Tempo determinato part-time':'card-det-pt',
+      'Apprendistato professionalizzante':'card-appr',
+      'Lavoro a chiamata':'card-ch',
+    };
+    const cardId=cardMap[tipoContr];
+    if(cardId) document.getElementById(cardId).style.display='block';
+    go(3);
+  }
 }
 
 function annullaBozza(chiave){
@@ -3216,7 +3325,7 @@ function invia(){
   // Dichiarazioni — dich1 e dich4 sempre obbligatorie; dich5 se edile
   const d1=document.getElementById('dich1')?.checked;
   const d4=document.getElementById('dich4')?.checked;
-  const isEdile=azLoggata?.settore==='Edilizia';
+  const isEdile=azLoggata?.ccnl_1==='Edilizia';
   const d5=isEdile ? document.getElementById('dich5')?.checked : true;
   const dichOk=d1&&d4&&d5;
   document.getElementById('e-dich')?.classList.toggle('on',!dichOk);if(!dichOk)errs.push('dich');
@@ -3248,10 +3357,78 @@ function invia(){
   window.scrollTo({top:0,behavior:'smooth'});
 
   // Genera e invia in background
+  salvaOrdineSupabase();
   generaEInviaEmail();
 }
 
-// ─── GENERA PDF E INVIA EMAIL ─────────────────────────────────────────────────
+// ─── SALVA ORDINE SU SUPABASE ─────────────────────────────────────────────────
+const SUPABASE_URL = 'https://gdqhvuwapiztjamfdazj.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_lUI2n7cuutwmR9ziy7SZmw_3MNQH4iC';
+
+async function salvaOrdineSupabase(){
+  try {
+    const az = azLoggata || {};
+    const ordine = {
+      codice_ditta:         az.codice || '',
+      datore:               gv('f-datore'),
+      email_azienda:        gv('f-email-cop'),
+      dipendente:           gv('f-dip'),
+      sesso:                rv('sesso'),
+      data_nascita:         gv('f-dob') || null,
+      data_assunzione:      gv('f-dass') || null,
+      straniero:            rv('straniero')==='Si',
+      permesso_soggiorno:   gv('f-permesso') || null,
+      tipologia_contratto:  tipoContr || rv('contr-base'),
+      qualifica:            rv('qual'),
+      livello_contrattuale: gv('f-liv') || null,
+      titolo_studio:        rv('titolo'),
+      titolo_studio_attinenza: rv('attinenza'),
+      mansioni:             gv('f-mans'),
+      precedenti_lavorativi:rv('prec'),
+      esperienza_mansioni:  rv('esper'),
+      periodo_prova:        rv('prova'),
+      comune:               document.getElementById('f-comune')?.value || '',
+      provincia:            document.getElementById('f-prov')?.value || '',
+      regione:              gv('f-regione') || '',
+      iban:                 gv('f-iban'),
+      cellulare_lavoratore: gv('f-cell') || '',
+      retribuzione:         rv('retrib'),
+      benefits:             Array.from(document.querySelectorAll('#benef-group input:checked')).map(i=>i.value),
+      trasferte:            rv('trasferta'),
+      giorni_somministrato: parseInt(gv('f-gg-som')) || 0,
+      cessati_contratti_termine: rv('cess'),
+      agevolazioni:         getAgevSel(),
+      dvr:                  rv('dvr'),
+      dichiarazioni:        Array.from(document.querySelectorAll('#pg4 input[type=checkbox]:checked')).filter(i=>i.id.startsWith('dich')).map(i=>i.value),
+      compilato_da:         gv('f-comp-da'),
+      osservazioni:         gv('f-osserv') || null,
+      causale:              rv('caus') || rv('caus-pt') || null,
+      scadenza_contratto:   gv('f-scad') || gv('f-scad-ass') || gv('f-scad-std') || gv('f-scad-pt') || gv('f-scad-std-pt') || null,
+      inviato_studio:       true,
+      inviato_at:           new Date().toISOString(),
+    };
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/ordini`, {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'apikey':        SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer':        'return=minimal',
+      },
+      body: JSON.stringify(ordine),
+    });
+
+    if(res.ok){
+      console.log('[Supabase] ✅ Ordine salvato correttamente');
+    } else {
+      const err = await res.text();
+      console.error('[Supabase] ❌ Errore salvataggio:', res.status, err);
+    }
+  } catch(e){
+    console.error('[Supabase] ❌ Eccezione:', e.message);
+  }
+}
 async function generaEInviaEmail(){
   // Verifica EmailJS disponibile
   if(typeof emailjs === 'undefined'){
