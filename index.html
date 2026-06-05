@@ -927,7 +927,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <!-- Obbligatorie -->
   <p style="font-size:11px;color:#6b7280;margin-bottom:.4rem;font-weight:500">Obbligatorie <span class="req">*</span></p>
   <div class="cg" style="margin-bottom:.5rem">
-    <label class="cc" onclick="togc(this)"><input type="checkbox" id="dich1" value="Comunicherà lavoratori somministrati"/><div class="rb"><div class="rt">Si impegna a comunicare allo Studio l'eventuale impiego di lavoratori somministrati</div></div></label>
+    <label class="cc" onclick="togc(this)"><input type="checkbox" id="dich1" value="Comunicherà lavoratori somministrati"/><div class="rb"><div class="rt">Si impegna a comunicare allo Studio l'eventuale impiego di lavoratori somministrati</div><div class="rd" style="color:#185FA5;font-size:11px;cursor:pointer" onclick="event.stopPropagation();hintDirect('Lavoratori somministrati','L\'indicazione del numero dei lavoratori somministrati in forza è necessaria per la corretta determinazione dell\'organico aziendale, nonché per la verifica della spettanza di specifiche agevolazioni e dell\'eventuale insorgenza di obblighi previsti dalla legge e dalla contrattazione collettiva applicabile.','Art. 36 D.Lgs. 81/2015 — lavoratori somministrati nel computo degli organici')">ℹ️ Guida al campo</div></div></label>
     <label class="cc" onclick="togc(this)"><input type="checkbox" id="dich4" value="Controllo medico competente"/><div class="rb"><div class="rt">L'azienda è informata che dovrà sottoporre il/la dipendente a controllo medico dal medico competente (se previsto dalla valutazione dei rischi)</div></div></label>
     <!-- dich5: visibile solo per aziende del settore Edilizia -->
     <label class="cc" id="dich5-wrap" style="display:none" onclick="togc(this)">
@@ -2783,7 +2783,15 @@ function openPdf(){
     ...(rv('straniero')==='Si'?[['Tipo permesso di soggiorno',document.getElementById('f-permesso')?.value||'—']]:[] ),
     ['Disabilità',rv('disab')],
     ...(rv('disab')==='Si'?[['Tipo invalidità',rv('tipo-disab')]]:[] ),
-    ['Data di nascita',fmtData(gv('f-dob'))],
+    ['Data di nascita', (()=>{
+      const dob=gv('f-dob');
+      if(!dob) return '—';
+      const t=new Date(),b=new Date(dob);
+      let a=t.getFullYear()-b.getFullYear();
+      const m=t.getMonth()-b.getMonth();
+      if(m<0||(m===0&&t.getDate()<b.getDate()))a--;
+      return `${fmtData(dob)} (${a} anni)`;
+    })()],
     ['Data assunzione',fmtData(gv('f-dass'))],
     ['Cellulare',gv('f-cell')],
     ['IBAN',gv('f-iban')],
@@ -3570,22 +3578,34 @@ async function invia(){
   formSent=true;
   sessionStorage.removeItem('form_draft');
 
-  // Mostra schermata done subito, poi invia email in background
-  // Genera il riepilogo PRIMA di nascondere pg4 (i campi devono essere visibili)
-  openPdf();
-  await new Promise(r=>setTimeout(r,400));
-  const pdfContentSnapshot = document.getElementById('pdf-c')?.innerHTML || '';
-  closePdf();
+  // Costruisce il riepilogo HTML direttamente (senza aprire il modal)
+  const pdfContentSnapshot = buildRiepilogoHTML();
 
-  // Ora mostra pg-done
+  // Mostra pg-done
   document.getElementById('pg4').classList.remove('on');
   document.getElementById('pg-done').style.display='block';
   document.getElementById('prog').style.width='100%';
   window.scrollTo({top:0,behavior:'smooth'});
 
-  // Invia email e salva in background usando il contenuto già generato
+  // Invia email e salva in background
   salvaOrdineSupabase();
   inviaEmailConSnapshot(pdfContentSnapshot);
+}
+
+// Costruisce l'HTML del riepilogo senza aprire il modal
+function buildRiepilogoHTML(){
+  // Usa openPdf per popolare pdf-c poi estrae il contenuto
+  // Apre il modal in modo invisibile
+  const modal = document.getElementById('pdf-ov');
+  const prevDisplay = modal.style.display;
+  modal.style.visibility = 'hidden';
+  modal.style.display = 'flex';
+  openPdf();
+  const html = document.getElementById('pdf-c')?.innerHTML || '';
+  modal.style.display = prevDisplay || 'none';
+  modal.style.visibility = '';
+  closePdf();
+  return html;
 }
 
 async function inviaEmailConSnapshot(htmlSnapshot){
@@ -3593,12 +3613,31 @@ async function inviaEmailConSnapshot(htmlSnapshot){
     console.error('[Email] EmailJS non disponibile'); return;
   }
   try {
-    // Crea elemento temporaneo con il contenuto snapshot
     const div = document.createElement('div');
     div.innerHTML = htmlSnapshot;
     await generaEInviaEmailConContenuto(div);
+    // Mostra messaggio successo nella pg-done
+    const doneEl = document.getElementById('pg-done');
+    if(doneEl){
+      let msgEl = document.getElementById('email-success-msg');
+      if(!msgEl){
+        msgEl = document.createElement('p');
+        msgEl.id = 'email-success-msg';
+        msgEl.style.cssText = 'margin-top:16px;padding:12px 16px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;color:#166534;font-size:14px;font-weight:600;text-align:center';
+        doneEl.querySelector('.card')?.appendChild(msgEl);
+      }
+      msgEl.textContent = '✅ Email inviate con successo allo Studio e all\'azienda.';
+    }
   } catch(err){
-    console.error('[Email] Errore:', err?.status, err?.text, err?.message || err);
+    console.error('[Email] Errore invio:', err?.status, err?.text, err?.message || err);
+    // Mostra errore
+    const doneEl = document.getElementById('pg-done');
+    if(doneEl){
+      let msgEl = document.getElementById('email-success-msg');
+      if(!msgEl){ msgEl=document.createElement('p');msgEl.id='email-success-msg';msgEl.style.cssText='margin-top:16px;padding:12px;border-radius:8px;font-size:13px;text-align:center';doneEl.querySelector('.card')?.appendChild(msgEl); }
+      msgEl.style.background='#fef2f2';msgEl.style.border='1px solid #fecaca';msgEl.style.color='#dc2626';
+      msgEl.textContent = '⚠️ Errore invio email. Contattare lo Studio al 030 7000841.';
+    }
   }
 }
 
