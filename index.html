@@ -200,17 +200,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="fld">
     <label class="lbl">Password <span class="req">*</span></label>
     <div style="position:relative">
-      <input type="password" autocomplete="new-password" id="f-pwd" placeholder="Password" style="font-size:16px;height:44px;padding-right:40px" onkeydown="if(event.key==='Enter')doLogin()"/>
-      <button onclick="togglePwd()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6b7280;font-size:16px" title="Mostra/Nascondi">👁</button>
+      <input type="password" autocomplete="current-password" id="f-pwd" placeholder="Password" style="font-size:16px;height:44px;padding-right:40px" onkeydown="if(event.key==='Enter')doLogin()" oninput="rilevaNuovaPassword(this)"/>
+      <button type="button" onclick="togglePwd()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6b7280;font-size:16px" title="Mostra/Nascondi">👁</button>
     </div>
     <p style="font-size:11px;color:#6b7280;margin-top:4px">Minimo 8 caratteri, di cui almeno un numero e una lettera maiuscola.</p>
     <span class="err-msg" id="e-pwd">Inserire la password</span>
   </div>
-  <button class="btn-p" onclick="doLogin()" style="width:100%;height:44px;font-size:15px;justify-content:center;margin-top:.25rem">
+  <!-- Pannello cambio password (appare se il browser suggerisce una nuova password) -->
+  <div id="nuova-pwd-panel" style="display:none;background:#fffbeb;border:1px solid #FDD835;border-radius:10px;padding:14px;margin-bottom:12px">
+    <p style="font-size:13px;color:#7A6000;font-weight:600;margin-bottom:8px">🔐 Vuoi impostare questa come nuova password?</p>
+    <p style="font-size:12px;color:#7A6000;margin-bottom:10px">Digita la password una seconda volta per confermare (copia/incolla consentito).</p>
+    <div class="fld" style="margin-bottom:8px">
+      <label class="lbl" style="font-size:12px">Conferma nuova password</label>
+      <input type="password" autocomplete="new-password" id="f-pwd-confirm" placeholder="Ripeti la password" style="height:38px;font-size:14px"/>
+      <span class="err-msg" id="e-pwd-confirm">Le password non corrispondono</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button type="button" onclick="confermaNuovaPassword()" style="background:#185FA5;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;cursor:pointer;font-weight:600">✅ Salva nuova password</button>
+      <button type="button" onclick="annullaNuovaPassword()" style="background:#fff;border:1px solid #d1d5db;border-radius:6px;padding:6px 14px;font-size:13px;cursor:pointer;color:#6b7280">Ignora</button>
+    </div>
+    <div id="pwd-saved-ok" style="display:none;color:#166534;font-size:12px;margin-top:8px;font-weight:600">✅ Nuova password salvata con successo.</div>
+  </div>
+  <button type="button" class="btn-p" onclick="doLogin()" style="width:100%;height:44px;font-size:15px;justify-content:center;margin-top:.25rem">
     Accedi →
   </button>
   <div style="text-align:center;margin-top:.875rem">
-    <button onclick="showPwdReset()" style="background:none;border:none;color:#185FA5;font-size:12px;cursor:pointer;text-decoration:underline">
+    <button type="button" onclick="showPwdReset()" style="background:none;border:none;color:#185FA5;font-size:12px;cursor:pointer;text-decoration:underline">
       Password dimenticata?
     </button>
   </div>
@@ -229,7 +244,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div style="font-size:12px;color:#166534;font-weight:600">✅ Accesso verificato</div>
       <div style="font-size:13px;font-weight:600;color:#1a1a1a" id="az-nome-display">—</div>
     </div>
-    <button onclick="doLogout()" style="background:none;border:0.5px solid #d1d5db;border-radius:6px;font-size:11px;color:#6b7280;cursor:pointer;padding:3px 8px">Esci</button>
+    <button type="button" onclick="doLogout()" style="background:none;border:0.5px solid #d1d5db;border-radius:6px;font-size:11px;color:#6b7280;cursor:pointer;padding:3px 8px">Esci</button>
   </div>
 
   <div class="fld" data-hint="Ragione sociale completa come da visura camerale. Pre-compilata dal profilo." data-label="Datore di lavoro" style="grid-column:1/-1">
@@ -246,9 +261,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
            oninput="this.value=this.value.replace(/\s/g,'')"/>
     <div id="email-cop-confirm" style="display:none;margin-top:6px;background:#fffbeb;border:1px solid #FFA500;border-radius:8px;padding:8px 12px;font-size:12px;color:#7A4400">
       ⚠️ L'email è stata modificata rispetto a quella registrata (<span id="email-cop-originale" style="font-weight:600"></span>).
-      <div style="display:flex;gap:8px;margin-top:6px">
-        <button onclick="confermaEmailCop()" style="background:#185FA5;color:#fff;border:none;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-weight:500">✅ Salva come nuovo indirizzo</button>
-        <button onclick="ripristinaEmailCop()" style="background:#fff;border:0.5px solid #d1d5db;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;color:#374151">↩ Ripristina originale</button>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+        <button type="button" onclick="confermaEmailCop()" style="background:#185FA5;color:#fff;border:none;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-weight:500">✅ Salva come nuovo indirizzo</button>
+        <button type="button" onclick="usaTemporaneamenteEmailCop()" style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;color:#166534;font-weight:500">⏱ Utilizzo temporaneamente</button>
+        <button type="button" onclick="ripristinaEmailCop()" style="background:#fff;border:0.5px solid #d1d5db;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;color:#374151">↩ Ripristina originale</button>
       </div>
     </div>
   </div>
@@ -607,7 +623,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="nav">
     <span class="pc">Pagina 1 di 4</span>
-    <button class="btn-p" onclick="next1()">Avanti →</button>
+    <button type="button" class="btn-p" onclick="next1()">Avanti →</button>
   </div>
 </div>
 </div>
@@ -629,7 +645,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <input type="radio" name="contr-base" value="Tempo indeterminato"/>
           <div class="rb"><div class="rt">01 — Tempo indeterminato</div></div>
         </label>
-        <button class="lg-btn" onclick="apriLineaGuida('01')" style="flex-shrink:0">📖 Leggi di più</button>
+        <button type="button" class="lg-btn" onclick="apriLineaGuida('01')" style="flex-shrink:0">📖 Leggi di più</button>
       </div>
       <!-- Sub-selezione orario TI -->
       <div id="sub-orario-ti" style="display:none;margin:6px 0 4px 18px">
@@ -642,7 +658,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <label class="lbl" style="font-size:12px">Distribuzione orario settimanale <span class="req">*</span></label>
           <table class="pt-tbl"><thead><tr><th style="width:90px">Giorno</th><th>Dalle</th><th>Alle</th><th>Ore</th><th></th></tr></thead><tbody id="pt-body-ti"></tbody></table>
           <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
-            <button class="btn-g" style="font-size:12px;padding:4px 10px" onclick="addPtRowTI()">+ Aggiungi giorno</button>
+            <button type="button" class="btn-g" style="font-size:12px;padding:4px 10px" onclick="addPtRowTI()">+ Aggiungi giorno</button>
             <span style="font-size:12px;color:#6b7280">Totale ore settimanali: <strong id="pt-tot-ti">0</strong></span>
           </div>
           <div class="fld" style="margin-top:8px">
@@ -659,7 +675,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <input type="radio" name="contr-base" value="Tempo determinato"/>
           <div class="rb"><div class="rt">02 — Tempo determinato</div><div class="rd">Richiede data di scadenza e causale obbligatoria se di durata superiore a 12 mesi.</div></div>
         </label>
-        <button class="lg-btn" onclick="apriLineaGuida('02')" style="flex-shrink:0">📖 Leggi di più</button>
+        <button type="button" class="lg-btn" onclick="apriLineaGuida('02')" style="flex-shrink:0">📖 Leggi di più</button>
       </div>
       <div id="sub-orario-td" style="display:none;margin:6px 0 4px 18px">
         <label class="lbl" style="font-size:12px;margin-bottom:4px">Orario di lavoro <span class="req">*</span></label>
@@ -671,7 +687,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <label class="lbl" style="font-size:12px">Distribuzione orario settimanale <span class="req">*</span></label>
           <table class="pt-tbl"><thead><tr><th style="width:90px">Giorno</th><th>Dalle</th><th>Alle</th><th>Ore</th><th></th></tr></thead><tbody id="pt-body-td"></tbody></table>
           <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
-            <button class="btn-g" style="font-size:12px;padding:4px 10px" onclick="addPtRowTD()">+ Aggiungi giorno</button>
+            <button type="button" class="btn-g" style="font-size:12px;padding:4px 10px" onclick="addPtRowTD()">+ Aggiungi giorno</button>
             <span style="font-size:12px;color:#6b7280">Totale ore settimanali: <strong id="pt-tot-td">0</strong></span>
           </div>
           <div class="fld" style="margin-top:8px">
@@ -688,7 +704,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <input type="radio" name="contr-base" value="Apprendistato professionalizzante" id="radio-appr"/>
           <div class="rb"><div class="rt">03 — Apprendistato professionalizzante</div><div class="rd">Contratto formativo con piano individuale e tutor. Contribuzione ridotta. <strong>Età da 18 a 29 anni.</strong></div></div>
         </label>
-        <button class="lg-btn" onclick="apriLineaGuida('03')" style="flex-shrink:0">📖 Leggi di più</button>
+        <button type="button" class="lg-btn" onclick="apriLineaGuida('03')" style="flex-shrink:0">📖 Leggi di più</button>
       </div>
 
       <!-- 04 — Lavoro a chiamata -->
@@ -698,7 +714,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <input type="radio" name="contr-base" value="Lavoro a chiamata"/>
           <div class="rb"><div class="rt">04 — Lavoro a chiamata (job on call)</div><div class="rd">Prestazione non continuativa. Richiede aggiornamento DVR. Limitazioni alle agevolazioni.</div></div>
         </label>
-        <button class="lg-btn" onclick="apriLineaGuida('04')" style="flex-shrink:0">📖 Leggi di più</button>
+        <button type="button" class="lg-btn" onclick="apriLineaGuida('04')" style="flex-shrink:0">📖 Leggi di più</button>
       </div>
       <div class="contr-sep"></div>
 
@@ -706,8 +722,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span class="err-msg" id="e-contr">Selezionare la tipologia di contratto</span>
   </div>
   <div class="nav">
-    <button class="btn-g" onclick="go(1)">← Indietro</button>
-    <button class="btn-p" onclick="next2()">Avanti →</button>
+    <button type="button" class="btn-g" onclick="go(1)">← Indietro</button>
+    <button type="button" class="btn-p" onclick="next2()">Avanti →</button>
   </div>
 </div>
 </div>
@@ -719,12 +735,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- Part-time -->
   <div id="card-pt" style="display:none">
-    <div class="hero"><div class="hero-t">Tempo indeterminato part-time</div><button class="btn-info" onclick="toggleInfo('ip-pt')">Informazioni</button></div>
+    <div class="hero"><div class="hero-t">Tempo indeterminato part-time</div><button type="button" class="btn-info" onclick="toggleInfo('ip-pt')">Informazioni</button></div>
     <div class="info-panel" id="ip-pt"><h4>Part-time — D.Lgs. 81/2015 artt. 4-12</h4><ul><li>Orizzontale (riduzione giornaliera), verticale (solo certi giorni), misto</li><li>Lavoro supplementare ammesso entro 25% ore con maggiorazione</li><li>Agevolazioni si applicano in proporzione all'orario ridotto</li></ul></div>
     <div class="fld">
       <label class="lbl">Distribuzione orario settimanale <span class="req">*</span></label>
       <table class="pt-tbl"><thead><tr><th style="width:90px">Giorno</th><th>Dalle</th><th>Alle</th><th>Ore</th><th></th></tr></thead><tbody id="pt-body"></tbody></table>
-      <button class="pt-add" onclick="addPtRow()">+ Aggiungi intervallo</button>
+      <button type="button" class="pt-add" onclick="addPtRow()">+ Aggiungi intervallo</button>
       <div style="margin-top:.5rem"><span class="ore-tot">⏱ Totale: <strong id="ore-tot">0h 00m</strong></span></div>
     </div>
     <div class="fld"><label class="lbl">Ulteriori precisazioni</label><textarea id="f-orario-note" placeholder="Variazioni, turni, clausole elastiche..."></textarea></div>
@@ -732,7 +748,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- A chiamata -->
   <div id="card-ch" style="display:none">
-    <div class="hero"><div class="hero-t">Lavoro a chiamata</div><button class="btn-info" onclick="toggleInfo('ip-ch')">Informazioni</button></div>
+    <div class="hero"><div class="hero-t">Lavoro a chiamata</div><button type="button" class="btn-info" onclick="toggleInfo('ip-ch')">Informazioni</button></div>
     <div class="info-panel" id="ip-ch"><h4>Lavoro intermittente — D.Lgs. 81/2015 artt. 13-18</h4><ul><li>Max 400 giornate/anno negli ultimi 3 anni</li><li>Comunicazione preventiva al Ministero entro 60 min. prima della prestazione</li><li>Non accede alla maggior parte degli incentivi contributivi</li></ul></div>
     <div class="warn-b" data-hint="Il mancato adeguamento del DVR alla specifica tutela dei lavoratori a chiamata comporta la nullità del contratto e la conseguente trasformazione del rapporto di lavoro a tempo indeterminato." data-label="DVR — Lavoro a chiamata" data-norm="Art. 14 D.Lgs. 81/2015">⚠️ Aggiornare il DVR e fare comunicazione preventiva al Ministero prima di ogni prestazione. <strong style="color:#dc2626">Il mancato adeguamento del DVR comporta la nullità del contratto e la trasformazione a TI.</strong></div>
     <div class="g2">
@@ -746,7 +762,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <!-- Determinato -->
   <!-- Tempo determinato full-time -->
   <div id="card-det" style="display:none">
-    <div class="hero"><div class="hero-t">Tempo determinato</div><button class="btn-info" onclick="toggleInfo('ip-det')">Informazioni</button></div>
+    <div class="hero"><div class="hero-t">Tempo determinato</div><button type="button" class="btn-info" onclick="toggleInfo('ip-det')">Informazioni</button></div>
     <div class="info-panel" id="ip-det"><h4>Contratto a termine — D.Lgs. 81/2015 artt. 19-29</h4><ul><li>Durata massima 24 mesi (proroghe incluse) per stesse mansioni stesso datore</li><li>Causale obbligatoria per contratti >12 mesi o ogni rinnovo</li><li>Contributo addizionale 1,40% (rimborsato se trasformazione a TI)</li></ul></div>
     <div class="fld" data-label="Causale" data-hint="La causale deve essere specifica e veritiera. Per esigenze temporanee o incrementi non programmabili: applicabile solo per far fronte a picchi di lavoro non prevedibili o necessità oggettive ed estranee all'attività ordinaria." data-norm="Art.19 D.Lgs.81/2015 — causale obbligatoria per contratti >12 mesi">
       <label class="lbl" style="font-size:15px;color:#dc2626;font-weight:700">Causale del contratto <span class="req">*</span></label>
@@ -800,7 +816,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- Tempo determinato part-time: sezione causale -->
   <div id="card-det-pt" style="display:none">
-    <div class="hero"><div class="hero-t">Tempo determinato</div><button class="btn-info" onclick="toggleInfo('ip-det-pt')">Informazioni</button></div>
+    <div class="hero"><div class="hero-t">Tempo determinato</div><button type="button" class="btn-info" onclick="toggleInfo('ip-det-pt')">Informazioni</button></div>
     <div class="info-panel" id="ip-det-pt"><h4>Contratto a termine part-time — D.Lgs. 81/2015 artt. 19-29 + artt. 4-12</h4><ul><li>Causale obbligatoria per contratti >12 mesi o ogni rinnovo</li><li>Durata massima 24 mesi (proroghe incluse)</li><li>Contributo addizionale 1,40% a carico datore</li></ul></div>
     <p class="sub-title" style="margin-top:0">📅 Passo 1 di 2 — Caratteristiche del contratto a termine</p>
     <div class="fld" data-label="Causale (tempo determinato)" data-hint="La causale deve essere specifica e veritiera." data-norm="Art.19 D.Lgs.81/2015">
@@ -852,7 +868,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- Apprendistato -->
   <div id="card-appr" style="display:none">
-    <div class="hero"><div class="hero-t">Apprendistato professionalizzante</div><button class="btn-info" onclick="toggleInfo('ip-appr')">Informazioni</button></div>
+    <div class="hero"><div class="hero-t">Apprendistato professionalizzante</div><button type="button" class="btn-info" onclick="toggleInfo('ip-appr')">Informazioni</button></div>
     <div class="info-panel" id="ip-appr"><h4>Apprendistato — D.Lgs. 81/2015 art.44</h4><ul><li>Età: da 18 a 29 anni</li><li>Durata: da 6 mesi a 3 anni</li><li>Tutor obbligatorio con almeno 8 ore di formazione certificata</li><li>Piano Formativo Individuale obbligatorio — lo Studio lo redige</li></ul></div>
     <div class="fld"><label class="lbl">Mansioni cui aspira <span class="req">*</span></label><input type="text" id="f-appr-mans" placeholder="es. addetto contabilità"/></div>
     <div class="fld"><label class="lbl">Qualifica alla quale aspira <span class="req">*</span></label><div class="rg"><label class="rc" onclick="pick(this,'qappr');document.getElementById('cf-qappr-altro').style.display='none'"><input type="radio" name="qappr" value="Impiegato concetto"/><div class="rb"><div class="rt">Impiegato — mansioni di concetto</div></div></label><label class="rc" onclick="pick(this,'qappr');document.getElementById('cf-qappr-altro').style.display='none'"><input type="radio" name="qappr" value="Impiegato ordine"/><div class="rb"><div class="rt">Impiegato — mansioni d'ordine</div></div></label><label class="rc" onclick="pick(this,'qappr');document.getElementById('cf-qappr-altro').style.display='none'"><input type="radio" name="qappr" value="Operaio qualificato"/><div class="rb"><div class="rt">Operaio qualificato</div></div></label><label class="rc" onclick="pick(this,'qappr');document.getElementById('cf-qappr-altro').style.display='none'"><input type="radio" name="qappr" value="Operaio specializzato"/><div class="rb"><div class="rt">Operaio specializzato</div></div></label><label class="rc" onclick="pick(this,'qappr');document.getElementById('cf-qappr-altro').style.display='block'"><input type="radio" name="qappr" value="Altro"/><div class="rb"><div class="rt">Altro</div></div></label></div>
@@ -863,8 +879,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <div class="nav">
-    <button class="btn-g" onclick="go(2)">← Indietro</button>
-    <button class="btn-p" onclick="nextPg3()">Avanti →</button>
+    <button type="button" class="btn-g" onclick="go(2)">← Indietro</button>
+    <button type="button" class="btn-p" onclick="nextPg3()">Avanti →</button>
   </div>
 </div>
 </div>
@@ -935,7 +951,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="fld" style="margin-top:.875rem" data-label="DVR" data-hint="Il DVR è obbligatorio per tutte le aziende con dipendenti (D.Lgs. 81/2008). Se mancante verrà segnalato nel riepilogo come criticità." data-norm="D.Lgs. 81/2008 art.17 — obbligo DVR">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <label class="lbl" style="margin:0;flex:1">È stato redatto e aggiornato il DVR (D.Lgs. 81/2008)? <span class="req">*</span></label>
-      <button class="lg-btn" style="flex-shrink:0" onclick="apriLineaGuida('dvr')">📖 Leggi di più</button>
+      <button type="button" class="lg-btn" style="flex-shrink:0" onclick="apriLineaGuida('dvr')">📖 Leggi di più</button>
     </div>
     <div class="rg-h">
       <label class="rc" onclick="pick(this,'dvr')"><input type="radio" name="dvr" value="Si"/><div class="rb"><div class="rt">Sì</div></div></label>
@@ -967,13 +983,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="nav">
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn-g" onclick="backFrom4()">← Indietro</button>
-      <button class="btn-g" onclick="go(1)" title="Torna alla prima pagina senza perdere i dati inseriti">🏠 Torna all'inizio</button>
+      <button type="button" class="btn-g" onclick="backFrom4()">← Indietro</button>
+      <button type="button" class="btn-g" onclick="go(1)" title="Torna alla prima pagina senza perdere i dati inseriti">🏠 Torna all'inizio</button>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn-rev" onclick="openPdf()">📄 Rivedi le tue risposte</button>
-      <button class="btn-g" onclick="salvaBozzeChiudi()" style="border-color:#185FA5;color:#185FA5">💾 Salva in bozze e chiudi</button>
-      <button class="btn-p gr" onclick="invia()">📤 Invia modulo</button>
+      <button type="button" class="btn-rev" onclick="openPdf()">📄 Rivedi le tue risposte</button>
+      <button type="button" class="btn-g" onclick="salvaBozzeChiudi()" style="border-color:#185FA5;color:#185FA5">💾 Salva in bozze e chiudi</button>
+      <button type="button" class="btn-p gr" onclick="invia()">📤 Invia modulo</button>
     </div>
   </div>
 </div>
@@ -990,10 +1006,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <p style="margin-top:.875rem;font-size:13px;color:#6b7280"><strong>030 7000841 — info@studiopelati.it</strong></p>
 </div>
 <div style="display:flex;justify-content:center;gap:12px;margin-top:.875rem;flex-wrap:wrap">
-  <button class="btn-p" onclick="tornaInizio()" style="height:44px;font-size:14px;padding:0 24px;gap:8px">
+  <button type="button" class="btn-p" onclick="tornaInizio()" style="height:44px;font-size:14px;padding:0 24px;gap:8px">
     🏠 Nuova assunzione
   </button>
-  <button class="btn-g" onclick="doLogout(true)" style="height:44px;font-size:14px;padding:0 24px;gap:8px">
+  <button type="button" class="btn-g" onclick="doLogout(true)" style="height:44px;font-size:14px;padding:0 24px;gap:8px">
     🚪 Esci
   </button>
 </div>
@@ -1015,12 +1031,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- PDF MODAL -->
 <div class="pdf-ov" id="pdf-ov">
 <div class="pdf-modal">
-  <div class="pdf-hd"><span class="pdf-ht" id="pdf-ht">Riepilogo</span><button class="pdf-cl" onclick="closePdf()">✕</button></div>
+  <div class="pdf-hd"><span class="pdf-ht" id="pdf-ht">Riepilogo</span><button type="button" class="pdf-cl" onclick="closePdf()">✕</button></div>
   <div class="pdf-bd"><div class="pdf-doc" id="pdf-c"></div></div>
   <div class="pdf-ft">
-    <button class="btn-g" onclick="closePdf()">Chiudi</button>
-    <button class="btn-g" onclick="stampaPdf()" style="gap:5px">🖨️ Stampa</button>
-    <button class="btn-p" onclick="inviaEmail()">📤 Invia all'azienda e allo Studio</button>
+    <button type="button" class="btn-g" onclick="closePdf()">Chiudi</button>
+    <button type="button" class="btn-g" onclick="stampaPdf()" style="gap:5px">🖨️ Stampa</button>
+    <button type="button" class="btn-p" onclick="inviaEmailDaModal()">📤 Invia all'azienda e allo Studio</button>
   </div>
 </div>
 </div>
@@ -1030,7 +1046,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="pdf-modal" style="max-width:400px">
   <div class="pdf-hd">
     <span class="pdf-ht">🔑 Password dimenticata</span>
-    <button class="pdf-cl" onclick="closePwdReset()">✕</button>
+    <button type="button" class="pdf-cl" onclick="closePwdReset()">✕</button>
   </div>
   <div class="pdf-bd" style="padding:1.25rem">
     <div id="pwd-reset-step1">
@@ -1040,7 +1056,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <input type="text" id="f-reset-codice" placeholder="es. 77" style="height:40px"/>
       </div>
       <div class="err-b" id="err-reset" style="margin-top:.5rem">⛔ Codice non trovato. Verificare o contattare lo Studio.</div>
-      <button class="btn-p" onclick="doReset()" style="width:100%;height:40px;justify-content:center;margin-top:.75rem">Invia password via email →</button>
+      <button type="button" class="btn-p" onclick="doReset()" style="width:100%;height:40px;justify-content:center;margin-top:.75rem">Invia password via email →</button>
     </div>
     <div id="pwd-reset-step2" style="display:none;text-align:center;padding:1rem 0">
       <div style="font-size:36px;margin-bottom:.75rem">✅</div>
@@ -1050,7 +1066,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="pdf-ft">
-    <button class="btn-g" onclick="closePwdReset()">Chiudi</button>
+    <button type="button" class="btn-g" onclick="closePwdReset()">Chiudi</button>
   </div>
 </div>
 </div>
@@ -1060,7 +1076,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="pdf-modal" style="max-width:400px">
   <div class="pdf-hd">
     <span class="pdf-ht">🔐 Modifica password</span>
-    <button class="pdf-cl" onclick="document.getElementById('chg-pwd-ov').classList.remove('on')">✕</button>
+    <button type="button" class="pdf-cl" onclick="document.getElementById('chg-pwd-ov').classList.remove('on')">✕</button>
   </div>
   <div class="pdf-bd" style="padding:1.25rem">
     <div class="err-b" id="err-chg">⛔ <span id="err-chg-txt">Le password non corrispondono o la password attuale è errata.</span></div>
@@ -1070,8 +1086,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="chg-pwd-ok" style="display:none;background:#f0fdf4;border:0.5px solid #86efac;border-radius:8px;padding:10px;text-align:center;font-size:13px;color:#166534;margin-top:.5rem">✅ Password modificata. Usala al prossimo accesso.</div>
   </div>
   <div class="pdf-ft">
-    <button class="btn-g" onclick="document.getElementById('chg-pwd-ov').classList.remove('on')">Annulla</button>
-    <button class="btn-p" onclick="doChangePwd()">Salva nuova password</button>
+    <button type="button" class="btn-g" onclick="document.getElementById('chg-pwd-ov').classList.remove('on')">Annulla</button>
+    <button type="button" class="btn-p" onclick="doChangePwd()">Salva nuova password</button>
   </div>
 </div>
 </div>
@@ -1081,12 +1097,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="pdf-modal" style="max-width:720px">
   <div class="pdf-hd">
     <span class="pdf-ht" id="lg-title">Linea guida</span>
-    <button class="pdf-cl" onclick="chiudiLineaGuida()">✕</button>
+    <button type="button" class="pdf-cl" onclick="chiudiLineaGuida()">✕</button>
   </div>
-  <div class="pdf-bd" id="lg-body" style="padding:1.25rem;font-family:Arial,sans-serif"></div>
+  <div class="pdf-bd" style="padding:0;overflow:hidden">
+    <iframe id="lg-body" style="width:100%;height:100%;border:none;padding:1.25rem;box-sizing:border-box;font-family:Arial,sans-serif" sandbox="allow-same-origin"></iframe>
+  </div>
   <div class="pdf-ft">
-    <button class="btn-g" onclick="chiudiLineaGuida()">Chiudi</button>
-    <button class="btn-g" onclick="stampaLineaGuida()" style="gap:5px">🖨️ Stampa</button>
+    <button type="button" class="btn-g" onclick="chiudiLineaGuida()">Chiudi</button>
+    <button type="button" class="btn-g" onclick="stampaLineaGuida()" style="gap:5px">🖨️ Stampa</button>
   </div>
 </div>
 </div>
@@ -1096,8 +1114,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <strong>📋 Compilazione in corso</strong>
   Il form è stato chiuso con dati non inviati. Vuoi riprendere la compilazione?
   <div class="rb-btns">
-    <button class="rb-btn-ok" onclick="resumeForm()">Riprendi</button>
-    <button class="rb-btn-no" onclick="dismissResume()">Abbandona</button>
+    <button type="button" class="rb-btn-ok" onclick="resumeForm()">Riprendi</button>
+    <button type="button" class="rb-btn-no" onclick="dismissResume()">Abbandona</button>
   </div>
 </div>
 
@@ -1298,9 +1316,25 @@ const GIORNI=['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','
 
 let curPage=1, tipoContr='', ptRows=[];
 let formInProgress=false, formSent=false;
-let azLoggata=null; // azienda correntemente autenticata
+let azLoggata=null;
+let pwdBrowserNuova=false;
 
-// ─── LOGIN / LOGOUT ───────────────────────────────────────────────────────────
+// Cattura errori globali per debug
+window.addEventListener('error', e=>{
+  if(e.message==='Script error.') return; // errore cross-origin — ignorabile
+  console.error('[Global Error]', e.message, e.filename, e.lineno);
+});
+
+function rilevaNuovaPassword(el){
+  try {
+    if(typeof pwdBrowserNuova !== 'undefined') pwdBrowserNuova = false;
+    const panel = document.getElementById('nuova-pwd-panel');
+    const ok = document.getElementById('pwd-saved-ok');
+    if(panel) panel.style.display = 'none';
+    if(ok) ok.style.display = 'none';
+  } catch(e){ /* ignora errori durante digitazione */ }
+}
+
 function doLogin(){
   const codice=document.getElementById('f-codice').value.trim();
   const pwd=document.getElementById('f-pwd').value;
@@ -1318,6 +1352,19 @@ function doLogin(){
     return;
   }
   errEl.classList.remove('on');
+
+  // Controlla se il browser ha inserito una password diversa (nuova password suggerita)
+  const isPwdNuova = pwd !== az.password && pwd !== pwdOverrides[codice];
+  if(isPwdNuova || (pwdOverrides[codice] && pwd !== AZIENDE_DB[codice]?.password)){
+    // La password usata per il login è diversa da quella memorizzata nel codice
+    // Probabilmente il browser ha suggerito/inserito una nuova password
+    document.getElementById('nuova-pwd-panel').style.display = 'block';
+    document.getElementById('f-pwd-confirm').value = '';
+    document.getElementById('e-pwd-confirm').classList.remove('on');
+    document.getElementById('pwd-saved-ok').style.display = 'none';
+    pwdBrowserNuova = true;
+  }
+
   azLoggata={...az, codice};
 
   // Compila campi
@@ -1337,11 +1384,61 @@ function doLogin(){
   setDefaultAss();
   setInterval(saveDraft,3000);
   window.addEventListener('beforeunload',e=>{if(formInProgress&&!formSent){saveDraft();e.preventDefault();e.returnValue='';}});
-  // Mostra dichiarazione edile se settore = Edilizia
   aggiornaDich5(az.ccnl_1,az.ccnl_2,az.ccnl_3);
   aggiornaCcnlSelector(az);
-  // Controlla bozze in sospeso per questa azienda
   setTimeout(()=>controllaBozzeSospese(codice), 400);
+}
+
+async function confermaNuovaPassword(){
+  const pwd1 = document.getElementById('f-pwd').value;
+  const pwd2 = document.getElementById('f-pwd-confirm').value;
+  const errEl = document.getElementById('e-pwd-confirm');
+  if(pwd1 !== pwd2){
+    errEl.classList.add('on');
+    return;
+  }
+  errEl.classList.remove('on');
+  const codice = azLoggata?.codice;
+  if(!codice) return;
+
+  // Aggiorna localmente
+  pwdOverrides[codice] = pwd1;
+  sessionStorage.setItem('sp_pwd_overrides', JSON.stringify(pwdOverrides));
+  if(AZIENDE_DB[codice]) AZIENDE_DB[codice].password = pwd1;
+
+  // Salva su Supabase
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/aziende?codice=eq.${encodeURIComponent(codice)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify({ password_hash: pwd1 }),
+    });
+    if(res.ok){
+      document.getElementById('pwd-saved-ok').style.display = 'block';
+      document.getElementById('pwd-saved-ok').textContent = '✅ Nuova password salvata con successo su Supabase.';
+      console.log('[PWD] Password aggiornata su Supabase per ditta', codice);
+    } else {
+      document.getElementById('pwd-saved-ok').style.display = 'block';
+      document.getElementById('pwd-saved-ok').style.color = '#dc2626';
+      document.getElementById('pwd-saved-ok').textContent = '⚠️ Password salvata localmente ma non su Supabase. Contattare lo Studio.';
+    }
+  } catch(e){
+    console.error('[PWD] Errore Supabase:', e.message);
+    document.getElementById('pwd-saved-ok').style.display = 'block';
+    document.getElementById('pwd-saved-ok').style.color = '#dc2626';
+    document.getElementById('pwd-saved-ok').textContent = '⚠️ Password salvata localmente. Errore connessione Supabase.';
+  }
+  setTimeout(()=>{ document.getElementById('nuova-pwd-panel').style.display='none'; }, 3000);
+}
+
+function annullaNuovaPassword(){
+  document.getElementById('nuova-pwd-panel').style.display = 'none';
+  pwdBrowserNuova = false;
 }
 
 function doLogout(skipConfirm){
@@ -1625,6 +1722,17 @@ function confermaEmailCop(){
   setTimeout(()=>{el.style.borderColor='';el.style.boxShadow='';},2000);
   console.log(`[Email] Aggiornata per ditta ${azLoggata.codice}: ${nuova}`);
 }
+function usaTemporaneamenteEmailCop(){
+  // Chiude il pannello senza salvare — l'email nel campo viene usata solo per questo invio
+  document.getElementById('email-cop-confirm').style.display='none';
+  const el=document.getElementById('f-email-cop');
+  // Feedback visivo verde temporaneo
+  el.style.borderColor='#16a34a';
+  el.style.boxShadow='0 0 0 2px rgba(22,163,74,.15)';
+  setTimeout(()=>{el.style.borderColor='';el.style.boxShadow='';},2000);
+  console.log('[Email] Uso temporaneo — non salvata su Supabase');
+}
+
 function ripristinaEmailCop(){
   if(azLoggata) document.getElementById('f-email-cop').value=azLoggata.email||'';
   document.getElementById('email-cop-confirm').style.display='none';
@@ -1788,8 +1896,8 @@ function addPtRowTI(){
   <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTI()"/></td>
   <td style="font-size:12px;font-weight:600;text-align:center">0</td>
   <td style="white-space:nowrap">
-    <button onclick="ripeti(this,'pt-body-ti')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
-    <button onclick="this.closest('tr').remove();calcPtTI()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button>
+    <button type="button" onclick="ripeti(this,'pt-body-ti')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
+    <button type="button" onclick="this.closest('tr').remove();calcPtTI()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button>
   </td>`;
   tbody.appendChild(tr);
 }
@@ -1829,8 +1937,8 @@ function addPtRowTD(){
   <td><input type="time" style="width:90px;font-size:12px" onchange="calcPtTD()"/></td>
   <td style="font-size:12px;font-weight:600;text-align:center">0</td>
   <td style="white-space:nowrap">
-    <button onclick="ripeti(this,'pt-body-td')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
-    <button onclick="this.closest('tr').remove();calcPtTD()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button>
+    <button type="button" onclick="ripeti(this,'pt-body-td')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
+    <button type="button" onclick="this.closest('tr').remove();calcPtTD()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px">✕</button>
   </td>`;
   tbody.appendChild(tr);
 }
@@ -2004,8 +2112,8 @@ function addPtRowB(){
   const tr=document.createElement('tr');tr.id='ptrb-'+id;
   tr.innerHTML=`<td><select style="height:26px;font-size:12px;border-radius:5px;padding:0 5px;width:100%" onchange="aggiornaRipeti(this,'pt-body-b')">${GIORNI.map(g=>`<option>${g}</option>`).join('')}</select></td><td><input type="time" style="width:100%" oninput="calcPtB()"/></td><td><input type="time" style="width:100%" oninput="calcPtB()"/></td><td id="ob-${id}" style="font-size:12px;color:#185FA5;font-weight:500;white-space:nowrap">—</td>
   <td style="white-space:nowrap">
-    <button onclick="ripeti(this,'pt-body-b')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
-    <button class="pt-del" onclick="rmPtB('${id}')" aria-label="Rimuovi">✕</button>
+    <button type="button" onclick="ripeti(this,'pt-body-b')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
+    <button type="button" class="pt-del" onclick="rmPtB('${id}')" aria-label="Rimuovi">✕</button>
   </td>`;
   document.getElementById('pt-body-b').appendChild(tr);
 }
@@ -2034,6 +2142,15 @@ function calcPtB(){
 
 // ─── UI HELPERS ───────────────────────────────────────────────────────────────
 // Capitalizza iniziale di ogni parola
+// ─── FORMATTAZIONE DATE ───────────────────────────────────────────────────────
+// Converte YYYY-MM-DD → GG/MM/AAAA (formato europeo)
+function fmtData(v){
+  if(!v||typeof v!=='string') return v||'—';
+  const m=v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m) return v;
+  return `${m[3]}/${m[2]}/${m[1]}`;
+}
+
 function capitalizeWords(el){
   const pos=el.selectionStart;
   el.value=el.value.replace(/(?:^|\s)\S/g,c=>c.toUpperCase());
@@ -2555,8 +2672,8 @@ function addPtRow(){
   const tr=document.createElement('tr');tr.id='ptr-'+id;
   tr.innerHTML=`<td><select style="height:26px;font-size:12px;border-radius:5px;padding:0 5px;width:100%" onchange="aggiornaRipeti(this,'pt-body')">${GIORNI.map(g=>`<option>${g}</option>`).join('')}</select></td><td><input type="time" style="width:100%" oninput="calcPt()"/></td><td><input type="time" style="width:100%" oninput="calcPt()"/></td><td id="o-${id}" style="font-size:12px;color:#185FA5;font-weight:500;white-space:nowrap">—</td>
   <td style="white-space:nowrap">
-    <button onclick="ripeti(this,'pt-body')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
-    <button class="pt-del" onclick="rmPt(${id})" aria-label="Rimuovi">✕</button>
+    <button type="button" onclick="ripeti(this,'pt-body')" class="btn-ripeti" style="display:none;background:none;border:1px solid #185FA5;color:#185FA5;cursor:pointer;font-size:11px;border-radius:5px;padding:1px 6px;margin-right:3px" title="Copia orari dalla riga precedente">Ripeti</button>
+    <button type="button" class="pt-del" onclick="rmPt(${id})" aria-label="Rimuovi">✕</button>
   </td>`;
   document.getElementById('pt-body').appendChild(tr);
 }
@@ -2665,8 +2782,8 @@ function openPdf(){
     ...(rv('straniero')==='Si'?[['Tipo permesso di soggiorno',document.getElementById('f-permesso')?.value||'—']]:[] ),
     ['Disabilità',rv('disab')],
     ...(rv('disab')==='Si'?[['Tipo invalidità',rv('tipo-disab')]]:[] ),
-    ['Data di nascita',gv('f-dob')],
-    ['Data assunzione',gv('f-dass')],
+    ['Data di nascita',fmtData(gv('f-dob'))],
+    ['Data assunzione',fmtData(gv('f-dass'))],
     ['Cellulare',gv('f-cell')],
     ['IBAN',gv('f-iban')],
     ['Precedenti lavorativi',rv('prec')],
@@ -2691,9 +2808,9 @@ function openPdf(){
     ['Cessati contratti a termine (12 mesi)',rv('cess')],
     ['Tipologia contratto',tipoContr||rv('contr')],
     ...(rv('caus')?[['Causale (TD full-time)',rv('caus')]]:[] ),
-    ...(gv('f-scad')?[['Scadenza contratto (TD full-time)',gv('f-scad')]]:[] ),
+    ...(gv('f-scad')?[['Scadenza contratto',fmtData(gv('f-scad'))]]:[] ),
     ...(rv('caus-pt')?[['Causale (TD part-time)',rv('caus-pt')]]:[] ),
-    ...(gv('f-scad-pt')?[['Scadenza contratto (TD part-time)',gv('f-scad-pt')]]:[] ),
+    ...(gv('f-scad-pt')?[['Scadenza contratto (PT)',fmtData(gv('f-scad-pt'))]]:[] ),
     ['Agevolazioni selezionate', tipoContr==='Apprendistato professionalizzante' ? 'N/A (apprendistato)' : (getAgevSel().join(', ')||'Nessuna')],
     ['DVR',rv('dvr')],
     ...(()=>{
@@ -2707,7 +2824,7 @@ function openPdf(){
     })(),
     ...(gv('f-osserv')?[['Osservazioni',gv('f-osserv')]]:[] ),
     ['Compilato da',gv('f-comp-da')],
-    ['Data compilazione',gv('f-data-comp')],
+    ['Data compilazione',fmtData(gv('f-data-comp'))||gv('f-data-comp')],
   ].filter(v=>v[1]);
 
   const crit=generaCrit();
@@ -2947,8 +3064,7 @@ async function apriLineaGuida(codice) {
   const titolo = LG_TITOLI[codice] || codice;
 
   document.getElementById('lg-title').textContent = titolo + ' — Linea Guida';
-  document.getElementById('lg-body').innerHTML =
-    '<div style="text-align:center;padding:2rem;color:#6b7280">⏳ Caricamento in corso…</div>';
+  lgWrite('<div style="text-align:center;padding:2rem;color:#6b7280">⏳ Caricamento in corso…</div>');
   document.getElementById('lg-ov').classList.add('on');
 
   // Segna come letto
@@ -2969,11 +3085,12 @@ async function apriLineaGuida(codice) {
       if (dati && dati.length > 0) {
         const lg = dati[0];
         document.getElementById('lg-title').textContent = lg.titolo + ' — Linea Guida';
-        document.getElementById('lg-body').innerHTML =
+        lgWrite(
           `<div style="font-family:Arial,sans-serif;font-size:13px;line-height:1.7;color:#1a1a1a">
             ${lg.riferimento ? `<p style="font-size:11px;color:#6b7280;font-style:italic;margin-bottom:12px">📋 ${lg.riferimento}</p>` : ''}
             ${lg.contenuto_html}
-          </div>`;
+          </div>`
+        );
         return;
       }
     }
@@ -2987,9 +3104,10 @@ async function apriLineaGuida(codice) {
       if (res.ok) {
         const arrayBuffer = await res.arrayBuffer();
         const result = await mammoth.convertToHtml({ arrayBuffer });
-        document.getElementById('lg-body').innerHTML =
+        lgWrite(
           '<div style="font-family:Arial,sans-serif;font-size:13px;line-height:1.7;color:#1a1a1a">' +
-          result.value + '</div>';
+          result.value + '</div>'
+        );
         return;
       }
     } catch(e) { console.warn('[LG] File Word non disponibile:', e.message); }
@@ -2998,11 +3116,12 @@ async function apriLineaGuida(codice) {
   // 3. Fallback: dizionario locale
   const lgLocale = LINEE_GUIDA[codice];
   if (lgLocale) {
-    document.getElementById('lg-body').innerHTML = buildLgHtml(codice);
+    lgWrite(buildLgHtml(codice));
   } else {
-    document.getElementById('lg-body').innerHTML =
+    lgWrite(
       '<div class="warn-b">⚠️ Contenuto non disponibile. Caricare il file <strong>' +
-      (nomeFile || codice) + '</strong> nella cartella <code>linee-guida/</code> su GitHub oppure inserire il testo su Supabase → tabella <code>linee_guida</code>.</div>';
+      (nomeFile || codice) + '</strong> nella cartella <code>linee-guida/</code> su GitHub oppure inserire il testo su Supabase → tabella <code>linee_guida</code>.</div>'
+    );
   }
 }
 
@@ -3012,7 +3131,8 @@ function chiudiLineaGuida() {
 
 function stampaLineaGuida() {
   const titolo = document.getElementById('lg-title').textContent;
-  const contenuto = document.getElementById('lg-body').innerHTML;
+  const iframe=document.getElementById('lg-body');
+  const contenuto = iframe.contentDocument?.body?.innerHTML||'';
 
   let printDiv = document.getElementById('print-area');
   if (!printDiv) {
@@ -3041,6 +3161,27 @@ function stampaLineaGuida() {
 }
 
 // Esporta lgLette per uso nel generaCrit e openPdf
+
+// Scrive contenuto nel iframe lg-body (isolato dal browser per evitare salva password)
+function lgWrite(html){
+  const iframe=document.getElementById('lg-body');
+  if(!iframe) return;
+  const doc=iframe.contentDocument||iframe.contentWindow?.document;
+  if(!doc) return;
+  doc.open();
+  doc.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <style>
+    body{font-family:Arial,sans-serif;font-size:13px;color:#1a1a1a;line-height:1.7;margin:0;padding:16px;box-sizing:border-box}
+    h3{font-size:14px;font-weight:700;color:#2E75B6;margin:14px 0 6px}
+    h2{font-size:15px;font-weight:700;color:#1F4E79;border-bottom:2px solid #2E75B6;padding-bottom:6px;margin-bottom:10px}
+    p{margin:0 0 8px;text-align:justify}
+    ul{margin:4px 0 8px 20px}li{margin-bottom:3px}
+    .warn-b{background:#FFF3CD;border:1px solid #FFA500;border-radius:6px;padding:8px 12px;font-size:12px;color:#7A4400;margin:8px 0}
+    .info-b{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;padding:8px 12px;font-size:12px;color:#1e40af;margin:8px 0}
+  </style></head><body>${html}</body></html>`);
+  doc.close();
+}
+
 // Traccia lettura linee guida
 const lgLette = new Set();
 
@@ -3215,7 +3356,7 @@ function gestisciAllegati(input){
     allegatiFiles.map((f,i)=>
       `<span style="display:inline-flex;align-items:center;gap:4px;background:#f3f4f6;border-radius:5px;padding:2px 8px;margin:2px 2px 2px 0">
         📄 ${f.name} <span style="color:#9ca3af">(${(f.size/1024).toFixed(0)} KB)</span>
-        <button onclick="rimuoviAllegato(${i})" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:13px;padding:0 2px">✕</button>
+        <button type="button" onclick="rimuoviAllegato(${i})" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:13px;padding:0 2px">✕</button>
       </span>`
     ).join('');
 }
@@ -3299,13 +3440,13 @@ function mostraBozzaModal(snap, chiave){
         <strong>Salvato il:</strong> ${data}
       </p>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button onclick="recuperaBozza('${chiave}')" style="background:#185FA5;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">
+        <button type="button" onclick="recuperaBozza('${chiave}')" style="background:#185FA5;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">
           📂 Lo recupero
         </button>
-        <button onclick="annullaBozza('${chiave}')" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">
+        <button type="button" onclick="annullaBozza('${chiave}')" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">
           🗑 Vuoi annullarlo?
         </button>
-        <button onclick="ignoraBozza('${chiave}')" style="background:#f3f4f6;color:#374151;border:0.5px solid #d1d5db;border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer">
+        <button type="button" onclick="ignoraBozza('${chiave}')" style="background:#f3f4f6;color:#374151;border:0.5px solid #d1d5db;border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer">
           Ignora
         </button>
       </div>
@@ -3391,7 +3532,7 @@ function ignoraBozza(chiave){
   console.log(`[BOZZA] Ignorata: ${chiave}`);
 }
 
-function invia(){
+async function invia(){
   const errs=[];
   // Agevolazioni — non richieste per apprendistato
   const isAppr = tipoContr==='Apprendistato professionalizzante';
@@ -3428,14 +3569,35 @@ function invia(){
   sessionStorage.removeItem('form_draft');
 
   // Mostra schermata done subito, poi invia email in background
+  // Genera il riepilogo PRIMA di nascondere pg4 (i campi devono essere visibili)
+  openPdf();
+  await new Promise(r=>setTimeout(r,400));
+  const pdfContentSnapshot = document.getElementById('pdf-c')?.innerHTML || '';
+  closePdf();
+
+  // Ora mostra pg-done
   document.getElementById('pg4').classList.remove('on');
   document.getElementById('pg-done').style.display='block';
   document.getElementById('prog').style.width='100%';
   window.scrollTo({top:0,behavior:'smooth'});
 
-  // Genera e invia in background
+  // Invia email e salva in background usando il contenuto già generato
   salvaOrdineSupabase();
-  generaEInviaEmail();
+  inviaEmailConSnapshot(pdfContentSnapshot);
+}
+
+async function inviaEmailConSnapshot(htmlSnapshot){
+  if(typeof emailjs === 'undefined'){
+    console.error('[Email] EmailJS non disponibile'); return;
+  }
+  try {
+    // Crea elemento temporaneo con il contenuto snapshot
+    const div = document.createElement('div');
+    div.innerHTML = htmlSnapshot;
+    await generaEInviaEmailConContenuto(div);
+  } catch(err){
+    console.error('[Email] Errore:', err?.status, err?.text, err?.message || err);
+  }
 }
 
 // ─── SALVA ORDINE SU SUPABASE ─────────────────────────────────────────────────
@@ -3448,42 +3610,49 @@ async function salvaOrdineSupabase(){
     const ordine = {
       codice_ditta:         az.codice || '',
       datore:               gv('f-datore'),
-      email_azienda:        gv('f-email-cop'),
+      email_azienda:        gv('f-email-cop') || null,
       dipendente:           gv('f-dip'),
-      sesso:                rv('sesso'),
+      sesso:                rv('sesso') || null,
       data_nascita:         gv('f-dob') || null,
       data_assunzione:      gv('f-dass') || null,
       straniero:            rv('straniero')==='Si',
       permesso_soggiorno:   gv('f-permesso') || null,
-      tipologia_contratto:  tipoContr || rv('contr-base'),
-      qualifica:            rv('qual'),
+      tipologia_contratto:  tipoContr || rv('contr-base') || '',
+      qualifica:            rv('qual') || null,
       livello_contrattuale: gv('f-liv') || null,
-      titolo_studio:        rv('titolo'),
-      titolo_studio_attinenza: rv('attinenza'),
-      mansioni:             gv('f-mans'),
-      precedenti_lavorativi:rv('prec'),
-      esperienza_mansioni:  rv('esper'),
-      periodo_prova:        rv('prova'),
-      comune:               document.getElementById('f-comune')?.value || '',
-      provincia:            document.getElementById('f-prov')?.value || '',
-      regione:              gv('f-regione') || '',
-      iban:                 gv('f-iban'),
-      cellulare_lavoratore: gv('f-cell') || '',
-      retribuzione:         rv('retrib'),
+      titolo_studio:        rv('titolo') || null,
+      titolo_studio_attinenza: rv('attinenza') || null,
+      mansioni:             gv('f-mans') || null,
+      precedenti_lavorativi:rv('prec') || null,
+      esperienza_mansioni:  rv('esper') || null,
+      periodo_prova:        rv('prova') || null,
+      comune:               document.getElementById('f-comune')?.value || null,
+      provincia:            document.getElementById('f-prov')?.value || null,
+      regione:              gv('f-regione') || null,
+      iban:                 gv('f-iban') || null,
+      cellulare_lavoratore: gv('f-cell') || null,
+      retribuzione:         rv('retrib') || null,
       benefits:             Array.from(document.querySelectorAll('#benef-group input:checked')).map(i=>i.value),
-      trasferte:            rv('trasferta'),
+      trasferte:            rv('trasferta') || null,
       giorni_somministrato: parseInt(gv('f-gg-som')) || 0,
-      cessati_contratti_termine: rv('cess'),
+      cessati_contratti_termine: rv('cess') || null,
       agevolazioni:         getAgevSel(),
-      dvr:                  rv('dvr'),
+      dvr:                  rv('dvr') || null,
       dichiarazioni:        Array.from(document.querySelectorAll('#pg4 input[type=checkbox]:checked')).filter(i=>i.id.startsWith('dich')).map(i=>i.value),
-      compilato_da:         gv('f-comp-da'),
+      compilato_da:         gv('f-comp-da') || null,
       osservazioni:         gv('f-osserv') || null,
       causale:              rv('caus') || rv('caus-pt') || null,
       scadenza_contratto:   gv('f-scad') || gv('f-scad-ass') || gv('f-scad-std') || gv('f-scad-pt') || gv('f-scad-std-pt') || null,
       inviato_studio:       true,
       inviato_at:           new Date().toISOString(),
     };
+
+    // Rimuovi campi null per evitare errori di schema
+    const ordineClean = Object.fromEntries(
+      Object.entries(ordine).filter(([,v]) => v !== null && v !== undefined)
+    );
+
+    console.log('[Supabase] Invio ordine...', ordineClean.codice_ditta);
 
     const res = await fetch(`${SUPABASE_URL}/rest/v1/ordini`, {
       method: 'POST',
@@ -3493,89 +3662,152 @@ async function salvaOrdineSupabase(){
         'Authorization': `Bearer ${SUPABASE_KEY}`,
         'Prefer':        'return=minimal',
       },
-      body: JSON.stringify(ordine),
+      body: JSON.stringify(ordineClean),
     });
 
     if(res.ok){
-      console.log('[Supabase] ✅ Ordine salvato correttamente');
+      console.log('[Supabase] ✅ Ordine salvato');
     } else {
-      const err = await res.text();
-      console.error('[Supabase] ❌ Errore salvataggio:', res.status, err);
+      const errTxt = await res.text();
+      console.error('[Supabase] ❌ HTTP', res.status, errTxt);
     }
   } catch(e){
-    console.error('[Supabase] ❌ Eccezione:', e.message);
+    // "Load failed" = rete non disponibile o CORS — non blocca il form
+    console.warn('[Supabase] ⚠️ Salvataggio non riuscito (rete/CORS):', e.message);
   }
 }
-async function generaEInviaEmail(){
-  // Verifica EmailJS disponibile
-  if(typeof emailjs === 'undefined'){
-    console.error('[Email] EmailJS non disponibile — libreria non caricata');
-    return;
-  }
+// Invio email dal modal riepilogo (bottone "Invia all'azienda e allo Studio")
+async function inviaEmailDaModal(){
+  const btn=document.querySelector('#pdf-ov .btn-p');
+  if(btn){ btn.disabled=true; btn.textContent='⏳ Invio in corso…'; }
 
   try {
-    // 1. Genera riepilogo HTML
-    openPdf();
-    await new Promise(r=>setTimeout(r,600));
+    // Usa il contenuto già presente nel modal (non riaprirlo)
     const pdfContent = document.getElementById('pdf-c');
-    const htmlRiepilogo = pdfContent ? pdfContent.innerHTML : '(riepilogo non disponibile)';
-    closePdf();
+    await generaEInviaEmailConContenuto(pdfContent);
 
-    const dipendente = gv('f-dip');
-    const datore     = gv('f-datore');
-    const dass       = gv('f-dass');
-    const emailAzienda = (gv('f-email-cop') || azLoggata?.email || '').trim();
-
-    console.log('[Email] Invio a studio: studiopelati@gmail.com');
-    console.log('[Email] Invio ad azienda:', emailAzienda);
-
-    const params = {
-      to_email:            'studiopelati@gmail.com',
-      to_name:             'Studio Pelati',
-      reply_to:            emailAzienda,
-      datore,
-      dipendente,
-      data_assunzione:     dass,
-      tipologia_contratto: tipoContr || rv('contr'),
-      agevolazioni:        getAgevSel().join(', ') || 'Nessuna',
-      compilato_da:        gv('f-comp-da'),
-      riepilogo_html:      htmlRiepilogo,
-    };
-
-    // 2. Email allo Studio
-    const r1 = await emailjs.send('service_v6yh8a8', 'template_jvpchue', params);
-    console.log('[Email] ✅ Studio:', r1.status, r1.text);
-
-    // 3. Email all'azienda (se diversa dallo studio)
-    if(emailAzienda && emailAzienda !== 'studiopelati@gmail.com'){
-      const r2 = await emailjs.send('service_v6yh8a8', 'template_jvpchue', {
-        ...params,
-        to_email: emailAzienda,
-        to_name:  datore,
-        reply_to: 'studiopelati@gmail.com',
-      });
-      console.log('[Email] ✅ Azienda:', r2.status, r2.text);
+    // Successo: mostra messaggio nel modal senza chiuderlo subito
+    if(btn){
+      btn.textContent='✅ Email inviate con successo!';
+      btn.style.background='#16a34a';
+      btn.style.color='#fff';
     }
 
-  } catch(err){
-    console.error('[Email] ❌ Errore:', err?.status, err?.text, err?.message || err);
+    // Messaggio di conferma nel footer del modal
+    const ft = document.querySelector('#pdf-ov .pdf-ft');
+    let msg = document.getElementById('email-sent-msg');
+    if(!msg){
+      msg = document.createElement('p');
+      msg.id = 'email-sent-msg';
+      msg.style.cssText = 'font-size:12px;color:#166534;font-weight:600;margin-right:auto;display:flex;align-items:center;gap:4px';
+      ft.insertBefore(msg, ft.firstChild);
+    }
+    msg.textContent = '✅ Email inviate con successo a studio e azienda.';
+
+    // Riabilita il bottone dopo 3 secondi
+    setTimeout(()=>{
+      if(btn){btn.disabled=false;btn.textContent='📤 Invia all\'azienda e allo Studio';btn.style.background='';btn.style.color='';}
+    }, 3000);
+
+  } catch(e){
+    if(btn){ btn.disabled=false; btn.textContent='📤 Invia all\'azienda e allo Studio'; btn.style.background=''; }
+    // Mostra errore nel modal
+    const ft = document.querySelector('#pdf-ov .pdf-ft');
+    let msg = document.getElementById('email-sent-msg');
+    if(!msg){ msg=document.createElement('p'); msg.id='email-sent-msg'; msg.style.cssText='font-size:12px;margin-right:auto'; ft.insertBefore(msg,ft.firstChild); }
+    msg.style.color='#dc2626'; msg.textContent='❌ Errore invio. Riprovare o contattare lo Studio.';
+    console.error('[inviaEmailDaModal]',e);
   }
 }
+
+async function generaEInviaEmail(){
+  // Usata solo dal modal — il pdf-c è già popolato
+  if(typeof emailjs === 'undefined'){ console.error('[Email] EmailJS non disponibile'); return; }
+  const pdfContent = document.getElementById('pdf-c');
+  try {
+    await generaEInviaEmailConContenuto(pdfContent);
+  } catch(err){
+    console.error('[Email] Errore:', err?.status, err?.text, err?.message || err);
+  }
+}
+
+async function generaEInviaEmailConContenuto(pdfContent){
+  console.log('[Email] Inizio invio...');
+  console.log('[Email] EmailJS disponibile:', typeof emailjs !== 'undefined');
+  console.log('[Email] pdfContent:', pdfContent ? 'OK' : 'MANCANTE');
+
+  if(typeof emailjs === 'undefined') throw new Error('EmailJS non disponibile');
+  if(!pdfContent) throw new Error('Contenuto PDF non trovato');
+
+  const dipendente = gv('f-dip');
+  const datore     = gv('f-datore');
+  const dass       = fmtData(gv('f-dass'));
+  const emailAzienda = (gv('f-email-cop') || azLoggata?.email || '').trim();
+
+  console.log('[Email] Destinatari:', 'studiopelati@gmail.com', '|', emailAzienda);
+  console.log('[Email] Dati:', datore, '-', dipendente, '-', dass);
+
+  const riepilogoHtml = `
+  <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#1a1a1a;max-width:700px;margin:0 auto;padding:16px">
+    <div style="background:#1F4E79;color:#fff;padding:16px 20px;border-radius:8px 8px 0 0;margin-bottom:16px">
+      <h2 style="margin:0;font-size:16px;font-weight:700">Ordine di assunzione — Studio Pelati</h2>
+      <p style="margin:4px 0 0;font-size:12px;opacity:.85">Comunicazione ricevuta il ${new Date().toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'})}</p>
+    </div>
+    ${pdfContent.innerHTML || pdfContent.textContent || '(contenuto vuoto)'}
+    <div style="margin-top:20px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:10px;color:#6b7280;text-align:center">
+      Studio Pelati — Brescia — 030 7000841 — info@studiopelati.it
+    </div>
+  </div>`;
+
+  const params = {
+    to_email:            'studiopelati@gmail.com',
+    to_name:             'Studio Pelati',
+    reply_to:            emailAzienda || 'noreply@studiopelati.it',
+    datore:              datore || '(non specificato)',
+    dipendente:          dipendente || '(non specificato)',
+    data_assunzione:     dass || '(non specificata)',
+    tipologia_contratto: tipoContr || rv('contr-base') || '(non specificata)',
+    agevolazioni:        getAgevSel().join(', ') || 'Nessuna',
+    compilato_da:        gv('f-comp-da') || '(non specificato)',
+    riepilogo_html:      riepilogoHtml,
+    allegati_info:       'Nessun allegato',
+  };
+
+  console.log('[Email] Chiamata emailjs.send studio...');
+  const r1 = await emailjs.send('service_v6yh8a8', 'template_jvpchue', params);
+  console.log('[Email] ✅ Studio risposta:', r1.status, r1.text);
+
+  if(emailAzienda && emailAzienda !== 'studiopelati@gmail.com'){
+    console.log('[Email] Chiamata emailjs.send azienda:', emailAzienda);
+    const r2 = await emailjs.send('service_v6yh8a8', 'template_jvpchue', {
+      ...params,
+      to_email:     emailAzienda,
+      to_name:      datore,
+      reply_to:     'studiopelati@gmail.com',
+      allegati_info:'',
+    });
+    console.log('[Email] ✅ Azienda risposta:', r2.status, r2.text);
+  }
+}
+
+
+
 </script>
-<!-- Librerie esterne — caricate in fondo per non bloccare il form -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" 
+
+<!-- Librerie esterne — caricate in fondo -->
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
   onerror="console.warn('[CDN] EmailJS non caricato')"></script>
 <script>
-  if(typeof emailjs !== 'undefined') {
+  if(typeof emailjs !== 'undefined'){
     emailjs.init('oueuoED95Jwy4zyQ-');
     console.log('[EmailJS] Inizializzato');
   }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"
-  onerror="console.warn('[CDN] Mammoth non caricato — le linee guida useranno il testo incorporato')"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"
+  onerror="console.warn('[CDN] Mammoth non caricato')"></script>
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"
   onerror="console.warn('[CDN] jsPDF non caricato')"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
   onerror="console.warn('[CDN] html2canvas non caricato')"></script>
 </body>
 </html>
