@@ -479,8 +479,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <div class="fld" data-label="Giorni come somministrato" data-hint="I giorni di prestazione come somministrato nella stessa mansione possono rendere incompatibile il periodo di prova." data-norm="D.Lgs. 81/2015 art.19 — limite 20% contratti a termine">
-    <label class="lbl">Giorni di prestazione come somministrato nella stessa mansione</label>
-    <input type="number" id="f-somm" placeholder="0" min="0" value="0" style="max-width:150px" onfocus="hint(this.closest('.fld'))"/>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <label class="lbl" style="margin:0;flex:1">Giorni di prestazione come somministrato nella stessa mansione</label>
+      <input type="number" id="f-somm" placeholder="0" min="0" value="0" style="width:90px;text-align:center;flex-shrink:0" onfocus="hint(this.closest('.fld'))"/>
+    </div>
   </div>
 
   <div class="g2">
@@ -927,7 +929,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <!-- Obbligatorie -->
   <p style="font-size:11px;color:#6b7280;margin-bottom:.4rem;font-weight:500">Obbligatorie <span class="req">*</span></p>
   <div class="cg" style="margin-bottom:.5rem">
-    <label class="cc" onclick="togc(this)"><input type="checkbox" id="dich1" value="Comunicherà lavoratori somministrati"/><div class="rb"><div class="rt">Si impegna a comunicare allo Studio l'eventuale impiego di lavoratori somministrati</div><div class="rd" style="color:#185FA5;font-size:11px;cursor:pointer" onclick="event.stopPropagation();hintDirect('Lavoratori somministrati','L\'indicazione del numero dei lavoratori somministrati in forza è necessaria per la corretta determinazione dell\'organico aziendale, nonché per la verifica della spettanza di specifiche agevolazioni e dell\'eventuale insorgenza di obblighi previsti dalla legge e dalla contrattazione collettiva applicabile.','Art. 36 D.Lgs. 81/2015 — lavoratori somministrati nel computo degli organici')">ℹ️ Guida al campo</div></div></label>
+    <label class="cc" onclick="togc(this);hintDirect('Lavoratori somministrati','L\'indicazione del numero dei lavoratori somministrati in forza è necessaria per la corretta determinazione dell\'organico aziendale, nonché per la verifica della spettanza di specifiche agevolazioni e dell\'eventuale insorgenza di obblighi previsti dalla legge e dalla contrattazione collettiva applicabile.','Art. 36 D.Lgs. 81/2015 — lavoratori somministrati nel computo degli organici')"><input type="checkbox" id="dich1" value="Comunicherà lavoratori somministrati"/><div class="rb"><div class="rt">Si impegna a comunicare allo Studio l'eventuale impiego di lavoratori somministrati</div></div></label>
     <label class="cc" onclick="togc(this)"><input type="checkbox" id="dich4" value="Controllo medico competente"/><div class="rb"><div class="rt">L'azienda è informata che dovrà sottoporre il/la dipendente a controllo medico dal medico competente (se previsto dalla valutazione dei rischi)</div></div></label>
     <!-- dich5: visibile solo per aziende del settore Edilizia -->
     <label class="cc" id="dich5-wrap" style="display:none" onclick="togc(this)">
@@ -1381,6 +1383,12 @@ function doLogin(){
   curPage=1;
   document.getElementById('pg1').classList.add('on');
   document.getElementById('prog').style.width='25%';
+
+  // Rimuovi i campi password dal DOM dopo il login per evitare la richiesta "Salva password"
+  ['f-pwd','f-pwd-confirm'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.closest('.fld')?.remove();
+  });
   sessionStorage.setItem('sp_azienda',JSON.stringify({...az,codice}));
   setDefaultAss();
   setInterval(saveDraft,3000);
