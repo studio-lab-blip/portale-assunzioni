@@ -1490,28 +1490,66 @@ function generaNuovaPassword(){
   return pwd;
 }
 
-function doReset(){
+async function doReset(){
   const codice=document.getElementById('f-reset-codice').value.trim();
   const az=AZIENDE_DB[codice];
   if(!az){document.getElementById('err-reset').classList.add('on');return;}
   document.getElementById('err-reset').classList.remove('on');
 
-  // Genera nuova password
   const nuovaPwd=generaNuovaPassword();
 
-  // Salva nella sessione (override)
+  // Salva localmente
   pwdOverrides[codice]=nuovaPwd;
   sessionStorage.setItem('sp_pwd_overrides',JSON.stringify(pwdOverrides));
-
-  // Aggiorna anche nel DB locale
   if(AZIENDE_DB[codice]) AZIENDE_DB[codice].password=nuovaPwd;
 
-  // In produzione: POST all'API per inviare via Resend e salvare su GitHub
-  console.log(`[SIMULAZIONE] Nuova password per ditta ${codice} (${az.ragione_sociale}): ${nuovaPwd} → inviata a ${az.email}`);
+  // Salva su Supabase
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/aziende?codice=eq.${encodeURIComponent(codice)}`,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Prefer':'return=minimal'},
+      body:JSON.stringify({password_hash:nuovaPwd})
+    });
+  } catch(e){ console.warn('[Reset] Supabase non raggiungibile'); }
 
-  document.getElementById('pwd-reset-msg').innerHTML=
-    `La nuova password è stata generata e inviata a:<br><strong>${az.email.replace(/(.{2}).+(@.+)/,'$1***$2')}</strong><br><br>
-     <span style="font-size:12px;color:#6b7280">Nota: in questa versione di prova la nuova password è visibile nella console del browser. In produzione viene inviata solo via email.</span>`;
+  // Invia email con la nuova password via EmailJS
+  const emailTo = az.email;
+  const ragione = az.ragione_sociale;
+  let inviata = false;
+  if(typeof emailjs !== 'undefined' && emailTo){
+    try {
+      const r = await emailjs.send('service_v6yh8a8','template_jvpchue',{
+        to_email:   emailTo,
+        to_name:    ragione,
+        reply_to:   'studiopelati@gmail.com',
+        datore:     ragione,
+        dipendente: '—',
+        data_assunzione: '—',
+        tipologia_contratto: '—',
+        agevolazioni: '—',
+        compilato_da: 'Sistema automatico',
+        riepilogo_html: `
+          <div style="font-family:Arial,sans-serif;font-size:14px;color:#1a1a1a;padding:16px">
+            <h2 style="color:#1F4E79">Nuova password — Portale Assunzioni Studio Pelati</h2>
+            <p>Gentile <strong>${ragione}</strong>,</p>
+            <p>Su tua richiesta è stata generata una nuova password di accesso al portale:</p>
+            <p style="font-size:22px;font-weight:700;letter-spacing:4px;color:#185FA5;background:#EFF6FF;padding:12px 20px;border-radius:8px;display:inline-block;margin:12px 0">${nuovaPwd}</p>
+            <p>Accedi al portale e modifica la password dalla sezione "Cambia password".</p>
+            <p style="color:#6b7280;font-size:12px;margin-top:20px">Studio Pelati — Brescia — 030 7000841 — info@studiopelati.it</p>
+          </div>`,
+        allegati_info: '',
+      });
+      if(r.status===200) inviata=true;
+    } catch(e){ console.error('[Reset] Errore invio email:', e.message); }
+  }
+
+  document.getElementById('pwd-reset-msg').innerHTML = inviata
+    ? `✅ La nuova password è stata inviata a:<br><strong>${emailTo.replace(/(.{2}).+(@.+)/,'$1***$2')}</strong><br><br>
+       <span style="font-size:12px;color:#6b7280">Accedi con la nuova password e modificala dalla sezione "Cambia password".</span>`
+    : `⚠️ Errore invio email. La nuova password è stata comunque generata.<br>
+       Contatta lo Studio al 030 7000841 per riceverla.<br><br>
+       <span style="font-size:11px;color:#6b7280">Cod. ditta: ${codice}</span>`;
+
   document.getElementById('pwd-reset-step1').style.display='none';
   document.getElementById('pwd-reset-step2').style.display='block';
 }
