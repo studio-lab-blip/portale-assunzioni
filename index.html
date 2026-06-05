@@ -249,7 +249,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="fld" data-hint="Ragione sociale completa come da visura camerale. Pre-compilata dal profilo." data-label="Datore di lavoro" style="grid-column:1/-1">
     <label class="lbl">Datore di lavoro <span class="req">*</span></label>
-    <input type="text" id="f-datore" placeholder="Ragione sociale" onfocus="hint(this.closest('.fld'))" readonly style="background:#f9fafb;color:#374151;max-width:100%"/>
+    <input type="text" id="f-datore" placeholder="Ragione sociale" onmouseenter="hint(this.closest('.fld'))" readonly style="background:#f9fafb;color:#374151;max-width:100%"/>
   </div>
 
   <div class="fld" data-hint="Il riepilogo delle risposte sarà consegnato a questo indirizzo. Pre-compilato con l'email del profilo aziendale. Se modificata verrà chiesta conferma e salvata." data-label="Email riepilogo">
@@ -272,12 +272,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="g2">
     <div class="fld" data-hint="Cognome e nome del lavoratore da assumere. Verrà riportato nel contratto e nella comunicazione UNILAV." data-label="Cognome e nome dipendente">
       <label class="lbl">Cognome e nome dipendente <span class="req">*</span></label>
-      <input type="text" id="f-dip" placeholder="Rossi Mario" oninput="capitalizeWords(this)" onfocus="hint(this.closest('.fld'))"/>
+      <input type="text" id="f-dip" placeholder="Rossi Mario" oninput="capitalizeWords(this)" onmouseenter="hint(this.closest('.fld'))"/>
       <span class="err-msg" id="e-dip">Campo obbligatorio</span>
     </div>
     <div class="fld" data-hint="Il sesso incide sulla verifica di agevolazioni specifiche (Bonus Donne 2026, agevolazioni over 50 donna)." data-label="Sesso">
       <label class="lbl">Sesso <span class="req">*</span></label>
-      <select id="f-sesso" onfocus="hint(this.closest('.fld'))">
+      <select id="f-sesso" onmouseenter="hint(this.closest('.fld'))">
         <option value="">Seleziona...</option><option>Maschio</option><option>Femmina</option>
       </select>
       <span class="err-msg" id="e-sesso">Campo obbligatorio</span>
@@ -336,7 +336,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="fld" data-hint="La data di nascita è necessaria per la redazione del contratto e per le verifiche normative." data-label="Data di nascita">
       <label class="lbl">Data di nascita <span class="req">*</span></label>
       <div class="age-row">
-        <input type="date" id="f-dob" style="flex:1" onfocus="hint(this.closest('.fld'))"/>
+        <input type="date" id="f-dob" style="flex:1" onmouseenter="hint(this.closest('.fld'))"/>
         <div class="age-pill" id="age-pill">📅 <span id="age-txt" style="color:#9ca3af">età</span></div>
       </div>
       <span class="err-msg" id="e-dob">Campo obbligatorio</span>
@@ -344,7 +344,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <!-- DATA ASSUNZIONE -->
     <div class="fld" data-hint="Non può essere inferiore al primo giorno lavorativo successivo alla data odierna. Se l'inizio lavoro è previsto per domani inviare entro le ore 15:00 di oggi." data-label="Data di assunzione" data-norm="Se inizio lavoro è domani: inviare entro le ore 15:00 di oggi">
       <label class="lbl">Data di assunzione <span class="req">*</span></label>
-      <input type="date" id="f-dass" oninput="checkDataAss(this)" onfocus="hint(this.closest('.fld'))"/>
+      <input type="date" id="f-dass" oninput="checkDataAss(this)" onmouseenter="hint(this.closest('.fld'))"/>
       <div class="attn-b" id="attn-ass">⏰ ATTENZIONE: Se l'inizio lavoro è previsto per domani il presente modello deve pervenire allo Studio entro le ore 15:00 di oggi.</div>
       <span class="err-msg" id="e-dass">La data non può essere precedente al primo giorno lavorativo successivo</span>
     </div>
@@ -357,7 +357,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="fld" data-hint="IBAN di 27 caratteri. Verificare attentamente: un IBAN errato causa mancato pagamento." data-label="IBAN">
     <label class="lbl">IBAN accredito retribuzione <span class="req">*</span></label>
-    <input type="text" id="f-iban" placeholder="IT60 X054 2811 1010 0000 0123 456" oninput="this.value=this.value.toUpperCase()" onfocus="hint(this.closest('.fld'))"/>
+    <input type="text" id="f-iban" placeholder="IT60 X054 2811 1010 0000 0123 456" oninput="this.value=this.value.toUpperCase()" onmouseenter="hint(this.closest('.fld'))"/>
     <span class="err-msg" id="e-iban">Campo obbligatorio</span>
   </div>
 
@@ -379,7 +379,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="fld" id="fld-ccnl" style="display:none" data-label="CCNL da applicare" data-hint="L'azienda applica più contratti collettivi nazionali. Selezionare il CCNL applicabile al lavoratore in base alle mansioni svolte." data-norm="Art. 2 D.Lgs. 81/2015 — CCNL applicato">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       <label class="lbl" style="margin:0;flex-shrink:0">CCNL da applicare <span class="req">*</span></label>
-      <select id="f-ccnl" onfocus="hint(this.closest('.fld'))" style="flex:1;min-width:180px">
+      <select id="f-ccnl" onmouseenter="hint(this.closest('.fld'))" style="flex:1;min-width:180px">
         <option value="">— Seleziona —</option>
       </select>
     </div>
@@ -411,7 +411,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="fld" data-label="Titolo di studio" data-hint="Il titolo di studio è obbligatorio. Se si seleziona 'Altro' indicare il titolo nel campo di testo.">
     <label class="lbl">Titolo di studio <span class="req">*</span></label>
-    <select id="f-titolo" onchange="chkTitoloAltro()" onfocus="hint(this.closest('.fld'))">
+    <select id="f-titolo" onchange="chkTitoloAltro()" onmouseenter="hint(this.closest('.fld'))">
       <option value="">Seleziona...</option>
       <option>Licenza media inferiore</option>
       <option>Diploma di maturità</option>
@@ -456,7 +456,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="fld" data-label="Livello contrattuale" data-hint="Il livello da attribuire è quello relativo alle prevalenti mansioni di più alto grado che il lavoratore dovrà svolgere. Regolamentazione particolare per l'apprendistato (sottoinquadramento fino a 2 livelli rispetto alla qualifica finale)." data-norm="CCNL applicato — classificazione del personale">
     <label class="lbl">Livello contrattuale</label>
-    <input type="text" id="f-liv" placeholder="es. 3° livello CCNL Metalmeccanici" onfocus="hint(this.closest('.fld'))"/>
+    <input type="text" id="f-liv" placeholder="es. 3° livello CCNL Metalmeccanici" onmouseenter="hint(this.closest('.fld'))"/>
     <p class="hint">Facoltativo. Se non noto lo Studio provvederà alla verifica.</p>
   </div>
 
@@ -473,7 +473,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <!-- MANSIONI con avviso nullità periodo di prova -->
   <div class="fld" data-hint="Descrivere in modo preciso e completo le mansioni. Indicazioni generiche o incomplete possono causare problemi in fase di verifica del contratto." data-label="Mansioni" data-norm="Indicazioni non coerenti o generiche possono essere causa di nullità del periodo di prova">
     <label class="lbl">Mansioni <span class="req">*</span></label>
-    <textarea id="f-mans" placeholder="Descrivere le principali mansioni che svolgerà il lavoratore..." onfocus="hint(this.closest('.fld'))"></textarea>
+    <textarea id="f-mans" placeholder="Descrivere le principali mansioni che svolgerà il lavoratore..." onmouseenter="hint(this.closest('.fld'))"></textarea>
     <div class="warn-hint">⚠️ L'indicazione di mansioni non coerenti, incomplete o generiche può essere causa di nullità del periodo di prova.</div>
     <span class="err-msg" id="e-mans">Campo obbligatorio</span>
   </div>
@@ -481,7 +481,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="fld" data-label="Giorni come somministrato" data-hint="I giorni di prestazione come somministrato nella stessa mansione possono rendere incompatibile il periodo di prova." data-norm="D.Lgs. 81/2015 art.19 — limite 20% contratti a termine">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       <label class="lbl" style="margin:0;flex:1">Giorni di prestazione come somministrato nella stessa mansione</label>
-      <input type="number" id="f-somm" placeholder="0" min="0" value="0" style="width:90px;text-align:center;flex-shrink:0" onfocus="hint(this.closest('.fld'))"/>
+      <input type="number" id="f-somm" placeholder="0" min="0" value="0" style="width:90px;text-align:center;flex-shrink:0" onmouseenter="hint(this.closest('.fld'))"/>
     </div>
   </div>
 
@@ -514,7 +514,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div>
         <label class="lbl" style="font-size:11px;color:#6b7280;font-weight:400">Provincia</label>
         <!-- Provincia: campo VUOTO all'apertura -->
-        <select id="f-prov" onchange="loadComuni(this.value)" onfocus="hint(this.closest('.fld'))">
+        <select id="f-prov" onchange="loadComuni(this.value)" onmouseenter="hint(this.closest('.fld'))">
           <option value="">— Seleziona —</option>
           <option value="AG">AG — Agrigento</option><option value="AL">AL — Alessandria</option><option value="AN">AN — Ancona</option><option value="AO">AO — Aosta</option><option value="AQ">AQ — L'Aquila</option><option value="AR">AR — Arezzo</option><option value="AT">AT — Asti</option><option value="AV">AV — Avellino</option>
           <option value="BA">BA — Bari</option><option value="BT">BT — Barletta-Andria-Trani</option><option value="BL">BL — Belluno</option><option value="BN">BN — Benevento</option><option value="BG">BG — Bergamo</option><option value="BI">BI — Biella</option><option value="BO">BO — Bologna</option><option value="BZ">BZ — Bolzano</option><option value="BS">BS — Brescia</option><option value="BR">BR — Brindisi</option>
@@ -2449,11 +2449,14 @@ function hintDirect(label, testo, norma){
   if(norma){n.textContent='📋 '+norma;n.style.display='block';}else n.style.display='none';
 }
 
-document.addEventListener('click',e=>{
+document.addEventListener('mouseover',e=>{
   const f=e.target.closest('.fld[data-hint]');
   if(f) hint(f);
-  else if(!e.target.closest('.sidebar')&&!e.target.closest('.pdf-ov')&&!e.target.closest('.lg-ov')) hint(null);
 });
+document.addEventListener('mouseleave',e=>{
+  // Reset solo se si esce dall'area del form principale
+  if(e.target===document.body) hint(null);
+}, true);
 
 // ─── PROVINCE / COMUNI ───────────────────────────────────────────────────────
 function loadComuni(prov){
