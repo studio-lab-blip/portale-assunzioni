@@ -596,7 +596,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <label class="lbl">Utilizzo beni aziendali e benefit <span class="req">*</span></label>
     <div class="cg" id="benef-group">
       <label class="cc" onclick="togc(this)"><input type="checkbox" value="Autovettura aziendale non occasionale"/><div class="rb"><div class="rt">Autovettura aziendale esclusivamente per lavoro in via non occasionale</div></div></label>
-      <label class="cc" onclick="togc(this);hintDirect('Autovettura aziendale anche ad uso personale nei giorni non lavorativi','Nel caso in cui l\'azienda assegni a un dipendente un\'autovettura di proprietà aziendale, per utilizzo sia a fini lavorativi che personali (uso promiscuo), l\'uso personale di tale veicolo concorre, ad ogni effetto, alla formazione del reddito per il dipendente (benefit), con conseguente tassazione, salvo che il relativo importo gli venga fatturato. L\'ammontare del reddito annuo cui corrisponde il benefit \'auto aziendale\' va calcolato con una percentuale che dipende dal tipo di alimentazione del veicolo; la norma risulta premiante per le autovetture elettriche e plug-in. La tassazione sarà calcolata su una percentuale (variabile a seconda dell\'alimentazione della vettura) del costo km dell\'autovettura, da calcolarsi sul valore della percorrenza media di 15.000 km annui.','Art. 51 co. 4 TUIR; Circ. AE n. 1/2024')"><input type="checkbox" value="Autovettura aziendale anche gg non lavorativi"/><div class="rb"><div class="rt">Autovettura aziendale anche ad uso personale nei giorni non lavorativi</div></div></label>
+      <label class="cc" onclick="togc(this)" onmouseenter="hintDirect('Autovettura aziendale anche ad uso personale nei giorni non lavorativi','Nel caso in cui l\'azienda assegni a un dipendente un\'autovettura di proprietà aziendale, per utilizzo sia a fini lavorativi che personali (uso promiscuo), l\'uso personale di tale veicolo concorre, ad ogni effetto, alla formazione del reddito per il dipendente (benefit), con conseguente tassazione, salvo che il relativo importo gli venga fatturato. L\'ammontare del reddito annuo cui corrisponde il benefit \'auto aziendale\' va calcolato con una percentuale che dipende dal tipo di alimentazione del veicolo; la norma risulta premiante per le autovetture elettriche e plug-in. La tassazione sarà calcolata su una percentuale (variabile a seconda dell\'alimentazione della vettura) del costo km dell\'autovettura, da calcolarsi sul valore della percorrenza media di 15.000 km annui.','Art. 51 co. 4 TUIR; Circ. AE n. 1/2024')"><input type="checkbox" value="Autovettura aziendale anche gg non lavorativi"/><div class="rb"><div class="rt">Autovettura aziendale anche ad uso personale nei giorni non lavorativi</div></div></label>
       <label class="cc" onclick="togc(this)"><input type="checkbox" value="Propria autovettura non occasionale"/><div class="rb"><div class="rt">Propria autovettura in via non occasionale</div><div class="rd">Con rimborso chilometrico in base a tariffe ACI.</div></div></label>
       <label class="cc" onclick="togc(this)"><input type="checkbox" value="Telefono aziendale"/><div class="rb"><div class="rt">Telefono cellulare aziendale</div></div></label>
       <label class="cc" onclick="togc(this)"><input type="checkbox" value="Benefits vari"/><div class="rb"><div class="rt">Benefits vari (alloggio, polizze, buoni pasto…)</div></div></label>
@@ -929,7 +929,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <!-- Obbligatorie -->
   <p style="font-size:11px;color:#6b7280;margin-bottom:.4rem;font-weight:500">Obbligatorie <span class="req">*</span></p>
   <div class="cg" style="margin-bottom:.5rem">
-    <label class="cc" onclick="togc(this);hintDirect('Lavoratori somministrati','L\'indicazione del numero dei lavoratori somministrati in forza è fondamentale per la corretta determinazione dell\'organico aziendale, ai fini della spettanza di specifiche agevolazioni ed anche di eventuali obblighi previsti dalla legge e dalla contrattazione collettiva applicabile.','Art. 36 D.Lgs. 81/2015 — lavoratori somministrati nel computo degli organici')"><input type="checkbox" id="dich1" value="Comunicherà lavoratori somministrati"/><div class="rb"><div class="rt">Si impegna a comunicare allo Studio l'eventuale impiego di lavoratori somministrati</div></div></label>
+    <label class="cc" onclick="togc(this)" onmouseenter="hintDirect('Lavoratori somministrati','L\'indicazione del numero dei lavoratori somministrati in forza è fondamentale per la corretta determinazione dell\'organico aziendale, ai fini della spettanza di specifiche agevolazioni ed anche di eventuali obblighi previsti dalla legge e dalla contrattazione collettiva applicabile.','Art. 36 D.Lgs. 81/2015 — lavoratori somministrati nel computo degli organici')"><input type="checkbox" id="dich1" value="Comunicherà lavoratori somministrati"/><div class="rb"><div class="rt">Si impegna a comunicare allo Studio l'eventuale impiego di lavoratori somministrati</div></div></label>
     <label class="cc" onclick="togc(this)"><input type="checkbox" id="dich4" value="Controllo medico competente"/><div class="rb"><div class="rt">L'azienda è informata che dovrà sottoporre il/la dipendente a controllo medico dal medico competente (se previsto dalla valutazione dei rischi)</div></div></label>
     <!-- dich5: visibile solo per aziende del settore Edilizia -->
     <label class="cc" id="dich5-wrap" style="display:none" onclick="togc(this)">
@@ -1046,26 +1046,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- MODAL PASSWORD DIMENTICATA -->
 <div class="pdf-ov" id="pwd-reset-ov" autocomplete="off">
-<div class="pdf-modal" style="max-width:400px">
+<div class="pdf-modal" style="max-width:420px">
   <div class="pdf-hd">
     <span class="pdf-ht">🔑 Password dimenticata</span>
     <button type="button" class="pdf-cl" onclick="closePwdReset()">✕</button>
   </div>
   <div class="pdf-bd" style="padding:1.25rem">
     <div id="pwd-reset-step1">
-      <p style="font-size:13px;color:#374151;margin-bottom:1rem;line-height:1.6">Inserisci il codice azienda. La password verrà inviata all'indirizzo email registrato per quella ditta.</p>
+      <p style="font-size:13px;color:#374151;margin-bottom:1rem;line-height:1.6">Inserisci il codice azienda e scegli la nuova password. Puoi usare quella suggerita o digitarne una tua.</p>
       <div class="fld">
         <label class="lbl">Codice azienda <span class="req">*</span></label>
-        <input type="text" id="f-reset-codice" placeholder="es. 77" style="height:40px"/>
+        <input type="text" id="f-reset-codice" placeholder="es. 77" style="height:40px" oninput="generaSuggerimento()"/>
+      </div>
+      <div class="fld" style="margin-top:8px">
+        <label class="lbl">Nuova password <span class="req">*</span></label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="f-reset-pwd" placeholder="Digita o usa quella suggerita" autocomplete="new-password" style="height:40px;flex:1;font-family:monospace;font-size:15px;letter-spacing:2px"/>
+          <button type="button" onclick="generaSuggerimento()" title="Genera nuova password suggerita" style="height:40px;padding:0 10px;background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;font-size:18px">🔄</button>
+        </div>
+        <p style="font-size:11px;color:#6b7280;margin-top:4px">Min. 8 caratteri, almeno una maiuscola e un numero.</p>
       </div>
       <div class="err-b" id="err-reset" style="margin-top:.5rem">⛔ Codice non trovato. Verificare o contattare lo Studio.</div>
-      <button type="button" class="btn-p" onclick="doReset()" style="width:100%;height:40px;justify-content:center;margin-top:.75rem">Invia password via email →</button>
+      <div class="err-b" id="err-reset-pwd" style="margin-top:.5rem;display:none">⛔ La password deve avere almeno 8 caratteri, una lettera maiuscola e un numero.</div>
+      <button type="button" class="btn-p" onclick="doReset()" style="width:100%;height:40px;justify-content:center;margin-top:.75rem">Salva e invia via email →</button>
     </div>
     <div id="pwd-reset-step2" style="display:none;text-align:center;padding:1rem 0">
       <div style="font-size:36px;margin-bottom:.75rem">✅</div>
-      <p style="font-size:14px;font-weight:600;color:#166534;margin-bottom:.5rem">Email inviata!</p>
-      <p style="font-size:13px;color:#374151;line-height:1.6" id="pwd-reset-msg">La password è stata inviata all'indirizzo email registrato per questa azienda.</p>
-      <p style="font-size:12px;color:#6b7280;margin-top:.5rem">Se non la ricevi entro qualche minuto, controlla la cartella spam o contatta lo Studio al <strong>030 7000841</strong>.</p>
+      <p style="font-size:14px;font-weight:600;color:#166534;margin-bottom:.5rem">Password aggiornata!</p>
+      <p style="font-size:13px;color:#374151;line-height:1.6" id="pwd-reset-msg"></p>
+      <p style="font-size:12px;color:#6b7280;margin-top:.5rem">Se non ricevi l'email entro qualche minuto controlla la cartella spam o contatta lo Studio al <strong>030 7000841</strong>.</p>
     </div>
   </div>
   <div class="pdf-ft">
@@ -1479,7 +1488,10 @@ function showPwdReset(){
   document.getElementById('pwd-reset-step2').style.display='none';
   document.getElementById('f-reset-codice').value='';
   document.getElementById('err-reset').classList.remove('on');
+  document.getElementById('err-reset-pwd').style.display='none';
   document.getElementById('pwd-reset-ov').classList.add('on');
+  // Pre-popola con una password suggerita
+  setTimeout(generaSuggerimento, 100);
 }
 function closePwdReset(){document.getElementById('pwd-reset-ov').classList.remove('on');}
 
@@ -1490,13 +1502,26 @@ function generaNuovaPassword(){
   return pwd;
 }
 
+function generaSuggerimento(){
+  const pwd = generaNuovaPassword();
+  const el = document.getElementById('f-reset-pwd');
+  if(el) el.value = pwd;
+}
+
+function validaPwd(pwd){
+  return pwd.length>=8 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd);
+}
+
 async function doReset(){
   const codice=document.getElementById('f-reset-codice').value.trim();
+  const nuovaPwd=(document.getElementById('f-reset-pwd')?.value||'').trim();
   const az=AZIENDE_DB[codice];
-  if(!az){document.getElementById('err-reset').classList.add('on');return;}
-  document.getElementById('err-reset').classList.remove('on');
 
-  const nuovaPwd=generaNuovaPassword();
+  document.getElementById('err-reset').classList.remove('on');
+  document.getElementById('err-reset-pwd').style.display='none';
+
+  if(!az){document.getElementById('err-reset').classList.add('on');return;}
+  if(!validaPwd(nuovaPwd)){document.getElementById('err-reset-pwd').style.display='block';return;}
 
   // Salva localmente
   pwdOverrides[codice]=nuovaPwd;
@@ -1512,44 +1537,34 @@ async function doReset(){
     });
   } catch(e){ console.warn('[Reset] Supabase non raggiungibile'); }
 
-  // Invia email con la nuova password via EmailJS
-  const emailTo = az.email;
-  const ragione = az.ragione_sociale;
-  let inviata = false;
-  if(typeof emailjs !== 'undefined' && emailTo){
+  // Invia email via EmailJS
+  const emailTo=az.email;
+  const ragione=az.ragione_sociale;
+  let inviata=false;
+  if(typeof emailjs!=='undefined'&&emailTo){
     try {
-      const r = await emailjs.send('service_v6yh8a8','template_jvpchue',{
-        to_email:   emailTo,
-        to_name:    ragione,
-        reply_to:   'studiopelati@gmail.com',
-        datore:     ragione,
-        dipendente: '—',
-        data_assunzione: '—',
-        tipologia_contratto: '—',
-        agevolazioni: '—',
-        compilato_da: 'Sistema automatico',
-        riepilogo_html: `
+      const r=await emailjs.send('service_v6yh8a8','template_jvpchue',{
+        to_email:emailTo, to_name:ragione, reply_to:'studiopelati@gmail.com',
+        datore:ragione, dipendente:'—', data_assunzione:'—',
+        tipologia_contratto:'—', agevolazioni:'—', compilato_da:'Sistema automatico',
+        riepilogo_html:`
           <div style="font-family:Arial,sans-serif;font-size:14px;color:#1a1a1a;padding:16px">
             <h2 style="color:#1F4E79">Nuova password — Portale Assunzioni Studio Pelati</h2>
             <p>Gentile <strong>${ragione}</strong>,</p>
-            <p>Su tua richiesta è stata generata una nuova password di accesso al portale:</p>
-            <p style="font-size:22px;font-weight:700;letter-spacing:4px;color:#185FA5;background:#EFF6FF;padding:12px 20px;border-radius:8px;display:inline-block;margin:12px 0">${nuovaPwd}</p>
-            <p>Accedi al portale e modifica la password dalla sezione "Cambia password".</p>
+            <p>La tua nuova password di accesso al portale è:</p>
+            <p style="font-size:22px;font-weight:700;letter-spacing:4px;color:#185FA5;background:#EFF6FF;padding:12px 20px;border-radius:8px;display:inline-block;margin:12px 0;font-family:monospace">${nuovaPwd}</p>
+            <p>Conservala in un luogo sicuro. Potrai cambiarla in qualsiasi momento dalla sezione "Cambia password" del portale.</p>
             <p style="color:#6b7280;font-size:12px;margin-top:20px">Studio Pelati — Brescia — 030 7000841 — info@studiopelati.it</p>
           </div>`,
-        allegati_info: '',
+        allegati_info:'',
       });
       if(r.status===200) inviata=true;
-    } catch(e){ console.error('[Reset] Errore invio email:', e.message); }
+    } catch(e){ console.error('[Reset] Errore invio email:',e.message); }
   }
 
-  document.getElementById('pwd-reset-msg').innerHTML = inviata
-    ? `✅ La nuova password è stata inviata a:<br><strong>${emailTo.replace(/(.{2}).+(@.+)/,'$1***$2')}</strong><br><br>
-       <span style="font-size:12px;color:#6b7280">Accedi con la nuova password e modificala dalla sezione "Cambia password".</span>`
-    : `⚠️ Errore invio email. La nuova password è stata comunque generata.<br>
-       Contatta lo Studio al 030 7000841 per riceverla.<br><br>
-       <span style="font-size:11px;color:#6b7280">Cod. ditta: ${codice}</span>`;
-
+  document.getElementById('pwd-reset-msg').innerHTML=inviata
+    ?`La nuova password è stata inviata a:<br><strong>${emailTo.replace(/(.{2}).+(@.+)/,'$1***$2')}</strong>`
+    :`⚠️ Errore invio email. Contatta lo Studio al 030 7000841.`;
   document.getElementById('pwd-reset-step1').style.display='none';
   document.getElementById('pwd-reset-step2').style.display='block';
 }
