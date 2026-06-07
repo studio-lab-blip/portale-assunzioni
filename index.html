@@ -3114,16 +3114,6 @@ const LINEE_GUIDA = {
   }
 };
 
-// ── URL base dei file Word su GitHub ──────────────────────────────────────────
-const LG_BASE_URL = 'https://raw.githubusercontent.com/studio-lab-blip/portale-assunzioni/main/linee-guida/';
-
-const LG_FILES = {
-  '01': '01%20-%20Tempo%20indeterminato.docx',
-  '02': '02%20-%20Tempo%20determinato.docx',
-  '03': '03%20-%20Apprendistato%20professionalizzante.docx',
-  '04': '04%20-%20Lavoro%20a%20chiamata.docx',
-  'dvr': '05%20-%20DVR.docx',
-};
 
 const LG_TITOLI = {
   '01': '01 — Tempo Indeterminato',
@@ -3135,7 +3125,6 @@ const LG_TITOLI = {
 
 async function apriLineaGuida(codice) {
   const titolo = LG_TITOLI[codice] || codice;
-
   document.getElementById('lg-title').textContent = titolo + ' — Linea Guida';
   lgWrite('<div style="text-align:center;padding:2rem;color:#6b7280">⏳ Caricamento in corso…</div>');
   document.getElementById('lg-ov').classList.add('on');
@@ -3147,7 +3136,7 @@ async function apriLineaGuida(codice) {
     if (c === codice) btn.classList.add('letto');
   });
 
-  // 1. Prova a leggere da Supabase
+  // Legge da Supabase (unica fonte)
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/linee_guida?codice=eq.${encodeURIComponent(codice)}&select=titolo,riferimento,contenuto_html&attivo=eq.true`,
@@ -3167,34 +3156,10 @@ async function apriLineaGuida(codice) {
         return;
       }
     }
-  } catch(e) { console.warn('[LG] Supabase non disponibile:', e.message); }
-
-  // 2. Prova a leggere il file Word da GitHub
-  const nomeFile = LG_FILES[codice];
-  if (nomeFile) {
-    try {
-      const res = await fetch(LG_BASE_URL + nomeFile);
-      if (res.ok) {
-        const arrayBuffer = await res.arrayBuffer();
-        const result = await mammoth.convertToHtml({ arrayBuffer });
-        lgWrite(
-          '<div style="font-family:Arial,sans-serif;font-size:13px;line-height:1.7;color:#1a1a1a">' +
-          result.value + '</div>'
-        );
-        return;
-      }
-    } catch(e) { console.warn('[LG] File Word non disponibile:', e.message); }
-  }
-
-  // 3. Fallback: dizionario locale
-  const lgLocale = LINEE_GUIDA[codice];
-  if (lgLocale) {
-    lgWrite(buildLgHtml(codice));
-  } else {
-    lgWrite(
-      '<div class="warn-b">⚠️ Contenuto non disponibile. Caricare il file <strong>' +
-      (nomeFile || codice) + '</strong> nella cartella <code>linee-guida/</code> su GitHub oppure inserire il testo su Supabase → tabella <code>linee_guida</code>.</div>'
-    );
+    lgWrite('<div class="warn-b">⚠️ Contenuto non trovato su Supabase per il codice: <strong>' + codice + '</strong>.<br>Aggiungilo su <a href="https://app.supabase.com" target="_blank">app.supabase.com</a> → Table Editor → linee_guida.</div>');
+  } catch(e) {
+    console.error('[LG] Errore Supabase:', e.message);
+    lgWrite('<div class="warn-b">⚠️ Impossibile connettersi a Supabase. Verificare la connessione e riprovare.</div>');
   }
 }
 
@@ -3852,6 +3817,23 @@ async function generaEInviaEmailConContenuto(pdfContent){
   console.log('[Email] Destinatari:', 'studiopelati@gmail.com', '|', emailAzienda);
   console.log('[Email] Dati:', datore, '-', dipendente, '-', dass);
 
+  // Converti il contenuto .row in tabella per compatibilità email
+  function htmlPerEmail(pdfEl){
+    const clone = pdfEl.cloneNode(true);
+    // Ogni .row → <tr><td rk>...<td rv>...
+    clone.querySelectorAll('.row').forEach(row=>{
+      const rk = row.querySelector('.rk')?.textContent||'';
+      const rv = row.querySelector('.rv')?.innerHTML||'';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td style="font-size:10px;color:#6b7280;padding:3px 8px 3px 0;white-space:nowrap;vertical-align:top;min-width:150px">${rk}</td><td style="font-size:10px;font-weight:500;padding:3px 0;vertical-align:top">${rv}</td>`;
+      const wrapper = document.createElement('table');
+      wrapper.style.cssText = 'width:100%;border-collapse:collapse;border-bottom:0.5px solid #f3f4f6';
+      wrapper.appendChild(tr);
+      row.replaceWith(wrapper);
+    });
+    return clone.innerHTML;
+  }
+
   const riepilogoHtml = `
   <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#1a1a1a;max-width:700px;margin:0 auto;padding:16px">
     <div style="background:#1F4E79;color:#fff;padding:16px 20px;border-radius:8px 8px 0 0;margin-bottom:16px">
@@ -3873,7 +3855,7 @@ async function generaEInviaEmailConContenuto(pdfContent){
       .agev-sugg h3{color:#1e40af;text-transform:none;letter-spacing:0;font-size:10px;margin:0 0 4px;font-weight:600}
       .agev-sugg-item{font-size:9px;color:#1e40af;padding:2px 0;display:flex;gap:4px;line-height:1.4}
     </style>
-    ${pdfContent.innerHTML || pdfContent.textContent || '(contenuto vuoto)'}
+    ${htmlPerEmail(pdfContent)}
     <div style="margin-top:20px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:10px;color:#6b7280;text-align:center">
       Studio Pelati — Brescia — 030 7000841 — info@studiopelati.it
     </div>
@@ -3923,8 +3905,6 @@ async function generaEInviaEmailConContenuto(pdfContent){
     console.log('[EmailJS] Inizializzato');
   }
 </script>
-<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"
-  onerror="console.warn('[CDN] Mammoth non caricato')"></script>
 <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"
   onerror="console.warn('[CDN] jsPDF non caricato')"></script>
 <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
